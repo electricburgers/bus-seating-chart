@@ -206,6 +206,13 @@
         UI.h('strong', { text: info.route }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
       UI.renderBus(busContext(roster, features, false, {}, isBefore ? 'Before (baseline)' : 'After (current)'))
     ]);
+    if ($('export-frame').checked) {
+      // Optional fun frame: a yellow school-bus outline with wheels around the chart.
+      sheet.classList.add('framed');
+      sheet.appendChild(UI.h('div', { 'class': 'bus-frame-label', text: 'SCHOOL BUS' }));
+      sheet.appendChild(UI.h('div', { 'class': 'bus-wheel left' }));
+      sheet.appendChild(UI.h('div', { 'class': 'bus-wheel right' }));
+    }
     document.body.appendChild(sheet);
     return root.html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff' }).then(
       function (canvas) { sheet.remove(); return canvas; },

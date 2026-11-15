@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 ## [Unreleased]
 
 ### Added (step 11)
+- Optional "Yellow bus frame" checkbox: wraps PDF and JPEG chart exports in a yellow school-bus outline with wheels.
 - Keyboard alternative to dragging (Enter picks up / puts down, Escape cancels), focusable seats and student list.
 - `css/print.css` print styles, empty-state text, `README.md`.
 - Vendored `html2canvas` 1.4.1 and `jsPDF` 2.5.1 in `vendor/`, enabling PDF and JPEG export.
