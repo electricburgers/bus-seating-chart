@@ -40,6 +40,21 @@
             <button id="add-student" type="submit">Add</button>
           </form>
         </details>
+        <details id="school-box" class="sub-box">
+          <summary>Rename schools</summary>
+          <form id="school-rename-form" class="row" autocomplete="off">
+            <label>School <select id="school-from"></select></label>
+            <label>New name <input id="school-to" type="text" required></label>
+            <button type="submit">Rename</button>
+          </form>
+          <p class="hint">Renames the school for every student who has it.</p>
+          <form id="school-replace-form" class="row" autocomplete="off">
+            <label>Find <input id="school-find" type="text" required placeholder="Elementary"></label>
+            <label>Replace with <input id="school-replace" type="text" placeholder="Elem"></label>
+            <button type="submit">Replace in all</button>
+          </form>
+          <p class="hint">Replaces whole words in every school name, ignoring capital letters. Leave "Replace with" empty to remove the word.</p>
+        </details>
         <details id="import-box" class="sub-box">
           <summary>Import from CSV</summary>
           <p class="hint">Columns: <code>name,school</code>. A header row is optional.</p>
@@ -96,6 +111,7 @@
   <script src="js/roster.js"></script>
   <script src="js/needs.js"></script>
   <script src="js/csvParser.js"></script>
+  <script src="js/schools.js"></script>
   <script src="js/sampleData.js"></script>
   <script src="js/rosterPrompt.js"></script>
   <script src="js/changeLog.js"></script>

@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.12.0] - 2026-11-15 08:49 EST
+
+### Added
+- "Rename schools" in the Students panel. Rename one school for every student who has it, or replace a whole word in all school names (for example Elementary to Elem), ignoring capital letters.
+
+### Fixed
+- The exported chart sheet now shrinks to fit the bus as well as growing, and the bus is laid out as one grid, so no white area covers the yellow bus frame.
+
 ## [0.11.0] - 2026-11-15 08:41 EST
 
 ### Added

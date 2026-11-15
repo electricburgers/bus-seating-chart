@@ -63,8 +63,11 @@ label.file-btn input { max-width: 190px; }
 
 .bus-figure { margin: 0; }
 .bus-figure figcaption { text-align: center; font-weight: 600; margin-bottom: 6px; }
-.bus { background: #fff; border: 3px solid #44505c; border-radius: 28px 28px 10px 10px; padding: 10px 12px; min-width: 330px; }
-.bench { display: grid; grid-template-columns: 1fr 2.4rem 1fr; align-items: center; margin: 4px 0; }
+/* One grid for the whole bus: the driver column and door column are as wide as their widest row (no blank space), and the aisle sits between them. */
+.bus { display: grid; grid-template-columns: max-content 2.4rem max-content; justify-content: center; align-items: center; row-gap: 8px; background: #fff; border: 3px solid #44505c; border-radius: 28px 28px 10px 10px; padding: 10px 12px; min-width: 330px; }
+.bench { display: contents; }
+.bench.wc-row, .rear-exit { grid-column: 1 / -1; }
+.bench.wc-row { display: flex; }
 .bench-side { display: flex; gap: 4px; }
 .bench-side.left { justify-content: flex-end; }
 .bench-side.right { justify-content: flex-start; }
@@ -102,7 +105,7 @@ span.feature { display: inline-block; line-height: 20px; border: 1px solid var(-
 .change-table th, .change-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid #e2e6ea; vertical-align: top; }
 .reason { width: 100%; }
 
-.export-sheet { position: fixed; left: -10000px; top: 0; box-sizing: border-box; width: max-content; min-width: 700px; padding: 16px; background: #fff; }
+.export-sheet { position: fixed; left: -10000px; top: 0; box-sizing: border-box; width: max-content; padding: 16px; background: #fff; }
 .export-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
 
 @media (max-width: 800px) { .layout { grid-template-columns: minmax(0, 1fr); } }
@@ -140,7 +143,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .chip:focus-visible, .seat:focus-visible, .pool:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* Optional yellow bus frame for PDF/JPEG export (captured off-screen by html2canvas) */
-.export-sheet.framed { min-width: 760px; padding: 36px 36px 58px; background: #f9c80e; border: 6px solid #1b1f24; border-radius: 48px 48px 18px 18px; }
+.export-sheet.framed { padding: 36px 36px 58px; background: #f9c80e; border: 6px solid #1b1f24; border-radius: 48px 48px 18px 18px; }
 .export-sheet.framed .export-header, .export-sheet.framed .bus-figure { background: #fff; }
 .export-sheet.framed .export-header { margin: 0; padding: 8px 12px; border-radius: 10px 10px 0 0; }
 .export-sheet.framed .bus-figure { padding: 8px 12px 12px; border-radius: 0 0 10px 10px; }
@@ -160,6 +163,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .students-box .count { font-weight: 400; color: #5b6570; }
 .sub-box { margin: 6px 0; }
 .sub-box > summary { cursor: pointer; min-height: 28px; }
-#add-form { align-items: flex-end; }
-#add-form label { display: flex; flex-direction: column; font-size: 12px; flex: 1 1 110px; min-width: 0; }
-#add-form input { width: 100%; box-sizing: border-box; min-height: 32px; }
+#add-form, #school-rename-form, #school-replace-form { align-items: flex-end; }
+#add-form label, #school-rename-form label, #school-replace-form label { display: flex; flex-direction: column; font-size: 12px; flex: 1 1 110px; min-width: 0; }
+#add-form input, #school-rename-form input, #school-rename-form select, #school-replace-form input { width: 100%; box-sizing: border-box; min-height: 32px; }

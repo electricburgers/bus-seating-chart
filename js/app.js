@@ -3,7 +3,7 @@
   if (typeof document === 'undefined') return;
 
   var B = root.BusApp;
-  var Layout = B.busLayout, Features = B.seatFeatures, Roster = B.roster, Needs = B.needs, Csv = B.csvParser;
+  var Schools = B.schools, Layout = B.busLayout, Features = B.seatFeatures, Roster = B.roster, Needs = B.needs, Csv = B.csvParser;
   var Prompt = B.rosterPrompt, Log = B.changeLog, Store = B.storage, Exp = B.exporter, UI = B.ui;
 
   function $(id) { return document.getElementById(id); }
@@ -104,6 +104,12 @@
     pool.textContent = '';
     UI.renderPool(chart, Needs.getWarnings(chart.roster, needsById(), chart.features)).forEach(function (li) { pool.appendChild(li); });
 
+    var fromSel = $('school-from'), picked = fromSel.value;
+    fromSel.textContent = '';
+    Schools.listSchools(chart.students).forEach(function (sc) {
+      fromSel.appendChild(UI.h('option', { value: sc.name, text: sc.name + ' (' + sc.count + ')' }));
+    });
+    if (picked) fromSel.value = picked;
     $('student-count').textContent = '(' + activeStudents().length + ')';
 
     var rows = Log.getRows(changes, chart.reasons);
@@ -382,6 +388,28 @@
       else chart.students = chart.students.filter(function (s) { return s.id !== id; });
       notify('Deleted ' + st.name + '.');
       commit();
+    });
+    function applySchoolChange(result, message) {
+      if (!result.changed) { notify('No school names matched.', true); return; }
+      chart.students = result.students;
+      notify(message(result.changed));
+      commit();
+    }
+    $('school-rename-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var from = $('school-from').value, to = $('school-to').value.trim();
+      if (!from) { notify('There are no schools to rename yet.', true); return; }
+      if (!to) { notify('Enter the new school name.', true); return; }
+      applySchoolChange(Schools.renameSchool(chart.students, from, to),
+        function (n) { return 'Renamed ' + from + ' to ' + to + ' for ' + n + ' student' + (n === 1 ? '' : 's') + '.'; });
+      $('school-to').value = '';
+    });
+    $('school-replace-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var find = $('school-find').value.trim(), rep = $('school-replace').value.trim();
+      if (!find) { notify('Enter the text to find.', true); return; }
+      applySchoolChange(Schools.replaceInSchools(chart.students, find, rep, true),
+        function (n) { return 'Replaced "' + find + '" with "' + rep + '" for ' + n + ' student' + (n === 1 ? '' : 's') + '.'; });
     });
     $('add-form').addEventListener('submit', function (e) {
       e.preventDefault();
