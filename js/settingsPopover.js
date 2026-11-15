@@ -84,6 +84,12 @@
         panel.appendChild(h('p', { 'class': 'hint', text: 'No saved templates yet.' }));
       }
 
+      panel.appendChild(h('h3', { text: 'Try it out' }));
+      var demo = h('button', { type: 'button', text: 'Generate fake names and layout' });
+      demo.addEventListener('click', function () { run(actions.loadSampleData); });
+      panel.appendChild(demo);
+      panel.appendChild(h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' }));
+
       var done = h('button', { type: 'button', text: 'Close' });
       done.addEventListener('click', function () { close(); button.focus(); });
       panel.appendChild(done);

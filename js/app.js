@@ -135,6 +135,26 @@
         notify('Loaded template "' + name + '". Students no longer on a seat were moved back to the list.');
       });
     },
+    loadSampleData: function () {
+      var hasWork = chart.students.length || Object.keys(chart.roster).length;
+      if (hasWork && !root.confirm('Replace the current chart with fake names and a fake layout? This cannot be undone (save JSON first if you need it).')) return;
+      guard(function () {
+        var d = B.sampleData.generate();
+        chart = Object.assign(newChart(), {
+          routeName: chart.routeName || 'Route 12 (sample)', preparedBy: chart.preparedBy || 'Sample Driver',
+          layout: d.layout, students: d.students, features: d.features, roster: d.roster,
+          baseline: Log.createBaseline(d.baselineRoster, d.features)
+        });
+        var rows = Log.getRows(Log.diff(chart.baseline, { roster: chart.roster, features: chart.features }), {});
+        var examples = ['Sibling seated together', 'Behavior seat change', 'New student added to route', 'Closer to the door'];
+        rows.forEach(function (r, i) { chart.reasons = Log.setReason(chart.reasons, r.key, examples[i % examples.length]); });
+        $('route-name').value = chart.routeName;
+        $('prepared-by').value = chart.preparedBy;
+        view = 'after';
+        commit();
+        notify('Loaded fake names and layout. Try the exports below.');
+      });
+    },
     deleteTemplate: function (name) {
       templates = Store.deleteTemplate(templates, name);
       Store.saveTemplates(storage(), templates);

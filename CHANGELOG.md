@@ -5,19 +5,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 
 ## [Unreleased]
 
-### Added (step 11)
-- Optional "Yellow bus frame" checkbox: wraps PDF and JPEG chart exports in a yellow school-bus outline with wheels.
-- Keyboard alternative to dragging (Enter picks up / puts down, Escape cancels), focusable seats and student list.
-- `css/print.css` print styles, empty-state text, `README.md`.
-- Vendored `html2canvas` 1.4.1 and `jsPDF` 2.5.1 in `vendor/`, enabling PDF and JPEG export.
-
-### Added
-- Step 10: the app itself. `index.html`, `css/styles.css`, `js/ui.js`, `js/dragdrop.js`, `js/settingsPopover.js`, `js/app.js`.
-- Drag-and-drop seating (drop on an occupied seat swaps, or sends the occupant back to the list), per-seat feature toggles, per-student needs, wrong-seat flags.
-- CSV import with Copy prompt button, baseline, Before/After/side-by-side views, Change Log reasons.
-- Settings popover: version and build time, rows, seats per side, door flip, wheelchair area, bench overrides, bus templates.
-- CSV and JSON export, JSON load, auto-save. `roster.place()` for the drop rule (tested).
-
 ### Planned
 - Bus layout with driver side left, door side right (3 seats per bench driver side, 2 door side, both configurable, per-bench overrides).
 - Optional wheelchair area (off by default) at the rear, at least 2 full rows (replacing the entire row), with the wheelchair door on the right side.
@@ -29,6 +16,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Export to PDF (multiple pages), JPEG, CSV and JSON, with route name, your name and export date.
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
+
+## [0.3.0] - 2026-11-15 07:51 EST
+
+### Added
+- Settings button "Generate fake names and layout": a made-up 11-row bus with wheelchair area, 34 students, a baseline and a few moves with sample reasons, for previewing exports (`js/sampleData.js`, tested).
+- Optional "Yellow bus frame" checkbox: wraps PDF and JPEG chart exports in a yellow school-bus outline with wheels.
+- Keyboard alternative to dragging (Enter picks up / puts down, Escape cancels), focusable seats and student list.
+- `css/print.css` print styles, empty-state text, `README.md`.
+- Vendored `html2canvas` 1.4.1 and `jsPDF` 2.5.1 in `vendor/`, enabling PDF and JPEG export.
+- Step 10: the app itself. `index.html`, `css/styles.css`, `js/ui.js`, `js/dragdrop.js`, `js/settingsPopover.js`, `js/app.js`.
+- Drag-and-drop seating (drop on an occupied seat swaps, or sends the occupant back to the list), per-seat feature toggles, per-student needs, wrong-seat flags.
+- CSV import with Copy prompt button, baseline, Before/After/side-by-side views, Change Log reasons.
+- Settings popover: version and build time, rows, seats per side, door flip, wheelchair area, bench overrides, bus templates.
+- CSV and JSON export, JSON load, auto-save. `roster.place()` for the drop rule (tested).
 
 ## [0.2.0] - 2026-11-15 07:28 EST
 
