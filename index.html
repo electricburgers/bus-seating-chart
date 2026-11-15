@@ -30,9 +30,17 @@
 
   <main class="layout">
     <aside class="side-panel">
-      <section>
-        <h2>Students</h2>
-        <details id="import-box">
+      <details id="students-box" class="students-box" open>
+        <summary><span class="students-title">Students</span> <span id="student-count" class="count"></span></summary>
+        <details id="add-box" class="sub-box">
+          <summary>Add a student</summary>
+          <form id="add-form" class="row" autocomplete="off">
+            <label>Name <input id="add-name" type="text" required></label>
+            <label>School <input id="add-school" type="text"></label>
+            <button id="add-student" type="submit">Add</button>
+          </form>
+        </details>
+        <details id="import-box" class="sub-box">
           <summary>Import from CSV</summary>
           <p class="hint">Columns: <code>name,school</code>. A header row is optional.</p>
           <textarea id="csv-text" rows="5" spellcheck="false" placeholder="Ann Lee,Oak Elementary"></textarea>
@@ -45,7 +53,7 @@
         <p class="hint">Drag a student onto a seat. On a phone or tablet, tap a student, then tap a seat (tap the student again to cancel). With a keyboard: Enter on a student picks them up, Enter on a seat (or this list) puts them down, Escape cancels.</p>
         <ul id="pool" class="pool" data-pool tabindex="0" aria-label="Student list"></ul>
         <button id="clear-roster" type="button" class="danger">Clear roster</button>
-      </section>
+      </details>
     </aside>
 
     <section class="main-panel">

@@ -17,6 +17,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.10.0] - 2026-11-15 08:40 EST
+
+### Added
+- "Add a student" form in the Students panel (name and school) for adding someone without a CSV. Duplicate name and school pairs are rejected.
+- The Students panel collapses with a twisty and shows the student count in its header.
+
+### Changed
+- Car seat and harness badges sit inside the bottom-right corner of each seat, so it is clear which student they belong to. They may cover part of a long school name.
+
 ## [0.9.0] - 2026-11-15 08:34 EST
 
 ### Changed

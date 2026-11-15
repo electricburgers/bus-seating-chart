@@ -104,6 +104,8 @@
     pool.textContent = '';
     UI.renderPool(chart, Needs.getWarnings(chart.roster, needsById(), chart.features)).forEach(function (li) { pool.appendChild(li); });
 
+    $('student-count').textContent = '(' + chart.students.length + ')';
+
     var rows = Log.getRows(changes, chart.reasons);
     var log = $('changelog');
     log.textContent = '';
@@ -363,6 +365,18 @@
       reader.onload = function () { $('csv-text').value = reader.result; notify('Loaded ' + file.name + '. Press Import.'); };
       reader.onerror = function () { notify('Could not read that file.', true); };
       reader.readAsText(file);
+    });
+    $('add-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = $('add-name').value.trim(), school = $('add-school').value.trim();
+      if (!name) { notify('Enter a student name.', true); return; }
+      var dup = chart.students.some(function (s) { return s.name.toLowerCase() === name.toLowerCase() && s.school.toLowerCase() === school.toLowerCase(); });
+      if (dup) { notify(name + ' is already in the roster.', true); return; }
+      chart.students.push({ id: nextStudentId(), name: name, school: school, needs: {} });
+      $('add-name').value = ''; $('add-school').value = '';
+      $('add-name').focus();
+      notify('Added ' + name + '.');
+      commit();
     });
     $('csv-import').addEventListener('click', function () {
       if (!$('csv-text').value.trim()) { notify('Paste CSV text or choose a file first.', true); return; }
