@@ -99,6 +99,7 @@ label.file-btn input { max-width: 190px; }
 .features { position: absolute; right: 4px; bottom: 4px; z-index: 1; display: flex; gap: 2px; }
 .feature { width: 22px; height: 22px; min-height: 22px; padding: 0; font-size: 12px; line-height: 1; text-align: center; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px #fff; }
 span.feature { display: inline-block; line-height: 20px; border: 1px solid var(--border); }
+.feature[data-feature='harnessAttachment'], span.feature.feature-harness { border-radius: 4px; font-weight: 700; }
 .feature.on { background: #1f5fbf; color: #fff; border-color: #1f5fbf; }
 
 .change-table { width: 100%; border-collapse: collapse; }

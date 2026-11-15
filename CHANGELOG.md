@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.13.0] - 2026-11-15 08:54 EST
+
+### Changed
+- The harness attachment "H" badge now sits in a rounded square instead of a circle, and the H is bold.
+
 ## [0.12.0] - 2026-11-15 08:49 EST
 
 ### Added

@@ -73,7 +73,7 @@
             'aria-pressed': on ? 'true' : 'false', 'aria-label': f.label + ' for this seat', title: f.label, text: f.short
           }));
         } else if (on) {
-          bar.appendChild(h('span', { 'class': 'feature on', title: f.label, text: f.short }));
+          bar.appendChild(h('span', { 'class': 'feature on' + (f.key === 'harnessAttachment' ? ' feature-harness' : ''), title: f.label, text: f.short }));
         }
       });
       seat.appendChild(bar);
