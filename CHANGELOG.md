@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.9.0] - 2026-11-15 08:34 EST
+
+### Changed
+- Car seat and harness badges are now small circles on the bottom-right corner of each seat, so they no longer take space from student names and schools.
+- The car seat badge is now a star (★) instead of "C".
+
 ## [0.8.0] - 2026-11-15 08:28 EST
 
 ### Fixed
