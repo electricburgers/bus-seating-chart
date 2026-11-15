@@ -17,7 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
-## [0.14.0] - 2026-11-15 12:53 EST
+## [0.14.0] - 2026-11-15 12:52 EST
 
 ### Added
 - Undo and Redo buttons (also Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z) for every seating, roster, layout and feature change.
