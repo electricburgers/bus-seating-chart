@@ -20,6 +20,12 @@
     </div>
   </header>
 
+  <div id="pick-bar" class="pick-bar" role="region" aria-label="Student picked up" hidden>
+    <span class="pick-text"></span>
+    <button type="button" class="pick-return">Back to list</button>
+    <button type="button" class="pick-cancel">Cancel</button>
+  </div>
+
   <div id="status" class="status" role="status" aria-live="polite"></div>
 
   <main class="layout">
@@ -36,7 +42,7 @@
             <button id="copy-prompt" type="button" title="Copies a prompt you can give Claude Code to turn a messy roster into this CSV format">Copy prompt</button>
           </div>
         </details>
-        <p class="hint">Drag a student onto a seat, or use the keyboard: Enter on a student picks them up, Enter on a seat (or this list) puts them down, Escape cancels.</p>
+        <p class="hint">Drag a student onto a seat. On a phone or tablet, tap a student, then tap a seat (tap the student again to cancel). With a keyboard: Enter on a student picks them up, Enter on a seat (or this list) puts them down, Escape cancels.</p>
         <ul id="pool" class="pool" data-pool tabindex="0" aria-label="Student list"></ul>
         <button id="clear-roster" type="button" class="danger">Clear roster</button>
       </section>

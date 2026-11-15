@@ -42,8 +42,32 @@
         if (n.getAttribute('data-student-id') === picked) n.classList.add('picked');
       });
     }
+    function nameOf(chip) { return (chip.querySelector('.chip-name') || chip).textContent; }
+    function updateBar(name) {
+      var bar = doc.getElementById('pick-bar');
+      if (!bar) return;
+      bar.hidden = picked === null;
+      var label = bar.querySelector('.pick-text');
+      if (label && picked !== null) label.textContent = 'Picked up ' + name + '. Tap a seat to place them.';
+    }
+    function pickUp(chip) {
+      picked = chip.getAttribute('data-student-id');
+      mark();
+      updateBar(nameOf(chip));
+      say('Picked up ' + nameOf(chip) + '. Move to a seat or the student list and press Enter (or tap a seat). Escape cancels.');
+    }
+    function cancel() { picked = null; mark(); updateBar(); say('Move cancelled.'); }
+    function putDown(target) {
+      var id = picked, seatId = target.getAttribute('data-seat-id');
+      picked = null;
+      updateBar();
+      if (seatId) handlers.onDropSeat(id, seatId); else handlers.onDropPool(id);
+      mark();
+      return seatId;
+    }
+
     doc.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && picked !== null) { picked = null; mark(); say('Move cancelled.'); return; }
+      if (e.key === 'Escape' && picked !== null) { cancel(); return; }
       if (e.key !== 'Enter' && e.key !== ' ') return;
       var t = e.target;
       if (!t || !t.closest || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(t.tagName)) return;
@@ -53,27 +77,43 @@
       if (picked === null) {
         if (!chip) return;
         e.preventDefault();
-        picked = chip.getAttribute('data-student-id');
-        mark();
-        say('Picked up ' + (chip.querySelector('.chip-name') || chip).textContent + '. Move to a seat or the student list and press Enter. Escape cancels.');
+        pickUp(chip);
         return;
       }
       // Something is picked up. A chip in the student list just changes the pick.
       if (chip && inPool) {
         e.preventDefault();
-        picked = chip.getAttribute('data-student-id');
-        mark();
+        pickUp(chip);
         return;
       }
       if (!target) return;
       e.preventDefault();
-      var id = picked, seatId = target.getAttribute('data-seat-id');
-      picked = null;
-      if (seatId) handlers.onDropSeat(id, seatId); else handlers.onDropPool(id);
-      mark();
+      var seatId = putDown(target);
       var again = seatId && doc.querySelector('.seat[data-seat-id="' + seatId + '"]');
       if (again && again.focus) again.focus();
     });
+
+    // Touch alternative (phones and tablets have no HTML5 drag): tap a student to pick them up,
+    // then tap a seat to put them down, or tap the student list to send them back. Tap them again to cancel.
+    doc.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest || t.closest('button, input, select, textarea, label, a, summary, .popover')) return;
+      var chip = t.closest('[data-student-id][draggable="true"]');
+      var target = dropTarget(t);
+      var inPool = target && target.hasAttribute('data-pool');
+      if (picked === null) { if (chip) pickUp(chip); return; }
+      if (chip && chip.getAttribute('data-student-id') === picked) { cancel(); return; }
+      if (chip && inPool) { pickUp(chip); return; }
+      if (target) putDown(target);
+    });
+    var bar = doc.getElementById && doc.getElementById('pick-bar');
+    if (bar) {
+      bar.querySelector('.pick-cancel').addEventListener('click', cancel);
+      bar.querySelector('.pick-return').addEventListener('click', function () {
+        if (picked === null) return;
+        putDown(doc.querySelector('[data-pool]'));
+      });
+    }
     doc.addEventListener('focusin', mark);
 
     doc.addEventListener('drop', function (e) {

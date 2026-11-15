@@ -28,7 +28,8 @@
       roster: chart.roster,
       features: chart.features,
       baseline: chart.baseline,
-      reasons: chart.reasons
+      reasons: chart.reasons,
+      logSnapshot: chart.logSnapshot || null
     });
   }
 
@@ -101,7 +102,9 @@
       roster: roster,
       features: features,
       baseline: cleanBaseline(data.baseline),
-      reasons: isObject(data.reasons) ? clone(data.reasons) : {}
+      reasons: isObject(data.reasons) ? clone(data.reasons) : {},
+      // The change log is only generated when the user finalizes it. null = not generated yet.
+      logSnapshot: Array.isArray(data.logSnapshot) ? clone(data.logSnapshot.filter(isObject)) : null
     };
   }
 

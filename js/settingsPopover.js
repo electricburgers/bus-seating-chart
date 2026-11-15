@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 
-  // Gear-button popover: version info, door flip, bus setup, bench overrides, templates.
+  // Gear-button popover: version info, then collapsible sections (bus setup, emergency windows, bench overrides, templates, sample data).
   // actions is app.js's set of handlers; each one may throw, and app.js shows the message.
   function create(opts) {
     var h = root.BusApp.ui.h;
@@ -23,32 +23,68 @@
 
     function run(fn) { fn(); render(); }
 
+    // Which sections are expanded survives re-renders (every change re-draws the panel).
+    var openSections = { setup: true, windows: false, overrides: false, templates: false, demo: false };
+
+    function section(key, title, kids) {
+      var d = h('details', { 'class': 'set-section', open: openSections[key] }, [h('summary', { text: title })].concat(kids));
+      d.addEventListener('toggle', function () { openSections[key] = d.open; });
+      return d;
+    }
+
     function render() {
       var st = opts.getState(), layout = st.layout, v = root.BusApp.version;
-      var side = layout.doorSide;
+      var side = layout.doorSide, Lib = root.BusApp.busLayout, wc = layout.wheelchair;
+      var scrollTop = panel.scrollTop;
       panel.textContent = '';
 
-      panel.appendChild(h('h2', { text: 'Settings' }));
-      panel.appendChild(h('p', { 'class': 'version', text: 'Version ' + v.version + ' · built ' + v.buildDate + ' ' + v.buildTime }));
+      // Header stays visible while the sections scroll.
+      var closeX = h('button', { type: 'button', 'class': 'set-close', 'aria-label': 'Close settings', text: '×' });
+      closeX.addEventListener('click', function () { close(); button.focus(); });
+      panel.appendChild(h('div', { 'class': 'set-head' }, [
+        h('div', {}, [h('h2', { text: 'Settings' }),
+          h('p', { 'class': 'version', text: 'Version ' + v.version + ' · built ' + v.buildDate + ' ' + v.buildTime })]),
+        closeX]));
 
-      panel.appendChild(h('h3', { text: 'Bus setup' }));
-      panel.appendChild(numberField('Rows', layout.rows, 1, actions.setRows));
-      panel.appendChild(numberField('Driver side seats per bench', layout.driverSeats, 0, function (n) { actions.setSeats('driver', n); }));
-      panel.appendChild(numberField('Door side seats per bench', layout.doorSeats, 0, function (n) { actions.setSeats('door', n); }));
+      // 1. Bus setup
       var flip = h('button', { type: 'button', text: 'Door is on the ' + side + ' — flip to ' + (side === 'right' ? 'left' : 'right') });
       flip.addEventListener('click', function () { run(actions.flipDoor); });
-      panel.appendChild(flip);
-
-      var wc = layout.wheelchair;
       var wcBox = h('input', { type: 'checkbox', checked: wc.enabled });
       wcBox.addEventListener('change', function () { run(function () { actions.setWheelchair({ enabled: wcBox.checked }); }); });
-      panel.appendChild(h('label', { 'class': 'field' }, [wcBox, ' Wheelchair area at the back']));
+      var setup = [
+        numberField('Rows', layout.rows, 1, actions.setRows),
+        numberField('Driver side seats per bench', layout.driverSeats, 0, function (n) { actions.setSeats('driver', n); }),
+        numberField('Door side seats per bench', layout.doorSeats, 0, function (n) { actions.setSeats('door', n); }),
+        flip,
+        h('label', { 'class': 'field' }, [wcBox, ' Wheelchair area at the back'])
+      ];
       if (wc.enabled) {
-        panel.appendChild(numberField('Wheelchair rows', wc.rows, root.BusApp.busLayout.MIN_WHEELCHAIR_ROWS,
-          function (n) { actions.setWheelchair({ rows: n }); }));
+        setup.push(numberField('Wheelchair rows', wc.rows, Lib.MIN_WHEELCHAIR_ROWS, function (n) { actions.setWheelchair({ rows: n }); }));
       }
+      panel.appendChild(section('setup', 'Bus setup', setup));
 
-      panel.appendChild(h('h3', { text: 'Single bench override' }));
+      // 2. Emergency window exits
+      function windowCell(row, sideName) {
+        var box = h('input', { type: 'checkbox', checked: Lib.hasEmergencyWindow(layout, row, sideName),
+          'aria-label': 'Row ' + row + ', ' + sideName + ' side emergency window exit' });
+        box.addEventListener('change', function () { run(function () { actions.setWindow(row, sideName, box.checked); }); });
+        return h('td', {}, [box]);
+      }
+      var firstWc = wc.enabled ? layout.rows - wc.rows + 1 : Infinity;
+      var winRows = [];
+      for (var r = 1; r < firstWc && r <= layout.rows; r++) {
+        winRows.push(h('tr', {}, [h('th', { scope: 'row', text: String(r) }), windowCell(r, 'driver'), windowCell(r, 'door')]));
+      }
+      var nWin = Object.keys(layout.emergencyWindows || {}).length;
+      panel.appendChild(section('windows', 'Emergency window exits' + (nWin ? ' (' + nWin + ')' : ''), [
+        h('p', { 'class': 'hint', text: 'Check the rows that have an emergency window exit on each side of the bus.' }),
+        h('div', { 'class': 'window-table-wrap' }, [h('table', { 'class': 'window-table' }, [
+          h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: 'Row' }),
+            h('th', { scope: 'col', text: 'Driver side' }), h('th', { scope: 'col', text: 'Door side' })])]),
+          h('tbody', {}, winRows)])])
+      ]));
+
+      // 3. Single bench override
       var rowIn = h('input', { type: 'number', min: '1', max: String(layout.rows), value: '1', 'aria-label': 'Row' });
       var sideSel = h('select', { 'aria-label': 'Side' }, [
         h('option', { value: 'driver', text: 'Driver side' }), h('option', { value: 'door', text: 'Door side' })]);
@@ -61,17 +97,17 @@
       clear.addEventListener('click', function () {
         run(function () { actions.clearOverride(parseInt(rowIn.value, 10), sideSel.value); });
       });
-      panel.appendChild(h('div', { 'class': 'row' }, ['Row ', rowIn, sideSel, ' seats ', countIn, set, clear]));
+      var ov = [h('p', { 'class': 'hint', text: 'Change the number of seats on one bench only.' }),
+        h('div', { 'class': 'row' }, ['Row ', rowIn, sideSel, ' seats ', countIn, set, clear])];
       var keys = Object.keys(layout.overrides);
-      if (keys.length) {
-        panel.appendChild(h('p', { 'class': 'hint', text: 'Overrides: ' + keys.map(function (k) { return k + ' = ' + layout.overrides[k]; }).join(', ') }));
-      }
+      if (keys.length) ov.push(h('p', { 'class': 'hint', text: 'Overrides: ' + keys.map(function (k) { return k + ' = ' + layout.overrides[k]; }).join(', ') }));
+      panel.appendChild(section('overrides', 'Single bench override' + (keys.length ? ' (' + keys.length + ')' : ''), ov));
 
-      panel.appendChild(h('h3', { text: 'Bus templates' }));
+      // 4. Templates
       var nameIn = h('input', { type: 'text', placeholder: 'Template name', 'aria-label': 'Template name' });
       var save = h('button', { type: 'button', text: 'Save current bus' });
       save.addEventListener('click', function () { run(function () { actions.saveTemplate(nameIn.value); }); });
-      panel.appendChild(h('div', { 'class': 'row' }, [nameIn, save]));
+      var tpl = [h('div', { 'class': 'row' }, [nameIn, save])];
       var names = st.templateNames;
       if (names.length) {
         var sel = h('select', { 'aria-label': 'Saved templates' }, names.map(function (n) { return h('option', { value: n, text: n }); }));
@@ -79,22 +115,23 @@
         var del = h('button', { type: 'button', 'class': 'danger', text: 'Delete' });
         load.addEventListener('click', function () { run(function () { actions.loadTemplate(sel.value); }); });
         del.addEventListener('click', function () { run(function () { actions.deleteTemplate(sel.value); }); });
-        panel.appendChild(h('div', { 'class': 'row' }, [sel, load, del]));
+        tpl.push(h('div', { 'class': 'row' }, [sel, load, del]));
       } else {
-        panel.appendChild(h('p', { 'class': 'hint', text: 'No saved templates yet.' }));
+        tpl.push(h('p', { 'class': 'hint', text: 'No saved templates yet.' }));
       }
+      panel.appendChild(section('templates', 'Bus templates', tpl));
 
-      panel.appendChild(h('h3', { text: 'Try it out' }));
+      // 5. Sample data
       var demo = h('button', { type: 'button', text: 'Generate fake names and layout' });
       demo.addEventListener('click', function () { run(function () { actions.loadSampleData(true); }); });
       var demoPlain = h('button', { type: 'button', text: 'Generate fake names, no wheelchair area' });
       demoPlain.addEventListener('click', function () { run(function () { actions.loadSampleData(false); }); });
-      panel.appendChild(h('div', { 'class': 'row' }, [demo, demoPlain]));
-      panel.appendChild(h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' }));
+      panel.appendChild(section('demo', 'Try it out', [
+        h('div', { 'class': 'row' }, [demo, demoPlain]),
+        h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' })
+      ]));
 
-      var done = h('button', { type: 'button', text: 'Close' });
-      done.addEventListener('click', function () { close(); button.focus(); });
-      panel.appendChild(done);
+      panel.scrollTop = scrollTop;
     }
 
     button.addEventListener('click', function () { if (isOpen()) close(); else open(); });

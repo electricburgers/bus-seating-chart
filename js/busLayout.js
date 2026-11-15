@@ -14,7 +14,8 @@
       doorSeats: layout.doorSeats,
       overrides: Object.assign({}, layout.overrides),
       doorSide: layout.doorSide,
-      wheelchair: Object.assign({}, layout.wheelchair)
+      wheelchair: Object.assign({}, layout.wheelchair),
+      emergencyWindows: Object.assign({}, layout.emergencyWindows)
     };
   }
   function normalizeWheelchair(w, rows) {
@@ -27,11 +28,21 @@
     if (out.enabled && out.rows >= rows) fail('wheelchair area must leave at least one regular row');
     return out;
   }
+  // Emergency window exits are stored as { "row-side": true }. Entries for rows that no longer exist are dropped.
+  function normalizeWindows(w, rows) {
+    var out = {};
+    Object.keys(w || {}).forEach(function (k) {
+      var m = /^(\d+)-(driver|door)$/.exec(k);
+      if (m && w[k] && parseInt(m[1], 10) >= 1 && parseInt(m[1], 10) <= rows) out[k] = true;
+    });
+    return out;
+  }
   function validate(layout) {
     if (!Number.isInteger(layout.rows) || layout.rows < 1) fail('rows must be a positive integer');
     if (!isCount(layout.driverSeats) || !isCount(layout.doorSeats)) fail('seats per bench must be a non-negative integer');
     if (layout.doorSide !== 'left' && layout.doorSide !== 'right') fail('doorSide must be "left" or "right"');
     layout.wheelchair = normalizeWheelchair(layout.wheelchair, layout.rows);
+    layout.emergencyWindows = normalizeWindows(layout.emergencyWindows, layout.rows);
     return layout;
   }
 
@@ -43,7 +54,8 @@
       doorSeats: o.doorSeats === undefined ? 2 : o.doorSeats,
       overrides: Object.assign({}, o.overrides),
       doorSide: o.doorSide || 'right',
-      wheelchair: o.wheelchair
+      wheelchair: o.wheelchair,
+      emergencyWindows: o.emergencyWindows
     });
   }
 
@@ -72,6 +84,19 @@
     checkSide(side); checkRow(layout, row);
     var next = copy(layout);
     delete next.overrides[overrideKey(row, side)];
+    return next;
+  }
+
+  function hasEmergencyWindow(layout, row, side) {
+    return !!(layout.emergencyWindows && layout.emergencyWindows[overrideKey(row, side)]);
+  }
+
+  // Marks (or unmarks) an emergency window exit on one side of one regular row.
+  function setEmergencyWindow(layout, row, side, on) {
+    checkSide(side); checkRow(layout, row);
+    var next = copy(layout);
+    if (on) next.emergencyWindows[overrideKey(row, side)] = true;
+    else delete next.emergencyWindows[overrideKey(row, side)];
     return next;
   }
 
@@ -111,6 +136,8 @@
       benches.push({
         row: row,
         wheelchair: wc,
+        driverWindow: !wc && hasEmergencyWindow(layout, row, 'driver'),
+        doorWindow: !wc && hasEmergencyWindow(layout, row, 'door'),
         driver: wc ? [] : seatsOnBench(layout, row, 'driver'),
         door: wc ? [] : seatsOnBench(layout, row, 'door')
       });
@@ -141,6 +168,7 @@
 
   var api = {
     createLayout: createLayout, setSeatsPerSide: setSeatsPerSide,
+    setEmergencyWindow: setEmergencyWindow, hasEmergencyWindow: hasEmergencyWindow,
     setBenchOverride: setBenchOverride, clearBenchOverride: clearBenchOverride,
     flipDoorSide: flipDoorSide, setWheelchair: setWheelchair, sideOrder: sideOrder,
     wheelchairDoorSide: wheelchairDoorSide, getBenches: getBenches, getSeats: getSeats,

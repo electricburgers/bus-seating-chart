@@ -95,3 +95,28 @@ test('validation rejects bad input', () => {
   assert.throws(() => L.setBenchOverride(L.createLayout(), 11, 'door', 2));
   assert.throws(() => L.createLayout({ rows: 3, wheelchair: { enabled: true, rows: 3 } }));
 });
+
+test('emergency window exits: set per row and side, shown on benches, dropped when the row goes away', () => {
+  let layout = L.createLayout({ rows: 6 });
+  assert.deepStrictEqual(layout.emergencyWindows, {});
+  layout = L.setEmergencyWindow(layout, 3, 'driver', true);
+  layout = L.setEmergencyWindow(layout, 3, 'door', true);
+  layout = L.setEmergencyWindow(layout, 5, 'door', true);
+  assert.strictEqual(L.hasEmergencyWindow(layout, 3, 'driver'), true);
+  assert.strictEqual(L.hasEmergencyWindow(layout, 4, 'driver'), false);
+  const b = L.getBenches(layout);
+  assert.deepStrictEqual([b[2].driverWindow, b[2].doorWindow, b[4].driverWindow, b[4].doorWindow], [true, true, false, true]);
+  layout = L.setEmergencyWindow(layout, 3, 'driver', false);
+  assert.strictEqual(L.hasEmergencyWindow(layout, 3, 'driver'), false);
+  assert.strictEqual(L.hasEmergencyWindow(L.createLayout(Object.assign({}, layout, { rows: 4 })), 5, 'door'), false);
+  assert.throws(() => L.setEmergencyWindow(layout, 99, 'door', true), /out of range/);
+  assert.throws(() => L.setEmergencyWindow(layout, 1, 'rear', true), /unknown side/);
+});
+
+test('emergency windows never show on wheelchair rows and survive other layout changes', () => {
+  let layout = L.createLayout({ rows: 6, wheelchair: { enabled: true, rows: 2 } });
+  layout = L.setEmergencyWindow(layout, 5, 'door', true);
+  assert.strictEqual(L.getBenches(layout)[4].doorWindow, false);
+  layout = L.flipDoorSide(L.setSeatsPerSide(L.setEmergencyWindow(layout, 2, 'driver', true), 'door', 3));
+  assert.strictEqual(L.hasEmergencyWindow(layout, 2, 'driver'), true);
+});

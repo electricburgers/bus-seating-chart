@@ -17,6 +17,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.6.0] - 2026-11-15 08:15 EST
+
+### Added
+- Emergency window exits: Settings has a table to tick which rows have an exit on the driver side and the door side; a red vertical EXIT tab shows on the bus. Saved with JSON and templates.
+- Tap-to-move for phones and tablets: tap a student, then tap a seat (a bottom bar offers Back to list and Cancel). Keyboard and mouse drag still work.
+- "Finalize change log" button: the in-app Change Log is no longer rebuilt while you move students. Press Finalize to freeze it, and a warning with a Refresh button appears if seating changes afterwards. The PDF change summary uses the finalized log. Saved with JSON and autosave.
+
+### Changed
+- Driver and Door labels are larger (18px bold).
+- Settings popover is pinned to the top of the screen with a sticky header and close button, and grouped into collapsible sections (Bus setup, Emergency window exits, Single bench override, Bus templates, Try it out).
+- PDF and JPEG exports only show the "After (current)" caption when "Include Before chart" is checked.
+
 ## [0.5.0] - 2026-11-15 08:04 EST
 
 ### Added

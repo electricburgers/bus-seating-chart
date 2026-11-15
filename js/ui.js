@@ -81,6 +81,10 @@
     return seat;
   }
 
+  function exitCell(side) {
+    return h('span', { 'class': 'window-exit', role: 'img', 'aria-label': 'Emergency window exit, ' + side + ' side', title: 'Emergency window exit', text: 'EXIT' });
+  }
+
   function markerCell(text, cls) { return h('div', { 'class': 'marker ' + cls, text: text }); }
 
   // ctx: { chart, roster, features, interactive, changed: {seatId: true}, warnings, byId, title }
@@ -89,13 +93,15 @@
     var order = L.sideOrder(layout), markers = L.getMarkers(layout);
     var bus = h('div', { 'class': 'bus' });
 
+    var anyExit = Object.keys(layout.emergencyWindows || {}).length > 0;
+    if (anyExit) bus.classList.add('has-exits');
     var front = { left: [], right: [] };
     front[markers.driverSeat.side].push(markerCell('Driver', 'driver-marker'));
     front[markers.frontDoor.side].push(markerCell('Door', 'door-marker'));
     bus.appendChild(h('div', { 'class': 'bench front-row' }, [
-      h('div', { 'class': 'bench-side left' }, front.left),
+      h('span', { 'class': 'exit-gutter' }), h('div', { 'class': 'bench-side left' }, front.left),
       h('div', { 'class': 'aisle', text: 'Front' }),
-      h('div', { 'class': 'bench-side right' }, front.right)
+      h('div', { 'class': 'bench-side right' }, front.right), h('span', { 'class': 'exit-gutter' })
     ]));
 
     L.getBenches(layout).forEach(function (bench) {
@@ -111,13 +117,14 @@
           return renderSeat(s.id, ctx, false);
         }));
       });
+      var exits = order.map(function (side) { return bench[side + 'Window'] ? exitCell(side) : h('span', { 'class': 'exit-gutter' }); });
       bus.appendChild(h('div', { 'class': 'bench', 'data-row': bench.row }, [
-        cols[0], h('div', { 'class': 'aisle', text: String(bench.row) }), cols[1]
+        exits[0], cols[0], h('div', { 'class': 'aisle', text: String(bench.row) }), cols[1], exits[1]
       ]));
     });
     bus.appendChild(h('div', { 'class': 'rear-exit', text: 'Rear emergency exit' }));
 
-    return h('figure', { 'class': 'bus-figure' }, [h('figcaption', { text: ctx.title }), bus]);
+    return h('figure', { 'class': 'bus-figure' }, [ctx.title ? h('figcaption', { text: ctx.title }) : null, bus]);
   }
 
   var NEED_LABELS = [

@@ -13,7 +13,7 @@
   }
   function storage() { try { return root.localStorage; } catch (e) { return null; } }
   function newChart() {
-    return { routeName: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {} };
+    return { routeName: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null };
   }
 
   var chart = Store.loadAutosave(storage()) || newChart();
@@ -65,6 +65,26 @@
     return set;
   }
 
+  // The change log is not built while the user is still moving students. They press "Finalize change log"
+  // and get a frozen table; if seating changes afterwards the log says so and offers a refresh.
+  function changeSig(list) { return JSON.stringify((list || []).map(function (c) { return Log.getRows([c], {})[0].key; }).sort()); }
+  function renderLogSection(liveChanges) {
+    if (!chart.baseline) return UI.h('p', { 'class': 'hint', text: 'Press "Set baseline" first, then move students. Come back here when you are done.' });
+    var btn = UI.h('button', { type: 'button', id: 'finalize-log', text: chart.logSnapshot ? 'Refresh change log' : 'Finalize change log' });
+    if (!chart.logSnapshot) {
+      return UI.h('div', {}, [
+        UI.h('p', { 'class': 'hint', text: 'Keep moving students as much as you like. The change log is only built when you press Finalize, so it does not shift while you work.' }),
+        btn]);
+    }
+    var rows = Log.getRows(chart.logSnapshot, chart.reasons);
+    var stale = changeSig(chart.logSnapshot) !== changeSig(liveChanges);
+    return UI.h('div', {}, [
+      stale ? UI.h('p', { 'class': 'warn-note', role: 'status', text: 'Seating has changed since this log was finalized. Press Refresh to update it.' })
+        : UI.h('p', { 'class': 'hint', text: 'Finalized. Add a reason for each change.' }),
+      UI.renderChangeLog(rows, Exp.changeTableRows(rows, chart.students)),
+      btn]);
+  }
+
   function render() {
     if (view !== 'after' && !chart.baseline) view = 'after';
     var changes = Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
@@ -87,8 +107,7 @@
     var rows = Log.getRows(changes, chart.reasons);
     var log = $('changelog');
     log.textContent = '';
-    log.appendChild(chart.baseline ? UI.renderChangeLog(rows, Exp.changeTableRows(rows, chart.students))
-      : UI.h('p', { 'class': 'hint', text: 'Press "Set baseline" to start tracking changes.' }));
+    log.appendChild(renderLogSection(changes));
 
     Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) {
       b.setAttribute('aria-pressed', b.getAttribute('data-view') === view ? 'true' : 'false');
@@ -120,6 +139,7 @@
     setOverride: function (row, side, n) {
       guard(function () { applyLayout(Layout.setBenchOverride(chart.layout, wholeNumber(row), side, wholeNumber(n))); });
     },
+    setWindow: function (row, side, on) { guard(function () { applyLayout(Layout.setEmergencyWindow(chart.layout, wholeNumber(row), side, !!on)); }); },
     clearOverride: function (row, side) { guard(function () { applyLayout(Layout.clearBenchOverride(chart.layout, wholeNumber(row), side)); }); },
     saveTemplate: function (name) {
       guard(function () {
@@ -148,6 +168,7 @@
         var rows = Log.getRows(Log.diff(chart.baseline, { roster: chart.roster, features: chart.features }), {});
         var examples = ['Sibling seated together', 'Behavior seat change', 'New student added to route', 'Closer to the door'];
         rows.forEach(function (r, i) { chart.reasons = Log.setReason(chart.reasons, r.key, examples[i % examples.length]); });
+        chart.logSnapshot = Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
         $('route-name').value = chart.routeName;
         $('prepared-by').value = chart.preparedBy;
         view = 'after';
@@ -214,7 +235,8 @@
   function fileName(ext) { var i = exportInfo(); return Exp.buildFilename(i.routeName, i.exportDate, ext); }
 
   // Draws one chart with the export header in an off-screen sheet and returns a canvas.
-  function captureSheet(which) {
+  // withLabel: show the "Before" / "After" caption. Only needed when both charts are in the same export.
+  function captureSheet(which, withLabel) {
     if (typeof root.html2canvas !== 'function') {
       return Promise.reject(new Error('PDF and JPEG export need the vendored html2canvas library, which is not installed yet.'));
     }
@@ -224,7 +246,7 @@
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
         UI.h('strong', { text: info.route }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
-      UI.renderBus(busContext(roster, features, false, {}, isBefore ? 'Before (baseline)' : 'After (current)'))
+      UI.renderBus(busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)'))
     ]);
     if ($('export-frame').checked) {
       // Optional fun frame: a yellow school-bus outline with wheels around the chart.
@@ -240,7 +262,7 @@
   }
 
   function exportJpeg() {
-    captureSheet('after').then(function (canvas) {
+    captureSheet('after', false).then(function (canvas) {
       canvas.toBlob(function (blob) { download(fileName('jpg'), blob); notify('JPEG saved.'); }, 'image/jpeg', 0.92);
     }).catch(function (e) { notify(e.message, true); });
   }
@@ -256,9 +278,9 @@
       if (hgt > 720) { hgt = 720; w = hgt * ratio; }
       doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 36, 36, w, hgt);
     }
-    captureSheet('after').then(function (after) {
+    captureSheet('after', !!wantBefore).then(function (after) {
       addImage(after, true);
-      return wantBefore ? captureSheet('before').then(function (before) { addImage(before, false); }) : null;
+      return wantBefore ? captureSheet('before', true).then(function (before) { addImage(before, false); }) : null;
     }).then(function () {
       drawChangeSummary(doc);
       doc.save(fileName('pdf'));
@@ -268,7 +290,7 @@
 
   function drawChangeSummary(doc) {
     var info = Exp.headerLines(exportInfo());
-    var changes = Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
+    var changes = chart.logSnapshot || Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
     var rows = Exp.changeTableRows(Log.getRows(changes, chart.reasons), chart.students);
     var x = [36, 150, 300, 450], widths = [108, 144, 144, 126], y = 36;
     doc.addPage();
@@ -323,6 +345,12 @@
       });
       commit();
     });
+    $('changelog').addEventListener('click', function (e) {
+      if (!e.target.closest || !e.target.closest('#finalize-log')) return;
+      chart.logSnapshot = Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
+      notify('Change log finalized with ' + chart.logSnapshot.length + ' change' + (chart.logSnapshot.length === 1 ? '' : 's') + '.');
+      commit();
+    });
     $('changelog').addEventListener('input', function (e) {
       var key = e.target.getAttribute('data-key');
       if (key) { chart.reasons = Log.setReason(chart.reasons, key, e.target.value); save(); }
@@ -350,13 +378,14 @@
     $('clear-roster').addEventListener('click', function () {
       if (!chart.students.length) return;
       if (!root.confirm('Remove all students, the baseline and change reasons? Seat features and the bus layout are kept.')) return;
-      chart.students = []; chart.roster = {}; chart.baseline = null; chart.reasons = {};
+      chart.students = []; chart.roster = {}; chart.baseline = null; chart.reasons = {}; chart.logSnapshot = null;
       commit();
     });
 
     $('set-baseline').addEventListener('click', function () {
       chart.baseline = Log.createBaseline(chart.roster, chart.features);
       chart.reasons = {};
+      chart.logSnapshot = null;
       notify('Baseline set. Changes from here on are tracked.');
       commit();
     });

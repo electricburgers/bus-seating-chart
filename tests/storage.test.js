@@ -16,7 +16,7 @@ function sampleChart() {
     roster: { '1-driver-1': 's1', 'wc-9': 's2' },
     features: { '1-driver-1': { carSeat: true } },
     baseline: { roster: { '1-driver-1': 's1' }, features: {} },
-    reasons: { 'student:s2': 'New student' }
+    reasons: { 'student:s2': 'New student' }, logSnapshot: null
   };
 }
 
@@ -164,4 +164,14 @@ test('old saves with a separate fiveStarBelt flag are folded into carSeat', () =
   assert.deepStrictEqual(chart.students[0].needs, { harnessAttachment: true, carSeat: true });
   assert.deepStrictEqual(chart.features[seat], { carSeat: true });
   assert.deepStrictEqual(chart.baseline.features[seat], { carSeat: true });
+});
+
+test('finalized change log snapshot round-trips; missing or bad snapshot means not generated', () => {
+  const chart = sampleChart();
+  chart.logSnapshot = [{ type: 'moved', student: 's1', from: '1-driver-1', to: '1-driver-2' }];
+  assert.deepStrictEqual(S.deserialize(S.serialize(chart)).logSnapshot, chart.logSnapshot);
+  assert.strictEqual(S.deserialize(S.serialize(sampleChart())).logSnapshot, null);
+  const data = JSON.parse(S.serialize(sampleChart()));
+  data.logSnapshot = 'nope';
+  assert.strictEqual(S.deserialize(JSON.stringify(data)).logSnapshot, null);
 });
