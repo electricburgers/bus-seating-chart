@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.4.0] - 2026-11-15 07:53 EST
+
+### Changed
+- Mobile layout: stacked header fields, full-width settings popover, larger touch targets, smaller seats and horizontally scrollable bus view on narrow screens.
+- WCAG AA: darker borders (3:1 non-text contrast), darker hint, aisle and empty-seat text (4.5:1), seat toggles at least 24x24 px, seated students no longer rely on reduced opacity, changed seats also get a double border (not colour alone), reduced-motion support.
+
 ## [0.3.0] - 2026-11-15 07:51 EST
 
 ### Added
