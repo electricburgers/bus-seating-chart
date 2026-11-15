@@ -5,15 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 
 ## [Unreleased]
 
+### Added (step 11)
+- Keyboard alternative to dragging (Enter picks up / puts down, Escape cancels), focusable seats and student list.
+- `css/print.css` print styles, empty-state text, `README.md`.
+- Vendored `html2canvas` 1.4.1 and `jsPDF` 2.5.1 in `vendor/`, enabling PDF and JPEG export.
+
 ### Added
 - Step 10: the app itself. `index.html`, `css/styles.css`, `js/ui.js`, `js/dragdrop.js`, `js/settingsPopover.js`, `js/app.js`.
 - Drag-and-drop seating (drop on an occupied seat swaps, or sends the occupant back to the list), per-seat feature toggles, per-student needs, wrong-seat flags.
 - CSV import with Copy prompt button, baseline, Before/After/side-by-side views, Change Log reasons.
 - Settings popover: version and build time, rows, seats per side, door flip, wheelchair area, bench overrides, bus templates.
 - CSV and JSON export, JSON load, auto-save. `roster.place()` for the drop rule (tested).
-
-### Not yet working
-- PDF and JPEG export show a message until `vendor/html2canvas.min.js` and `vendor/jspdf.umd.min.js` are added (step 11).
 
 ### Planned
 - Bus layout with driver side left, door side right (3 seats per bench driver side, 2 door side, both configurable, per-bench overrides).

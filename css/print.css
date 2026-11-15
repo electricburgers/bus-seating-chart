@@ -1,0 +1,17 @@
+/* Printing prints the bus chart(s) and change log only. */
+@page { margin: 12mm; }
+body { background: #fff; color: #000; font-size: 11px; }
+.app-header .spacer, .settings-wrap, .status, .side-panel, .toolbar,
+.exports, .file-btn, .feature:not(.on), .hint, .popover { display: none !important; }
+.app-header { border: 0; padding: 0 0 6px; }
+.app-header label { font-weight: 600; }
+.app-header input { border: 0; padding: 0; font: inherit; background: none; }
+.layout { display: block; padding: 0; }
+.main-panel > section { border: 0; padding: 0; margin: 0 0 10px; break-inside: avoid; }
+.views { display: flex; gap: 12px; }
+.bus-figure, .change-table tr { break-inside: avoid; }
+.seat { border-color: #000; background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.seat.changed { box-shadow: none; outline: 3px solid #000; }
+.chip { cursor: default; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.change-table input.reason { border: 0; padding: 0; font: inherit; background: none; }
+.feature.on { background: #000 !important; color: #fff !important; border-color: #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }

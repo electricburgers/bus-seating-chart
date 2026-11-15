@@ -87,3 +87,7 @@ span.feature { display: inline-block; line-height: 20px; border: 1px solid var(-
 .export-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
 
 @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+
+/* Keyboard alternative to dragging */
+.chip.picked { outline: 3px solid var(--accent); outline-offset: 1px; background: #eaf1fc; }
+.chip:focus-visible, .seat:focus-visible, .pool:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }

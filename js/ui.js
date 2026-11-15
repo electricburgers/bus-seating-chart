@@ -38,7 +38,7 @@
   function studentChip(student, warnings, extraClass) {
     var chip = h('div', {
       'class': 'chip' + (extraClass ? ' ' + extraClass : ''),
-      draggable: 'true', 'data-student-id': student.id,
+      draggable: 'true', tabindex: '0', role: 'button', 'data-student-id': student.id,
       style: schoolStyle(student.school)
     }, [
       h('span', { 'class': 'chip-name', text: student.name }),
@@ -57,7 +57,7 @@
     var feats = ctx.features[seatId] || {};
     var seat = h('div', {
       'class': 'seat' + (isWheelchair ? ' wc' : '') + (student ? ' filled' : '') + (ctx.changed[seatId] ? ' changed' : ''),
-      'data-seat-id': seatId, 'data-drop': ctx.interactive ? 'true' : false
+      'data-seat-id': seatId, 'data-drop': ctx.interactive ? 'true' : false, tabindex: ctx.interactive ? '0' : false
     });
     if (student) {
       seat.appendChild(studentChip(student, ctx.warnings[studentId]));
@@ -132,7 +132,7 @@
       var sa = R.seatOf(chart.roster, a.id) !== undefined, sb = R.seatOf(chart.roster, b.id) !== undefined;
       return sa === sb ? a.name.localeCompare(b.name) : (sa ? 1 : -1);
     });
-    if (!list.length) return [h('li', { 'class': 'empty', text: 'No students yet. Import a CSV above.' })];
+    if (!list.length) return [h('li', { 'class': 'empty', text: 'No students yet. Open "Import CSV" above and paste or choose a file.' })];
     return list.map(function (s) {
       var seatId = R.seatOf(chart.roster, s.id);
       var needs = h('div', { 'class': 'needs' }, NEED_LABELS.map(function (n) {

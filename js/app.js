@@ -273,6 +273,7 @@
     $('prepared-by').addEventListener('input', function (e) { chart.preparedBy = e.target.value; save(); });
 
     B.dragdrop.attach(document, {
+      onMessage: function (m) { notify(m); },
       onDropSeat: function (studentId, seatId) { guard(function () { chart.roster = Roster.place(chart.roster, chart.layout, studentId, seatId); commit(); }); },
       onDropPool: function (studentId) { chart.roster = Roster.unassign(chart.roster, studentId); commit(); }
     });
