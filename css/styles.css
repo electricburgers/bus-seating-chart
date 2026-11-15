@@ -73,11 +73,9 @@ label.file-btn input { max-width: 190px; }
 .door-marker { background: #cdebd0; }
 .front-row .aisle { font-size: 13px; font-weight: 600; }
 
-/* Emergency window exits: a gutter column on each side of the bus, only when at least one is set */
-.bus.has-exits .bench:not(.wc-row) { grid-template-columns: 1.7rem 1fr 2.4rem 1fr 1.7rem; }
-.exit-gutter { display: none; }
-.bus.has-exits .exit-gutter { display: block; }
-.window-exit { align-self: stretch; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 2px; padding: 4px 0; font-size: 12px; line-height: 1.15; font-weight: 700; color: #fff; background: #b3261e; border-radius: 4px; }
+/* Emergency window exit: a red tab beside the seats of its row, stretched to the seat height */
+.window-exit { align-self: stretch; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 42px; padding: 0 4px; font-size: 13px; line-height: 1; font-weight: 700; letter-spacing: .04em; color: #fff; background: #b3261e; border-radius: 4px; }
+.window-exit-spacer { flex: 0 0 42px; }
 .window-table-wrap { max-height: 190px; overflow: auto; border: 1px solid var(--border); border-radius: 4px; }
 .window-table { width: 100%; border-collapse: collapse; }
 .window-table th, .window-table td { padding: 3px 8px; text-align: left; border-bottom: 1px solid #e2e6ea; }
@@ -88,8 +86,8 @@ label.file-btn input { max-width: 190px; }
 .wc-door { align-self: stretch; display: flex; align-items: center; background: #d7e6f7; }
 .rear-exit { margin-top: 8px; padding: 3px; text-align: center; font-size: 11px; font-weight: 600; background: #f6d8d8; border-radius: 4px; }
 
-.seat { box-sizing: border-box; width: 96px; height: 84px; display: flex; flex-direction: column; overflow: hidden; padding: 3px; border: 1px solid var(--border); border-radius: 6px; background: #fafbfc; }
-.seat.wc { width: auto; height: 84px; background: #eef5fc; }
+.seat { box-sizing: border-box; width: 96px; height: 96px; display: flex; flex-direction: column; overflow: hidden; padding: 3px; border: 1px solid var(--border); border-radius: 6px; background: #fafbfc; }
+.seat.wc { width: auto; height: 96px; background: #eef5fc; }
 .seat.drop-hover { outline: 3px solid var(--accent); background: #eaf1fc; }
 .seat.changed { box-shadow: 0 0 0 3px var(--changed); border-style: double; border-width: 3px; }
 .seat .chip { width: 100%; box-sizing: border-box; flex: 1 1 auto; min-height: 0; overflow: hidden; }

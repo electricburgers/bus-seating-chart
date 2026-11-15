@@ -82,7 +82,7 @@
   }
 
   function exitCell(side) {
-    return h('span', { 'class': 'window-exit', role: 'img', 'aria-label': 'Emergency window exit, ' + side + ' side', title: 'Emergency window exit' }, ['E', 'X', 'I', 'T'].map(function (c) { return h('span', { 'aria-hidden': 'true', text: c }); }));
+    return h('span', { 'class': 'window-exit', role: 'img', 'aria-label': 'Emergency window exit, ' + side + ' side', title: 'Emergency window exit', text: 'EXIT' });
   }
 
   function markerCell(text, cls) { return h('div', { 'class': 'marker ' + cls, text: text }); }
@@ -92,16 +92,15 @@
     var L = lib('busLayout'), layout = ctx.chart.layout;
     var order = L.sideOrder(layout), markers = L.getMarkers(layout);
     var bus = h('div', { 'class': 'bus' });
-
     var anyExit = Object.keys(layout.emergencyWindows || {}).length > 0;
-    if (anyExit) bus.classList.add('has-exits');
+
     var front = { left: [], right: [] };
     front[markers.driverSeat.side].push(markerCell('Driver', 'driver-marker'));
     front[markers.frontDoor.side].push(markerCell('Door', 'door-marker'));
     bus.appendChild(h('div', { 'class': 'bench front-row' }, [
-      h('span', { 'class': 'exit-gutter' }), h('div', { 'class': 'bench-side left' }, front.left),
+      h('div', { 'class': 'bench-side left' }, front.left),
       h('div', { 'class': 'aisle', text: 'Front' }),
-      h('div', { 'class': 'bench-side right' }, front.right), h('span', { 'class': 'exit-gutter' })
+      h('div', { 'class': 'bench-side right' }, front.right)
     ]));
 
     L.getBenches(layout).forEach(function (bench) {
@@ -112,14 +111,16 @@
         bus.appendChild(h('div', { 'class': 'bench wc-row', 'data-row': bench.row }, parts));
         return;
       }
+      // The EXIT tab sits inside its side, on the window edge of the bus, right beside that row's seats.
       var cols = order.map(function (side, i) {
-        return h('div', { 'class': 'bench-side ' + (i === 0 ? 'left' : 'right') }, bench[side].map(function (s) {
-          return renderSeat(s.id, ctx, false);
-        }));
+        var kids = bench[side].map(function (s) { return renderSeat(s.id, ctx, false); });
+        // Rows without an exit get an invisible spacer so seat columns stay lined up when any row has one.
+        var tab = bench[side + 'Window'] ? exitCell(side) : (anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null);
+        if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
+        return h('div', { 'class': 'bench-side ' + (i === 0 ? 'left' : 'right') }, kids);
       });
-      var exits = order.map(function (side) { return bench[side + 'Window'] ? exitCell(side) : h('span', { 'class': 'exit-gutter' }); });
       bus.appendChild(h('div', { 'class': 'bench', 'data-row': bench.row }, [
-        exits[0], cols[0], h('div', { 'class': 'aisle', text: String(bench.row) }), cols[1], exits[1]
+        cols[0], h('div', { 'class': 'aisle', text: String(bench.row) }), cols[1]
       ]));
     });
     bus.appendChild(h('div', { 'class': 'rear-exit', text: 'Rear emergency exit' }));

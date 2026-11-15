@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.8.0] - 2026-11-15 08:28 EST
+
+### Fixed
+- Emergency window EXIT tabs now read "EXIT" upright and sit directly beside their row's outer seat (screen, PDF and JPEG), instead of in far-edge columns. Checked in a rendered PDF.
+- Seats are now 96 x 96 px so a two-line name plus school is no longer clipped.
+
 ## [0.7.0] - 2026-11-15 08:21 EST
 
 ### Fixed
