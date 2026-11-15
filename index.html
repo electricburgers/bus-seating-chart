@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bus Seating Chart</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Bus Seating Chart</h1>
+    <label>Route name <input id="route-name" type="text" autocomplete="off"></label>
+    <label>Your name <input id="prepared-by" type="text" autocomplete="off"></label>
+    <label>Date <input id="export-date" type="date"></label>
+    <span class="spacer"></span>
+    <div class="settings-wrap">
+      <button id="settings-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="settings-panel">&#9881; Settings</button>
+      <div id="settings-panel" class="popover" role="dialog" aria-label="Settings" hidden></div>
+    </div>
+  </header>
+
+  <div id="status" class="status" role="status" aria-live="polite"></div>
+
+  <main class="layout">
+    <aside class="side-panel">
+      <section>
+        <h2>Students</h2>
+        <details id="import-box">
+          <summary>Import from CSV</summary>
+          <p class="hint">Columns: <code>name,school</code>. A header row is optional.</p>
+          <textarea id="csv-text" rows="5" spellcheck="false" placeholder="Ann Lee,Oak Elementary"></textarea>
+          <div class="row">
+            <input id="csv-file" type="file" accept=".csv,text/csv,text/plain">
+            <button id="csv-import" type="button">Import</button>
+            <button id="copy-prompt" type="button" title="Copies a prompt you can give Claude Code to turn a messy roster into this CSV format">Copy prompt</button>
+          </div>
+        </details>
+        <p class="hint">Drag a student onto a seat. Drag back here to unseat.</p>
+        <ul id="pool" class="pool" data-pool></ul>
+        <button id="clear-roster" type="button" class="danger">Clear roster</button>
+      </section>
+    </aside>
+
+    <section class="main-panel">
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="View">
+          <button type="button" data-view="after" aria-pressed="true">After</button>
+          <button type="button" data-view="before" aria-pressed="false">Before</button>
+          <button type="button" data-view="side" aria-pressed="false">Side by side</button>
+        </div>
+        <button id="set-baseline" type="button">Set baseline</button>
+        <span id="baseline-note" class="hint"></span>
+      </div>
+      <div id="views" class="views"></div>
+
+      <section class="changelog">
+        <h2>Change Log</h2>
+        <div id="changelog"></div>
+      </section>
+
+      <section class="exports">
+        <h2>Save and export</h2>
+        <div class="row">
+          <button id="export-pdf" type="button">PDF</button>
+          <label class="inline"><input id="pdf-before" type="checkbox"> Include Before chart</label>
+          <button id="export-jpeg" type="button">JPEG</button>
+          <button id="export-csv" type="button">CSV</button>
+          <button id="export-json" type="button">Save JSON</button>
+          <label class="file-btn">Load JSON <input id="load-json" type="file" accept=".json,application/json"></label>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Vendored html2canvas and jsPDF go here once added (step 11): vendor/html2canvas.min.js, vendor/jspdf.umd.min.js -->
+  <script src="js/version.js"></script>
+  <script src="js/busLayout.js"></script>
+  <script src="js/seatFeatures.js"></script>
+  <script src="js/roster.js"></script>
+  <script src="js/needs.js"></script>
+  <script src="js/csvParser.js"></script>
+  <script src="js/rosterPrompt.js"></script>
+  <script src="js/changeLog.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/exporter.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/dragdrop.js"></script>
+  <script src="js/settingsPopover.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

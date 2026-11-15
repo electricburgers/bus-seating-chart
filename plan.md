@@ -37,6 +37,7 @@ Independent toggles per seat, combinable:
 ## Students
 
 - CSV import with columns `name,school`. Header row optional. Quotes, blank lines and duplicates handled. Optional extra "needs" columns accepted.
+- **Copy prompt button** next to the CSV import: copies a Claude Code prompt (`js/rosterPrompt.js`) that turns a messy roster into this CSV format. The button itself is wired in step 10.
 - Needs are set per student in the app: car seat, 5-star belt, harness attachment, wheelchair.
 - **Wrong-seat warning:** a student who needs a feature gets a red flag when seated in a seat without it, or when a wheelchair student is outside the wheelchair area.
 - School is shown on the seat (label and/or color per school).
@@ -81,7 +82,7 @@ package.json
 README.md
 css/      styles.css  print.css
 js/       version.js  busLayout.js  seatFeatures.js  roster.js  needs.js
-          csvParser.js  changeLog.js  storage.js  exporter.js
+          csvParser.js  rosterPrompt.js  changeLog.js  storage.js  exporter.js
           ui.js  dragdrop.js  settingsPopover.js  app.js
 vendor/   html2canvas.min.js  jspdf.umd.min.js
 fonts/

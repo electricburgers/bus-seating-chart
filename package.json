@@ -1,0 +1,9 @@
+{
+  "name": "bus-seating-chart",
+  "version": "0.2.0",
+  "description": "Offline-capable bus seating chart with drag-and-drop student placement",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/"
+  }
+}

@@ -5,13 +5,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 
 ## [Unreleased]
 
+### Added
+- Step 10: the app itself. `index.html`, `css/styles.css`, `js/ui.js`, `js/dragdrop.js`, `js/settingsPopover.js`, `js/app.js`.
+- Drag-and-drop seating (drop on an occupied seat swaps, or sends the occupant back to the list), per-seat feature toggles, per-student needs, wrong-seat flags.
+- CSV import with Copy prompt button, baseline, Before/After/side-by-side views, Change Log reasons.
+- Settings popover: version and build time, rows, seats per side, door flip, wheelchair area, bench overrides, bus templates.
+- CSV and JSON export, JSON load, auto-save. `roster.place()` for the drop rule (tested).
+
+### Not yet working
+- PDF and JPEG export show a message until `vendor/html2canvas.min.js` and `vendor/jspdf.umd.min.js` are added (step 11).
+
 ### Planned
 - Bus layout with driver side left, door side right (3 seats per bench driver side, 2 door side, both configurable, per-bench overrides).
 - Optional wheelchair area (off by default) at the rear, at least 2 full rows (replacing the entire row), with the wheelchair door on the right side.
 - Driver, door and rear exit markers.
 - Seat toggles: car seat, 5-star seat belt, harness attachment.
 - Drag-and-drop student assignment with wrong-seat warnings.
-- CSV student import (`name,school`).
+- CSV student import (`name,school`), with a Copy button for a Claude Code prompt that reformats a messy roster.
 - Baseline, Before/After view, and change log with reasons.
 - Export to PDF (multiple pages), JPEG, CSV and JSON, with route name, your name and export date.
 - Settings button with a popover showing version number, build date and build time.
