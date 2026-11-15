@@ -5,6 +5,8 @@
   var SCHEMA_VERSION = 1;
   var AUTOSAVE_KEY = 'busSeatingChart.autosave';
   var TEMPLATES_KEY = 'busSeatingChart.templates';
+  var BACKUP_KEY = 'busSeatingChart.backup';
+  var THEME_KEY = 'busSeatingChart.theme';
 
   function fail(msg) { throw new Error('storage: ' + msg); }
   function lib(name) {
@@ -162,6 +164,32 @@
     try { return deserialize(text); } catch (e) { return null; }
   }
 
+  // One-deep backup of the chart that was just replaced (load JSON, sample data, clear roster).
+  // Survives a page reload, unlike the in-session undo history.
+  function saveBackup(store, chart, reason, now) {
+    try {
+      var text = JSON.stringify({ savedAt: (now || new Date()).toISOString(), reason: String(reason || ''), chart: serialize(chart) });
+      return write(store, BACKUP_KEY, text);
+    } catch (e) { return { ok: false, error: e.message }; }
+  }
+
+  // Returns { savedAt, reason, chart } or null.
+  function loadBackup(store) {
+    var text = read(store, BACKUP_KEY);
+    if (text === null) return null;
+    try {
+      var data = JSON.parse(text);
+      if (!isObject(data) || typeof data.chart !== 'string') return null;
+      return { savedAt: str(data.savedAt), reason: str(data.reason), chart: deserialize(data.chart) };
+    } catch (e) { return null; }
+  }
+
+  function saveTheme(store, theme) { return write(store, THEME_KEY, theme); }
+  function loadTheme(store) {
+    var t = read(store, THEME_KEY);
+    return t === 'light' || t === 'dark' ? t : 'auto';
+  }
+
   function saveTemplates(store, templates) { return write(store, TEMPLATES_KEY, JSON.stringify(templates)); }
 
   function loadTemplates(store) {
@@ -177,6 +205,7 @@
     SCHEMA_VERSION: SCHEMA_VERSION, AUTOSAVE_KEY: AUTOSAVE_KEY, TEMPLATES_KEY: TEMPLATES_KEY,
     serialize: serialize, deserialize: deserialize,
     saveTemplate: saveTemplate, listTemplates: listTemplates, loadTemplate: loadTemplate, deleteTemplate: deleteTemplate,
+    saveBackup: saveBackup, loadBackup: loadBackup, saveTheme: saveTheme, loadTheme: loadTheme,
     saveAutosave: saveAutosave, loadAutosave: loadAutosave, saveTemplates: saveTemplates, loadTemplates: loadTemplates
   };
   root.BusApp = root.BusApp || {};

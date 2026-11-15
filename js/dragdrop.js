@@ -2,9 +2,15 @@
   'use strict';
 
   // Native HTML5 drag and drop, delegated from the document so re-rendering never loses handlers.
-  // handlers: { onDropSeat(studentId, seatId), onDropPool(studentId) }
+  // handlers: { onDropSeat(studentId, seatId), onDropPool(studentId), onMessage(text),
+  //   onLift(studentId)    a student starts moving (drag or tap-pick), so the app can show where they fit,
+  //   onRelease()          the move ended or was cancelled,
+  //   isPaused()           true while another click mode (swap mode) owns clicks }
   function attach(doc, handlers) {
     var dragging = null;
+    function lift(id) { if (handlers.onLift) handlers.onLift(id); }
+    function release() { if (handlers.onRelease) handlers.onRelease(); }
+    function paused() { return !!(handlers.isPaused && handlers.isPaused()); }
 
     doc.addEventListener('dragstart', function (e) {
       var chip = e.target.closest && e.target.closest('[data-student-id][draggable="true"]');
@@ -12,12 +18,14 @@
       dragging = chip.getAttribute('data-student-id');
       e.dataTransfer.setData('text/plain', dragging);
       e.dataTransfer.effectAllowed = 'move';
-      chip.classList.add('dragging');
+      // Mark after the browser has taken its drag image, so the ghost is not the faded chip.
+      setTimeout(function () { chip.classList.add('dragging'); lift(dragging); }, 0);
     });
 
     doc.addEventListener('dragend', function () {
       dragging = null;
       clearHover(doc);
+      release();
       Array.prototype.forEach.call(doc.querySelectorAll('.dragging'), function (n) { n.classList.remove('dragging'); });
     });
 
@@ -53,14 +61,16 @@
     function pickUp(chip) {
       picked = chip.getAttribute('data-student-id');
       mark();
+      lift(picked);
       updateBar(nameOf(chip));
       say('Picked up ' + nameOf(chip) + '. Move to a seat or the student list and press Enter (or tap a seat). Escape cancels.');
     }
-    function cancel() { picked = null; mark(); updateBar(); say('Move cancelled.'); }
+    function cancel() { picked = null; mark(); updateBar(); release(); say('Move cancelled.'); }
     function putDown(target) {
       var id = picked, seatId = target.getAttribute('data-seat-id');
       picked = null;
       updateBar();
+      release();
       if (seatId) handlers.onDropSeat(id, seatId); else handlers.onDropPool(id);
       mark();
       return seatId;
@@ -97,6 +107,7 @@
     // then tap a seat to put them down, or tap the student list to send them back. Tap them again to cancel.
     doc.addEventListener('click', function (e) {
       var t = e.target;
+      if (paused()) return;
       if (!t || !t.closest || t.closest('button, input, select, textarea, label, a, summary, .popover')) return;
       var chip = t.closest('[data-student-id][draggable="true"]');
       var target = dropTarget(t);
@@ -123,6 +134,7 @@
       var id = dragging;
       dragging = null;
       clearHover(doc);
+      release();
       var seatId = target.getAttribute('data-seat-id');
       if (seatId) handlers.onDropSeat(id, seatId); else handlers.onDropPool(id);
     });

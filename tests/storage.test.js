@@ -183,3 +183,29 @@ test('a deleted student kept for the baseline stays flagged as removed after a s
   assert.strictEqual(back.students.find((s) => s.id === 'gone').removed, true);
   assert.strictEqual(back.students.find((s) => s.id !== 'gone').removed, undefined);
 });
+
+test('backup round-trips and ignores junk', () => {
+  const mem = {};
+  const store = { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = v; } };
+  const S2 = require('../js/storage.js');
+  assert.strictEqual(S2.loadBackup(store), null);
+  const chart = S2.deserialize(S2.serialize({ routeName: 'R1', preparedBy: '', layout: undefined, students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null }));
+  assert.ok(S2.saveBackup(store, chart, 'Loaded sample data', new Date('2026-01-02T03:04:05Z')).ok);
+  const b = S2.loadBackup(store);
+  assert.strictEqual(b.reason, 'Loaded sample data');
+  assert.strictEqual(b.savedAt, '2026-01-02T03:04:05.000Z');
+  assert.strictEqual(b.chart.routeName, 'R1');
+  mem['busSeatingChart.backup'] = 'not json';
+  assert.strictEqual(S2.loadBackup(store), null);
+});
+
+test('theme preference defaults to auto', () => {
+  const mem = {};
+  const store = { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = v; } };
+  const S2 = require('../js/storage.js');
+  assert.strictEqual(S2.loadTheme(store), 'auto');
+  S2.saveTheme(store, 'dark');
+  assert.strictEqual(S2.loadTheme(store), 'dark');
+  mem['busSeatingChart.theme'] = 'purple';
+  assert.strictEqual(S2.loadTheme(store), 'auto');
+});

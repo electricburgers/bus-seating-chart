@@ -17,6 +17,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.14.0] - 2026-11-15 12:53 EST
+
+### Added
+- Undo and Redo buttons (also Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z) for every seating, roster, layout and feature change.
+- Swap mode: click a seat with a student, then another seat, to swap the two students (or move into an empty seat).
+- Legend explaining the badges and colors, and a welcome card with first steps when the chart is empty.
+- Dark mode, chosen under Settings > Appearance (matches the device by default). Exports and printouts stay light.
+- Drag feedback: while moving a student, seats are outlined green (fits), amber (would raise a warning) or blue (swap).
+- Export options: paper size (Letter or A4), portrait or landscape, image quality, optional change summary page, and a preview.
+- Data safety: a backup of the chart is kept before loading JSON, loading fake data or clearing the roster, with a Restore button under Settings > Data safety. Loading a JSON file now asks before replacing your work.
+
+### Changed
+- The yellow bus frame now has red and yellow lights at the back (red outside, yellow inside) instead of wheels.
+- The rear emergency exit box is no longer the full width of the bus.
+
+### Fixed
+- The emergency window list no longer jumps to the top each time a window is checked.
+
 ## [0.13.0] - 2026-11-15 08:54 EST
 
 ### Changed

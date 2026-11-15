@@ -4,7 +4,7 @@
 
   var B = root.BusApp;
   var Schools = B.schools, Layout = B.busLayout, Features = B.seatFeatures, Roster = B.roster, Needs = B.needs, Csv = B.csvParser;
-  var Prompt = B.rosterPrompt, Log = B.changeLog, Store = B.storage, Exp = B.exporter, UI = B.ui;
+  var Prompt = B.rosterPrompt, Log = B.changeLog, Store = B.storage, Exp = B.exporter, UI = B.ui, History = B.history;
 
   function $(id) { return document.getElementById(id); }
   function today() {
@@ -20,6 +20,22 @@
   var templates = Store.loadTemplates(storage());
   var view = 'after';
   var popover;
+  var hist = History.create(Store.serialize(chart));
+  var autosaveOk = true;
+  var swapMode = false, swapFrom = null;
+  var theme = Store.loadTheme(storage());
+
+  // ---- theme ----
+
+  function applyTheme() {
+    var dark = theme === 'dark' || (theme === 'auto' && root.matchMedia && root.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  }
+  applyTheme();
+  if (root.matchMedia) {
+    var mq = root.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', applyTheme);
+  }
 
   // ---- feedback and saving ----
 
@@ -33,9 +49,43 @@
   }
   function save() {
     var r = Store.saveAutosave(storage(), chart);
+    autosaveOk = r.ok;
     if (!r.ok) notify('Auto-save failed (' + r.error + '). Use Save JSON to keep your work.', true);
   }
-  function commit() { save(); render(); }
+  // Every user-visible change goes through commit(): it records an undo step, auto-saves and redraws.
+  function commit() { hist = History.push(hist, Store.serialize(chart)); save(); render(); }
+
+  function syncHeaderInputs() {
+    $('route-name').value = chart.routeName;
+    $('prepared-by').value = chart.preparedBy;
+  }
+  // Route name, preparer and change reasons are typed text, so they stay as they are when you undo or redo.
+  function restoreSnapshot(text, message) {
+    var keep = { routeName: chart.routeName, preparedBy: chart.preparedBy, reasons: chart.reasons };
+    chart = Object.assign(Store.deserialize(text), keep);
+    swapFrom = null;
+    syncHeaderInputs();
+    save();
+    render();
+    notify(message);
+  }
+  function undo() {
+    if (!History.canUndo(hist)) { notify('Nothing to undo.'); return; }
+    hist = History.undo(hist);
+    restoreSnapshot(hist.present, 'Undid the last change.');
+  }
+  function redo() {
+    if (!History.canRedo(hist)) { notify('Nothing to redo.'); return; }
+    hist = History.redo(hist);
+    restoreSnapshot(hist.present, 'Redid the change.');
+  }
+
+  // One-deep safety copy of the chart that is about to be replaced. Survives a reload, unlike undo.
+  function backupBefore(reason) {
+    var r = Store.saveBackup(storage(), chart, reason);
+    if (!r.ok) notify('Could not keep a backup of the old chart (' + r.error + ').', true);
+  }
+  function hasWork() { return activeStudents().length > 0 || Object.keys(chart.roster).length > 0; }
 
   // ---- rendering ----
 
@@ -121,6 +171,10 @@
       b.setAttribute('aria-pressed', b.getAttribute('data-view') === view ? 'true' : 'false');
       if (b.getAttribute('data-view') !== 'after') b.disabled = !chart.baseline;
     });
+    $('onboarding').hidden = hasWork() || !!chart.baseline;
+    $('undo').disabled = !History.canUndo(hist);
+    $('redo').disabled = !History.canRedo(hist);
+    markSwap();
     $('baseline-note').textContent = chart.baseline ? changes.length + ' change' + (changes.length === 1 ? '' : 's') + ' since baseline' : 'No baseline set';
   }
 
@@ -164,9 +218,9 @@
       });
     },
     loadSampleData: function (wheelchair) {
-      var hasWork = activeStudents().length || Object.keys(chart.roster).length;
-      if (hasWork && !root.confirm('Replace the current chart with fake names and a fake layout? This cannot be undone (save JSON first if you need it).')) return;
+      if (hasWork() && !root.confirm('Replace the current chart with fake names and a fake layout? You can Undo this, and the old chart is also kept under Settings > Data safety.')) return;
       guard(function () {
+        backupBefore('Before loading fake sample data');
         var d = B.sampleData.generate(null, { wheelchair: wheelchair !== false });
         chart = Object.assign(newChart(), {
           routeName: chart.routeName || 'Route 12 (sample)', preparedBy: chart.preparedBy || 'Sample Driver',
@@ -182,6 +236,23 @@
         view = 'after';
         commit();
         notify((wheelchair === false ? 'Loaded fake names and a layout without a wheelchair area. Try the exports below.' : 'Loaded fake names and layout. Try the exports below.'));
+      });
+    },
+    setTheme: function (t) {
+      theme = t === 'light' || t === 'dark' ? t : 'auto';
+      Store.saveTheme(storage(), theme);
+      applyTheme();
+    },
+    restoreBackup: function () {
+      var b = Store.loadBackup(storage());
+      if (!b) { notify('There is no backup to restore.', true); return; }
+      if (hasWork() && !root.confirm('Replace the current chart with the backup? You can Undo this.')) return;
+      guard(function () {
+        chart = b.chart;
+        syncHeaderInputs();
+        view = 'after';
+        commit();
+        notify('Restored the backup.');
       });
     },
     deleteTemplate: function (name) {
@@ -262,11 +333,13 @@
       // Optional fun frame: a yellow school-bus outline with wheels around the chart.
       sheet.classList.add('framed');
       sheet.appendChild(UI.h('div', { 'class': 'bus-frame-label', text: 'SCHOOL BUS' }));
-      sheet.appendChild(UI.h('div', { 'class': 'bus-wheel left' }));
-      sheet.appendChild(UI.h('div', { 'class': 'bus-wheel right' }));
+      ['red left', 'yellow left', 'yellow right', 'red right'].forEach(function (c) {
+        sheet.appendChild(UI.h('div', { 'class': 'bus-light ' + c }));
+      });
     }
     document.body.appendChild(sheet);
-    return root.html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff' }).then(
+    var scale = parseFloat($('opt-quality').value) || 2;
+    return root.html2canvas(sheet, { scale: scale, backgroundColor: '#ffffff' }).then(
       function (canvas) { sheet.remove(); return canvas; },
       function (e) { sheet.remove(); throw e; });
   }
@@ -281,28 +354,41 @@
     var J = root.jspdf && root.jspdf.jsPDF;
     if (!J) { notify('PDF export needs the vendored jsPDF library, which is not installed yet.', true); return; }
     var wantBefore = $('pdf-before').checked && chart.baseline;
-    var doc = new J({ unit: 'pt', format: 'letter' });
+    var doc = new J({ unit: 'pt', format: $('opt-paper').value, orientation: $('opt-orient').value });
+    var size = doc.internal.pageSize;
+    var pw = size.getWidth ? size.getWidth() : size.width, ph = size.getHeight ? size.getHeight() : size.height;
     function addImage(canvas, first) {
       if (!first) doc.addPage();
-      var ratio = canvas.width / canvas.height, w = 540, hgt = w / ratio;
-      if (hgt > 720) { hgt = 720; w = hgt * ratio; }
-      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 36, 36, w, hgt);
+      var maxW = pw - 72, maxH = ph - 72, ratio = canvas.width / canvas.height;
+      var w = maxW, hgt = w / ratio;
+      if (hgt > maxH) { hgt = maxH; w = hgt * ratio; }
+      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 36 + (maxW - w) / 2, 36, w, hgt);
     }
     captureSheet('after', !!wantBefore).then(function (after) {
       addImage(after, true);
       return wantBefore ? captureSheet('before', true).then(function (before) { addImage(before, false); }) : null;
     }).then(function () {
-      drawChangeSummary(doc);
+      if ($('opt-summary').checked) drawChangeSummary(doc, pw, ph);
       doc.save(fileName('pdf'));
       notify('PDF saved.');
     }).catch(function (e) { notify(e.message, true); });
   }
 
-  function drawChangeSummary(doc) {
+  function previewExport() {
+    var wantBefore = $('pdf-before').checked && chart.baseline;
+    captureSheet('after', !!wantBefore).then(function (canvas) {
+      $('preview-img').src = canvas.toDataURL('image/jpeg', 0.85);
+      $('preview-box').hidden = false;
+      notify('Preview ready. This is the "After" chart as it will be exported.');
+    }).catch(function (e) { notify(e.message, true); });
+  }
+
+  function drawChangeSummary(doc, pw, ph) {
     var info = Exp.headerLines(exportInfo());
     var changes = chart.logSnapshot || Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
     var rows = Exp.changeTableRows(Log.getRows(changes, chart.reasons), chart.students);
-    var x = [36, 150, 300, 450], widths = [108, 144, 144, 126], y = 36;
+    var total = pw - 72, fr = [0.2, 0.267, 0.267, 0.233], widths = fr.map(function (f) { return Math.floor(total * f) - 6; });
+    var x = [36, 36 + total * fr[0], 36 + total * (fr[0] + fr[1]), 36 + total * (fr[0] + fr[1] + fr[2])], y = 36;
     doc.addPage();
     doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
     doc.text('Change Summary', 36, y); y += 18;
@@ -314,12 +400,89 @@
       doc.setFont('helvetica', bold ? 'bold' : 'normal');
       var wrapped = cells.map(function (c, i) { return doc.splitTextToSize(String(c), widths[i]); });
       var height = Math.max.apply(null, wrapped.map(function (w) { return w.length; })) * 12 + 6;
-      if (y + height > 756) { doc.addPage(); y = 36; }
+      if (y + height > ph - 36) { doc.addPage(); y = 36; }
       wrapped.forEach(function (w, i) { doc.text(w, x[i], y + 9); });
       y += height;
     }
     line(['Student', 'From', 'To', 'Reason'], true);
     rows.forEach(function (r) { line([r.student, r.from, r.to, r.reason], false); });
+  }
+
+  // ---- swap mode and drag feedback ----
+
+  function studentName(id) { var st = byId()[id]; return st ? st.name : 'student'; }
+  function interactiveSeats() { return Array.prototype.slice.call(document.querySelectorAll('.seat[data-drop="true"]')); }
+  function markSwap() {
+    document.body.classList.toggle('swap-mode', swapMode);
+    $('swap-mode').setAttribute('aria-pressed', swapMode ? 'true' : 'false');
+    if (swapFrom !== null && chart.roster[swapFrom] === undefined) swapFrom = null;
+    interactiveSeats().forEach(function (el) { el.classList.toggle('swap-from', el.getAttribute('data-seat-id') === swapFrom); });
+  }
+  function swapClick(seatId) {
+    if (swapFrom === null) {
+      if (chart.roster[seatId] === undefined) { notify('Swap mode: click a seat with a student first, then the seat to swap with.'); return; }
+      swapFrom = seatId;
+      markSwap();
+      notify('Swap mode: ' + studentName(chart.roster[seatId]) + ' selected. Click another seat to swap or move. Click the same seat to cancel.');
+      return;
+    }
+    if (swapFrom === seatId) { swapFrom = null; markSwap(); notify('Swap cancelled.'); return; }
+    var a = chart.roster[swapFrom], b = chart.roster[seatId], from = swapFrom;
+    guard(function () {
+      chart.roster = Roster.moveOrSwap(chart.roster, chart.layout, from, seatId);
+      swapFrom = null;
+      commit();
+      notify(b !== undefined ? 'Swapped ' + studentName(a) + ' and ' + studentName(b) + '.' : 'Moved ' + studentName(a) + ' to ' + Exp.formatSeat(seatId) + '.');
+    });
+  }
+  function setSwapMode(on) {
+    swapMode = on; swapFrom = null;
+    markSwap();
+    notify(on ? 'Swap mode on. Click a seat with a student, then another seat to swap them.' : 'Swap mode off.');
+  }
+
+  // While a student is being moved, outline each seat: green fits, amber would raise a warning, blue swaps with someone.
+  function showFits(studentId) {
+    var st = byId()[studentId];
+    if (!st) return;
+    var here = Roster.seatOf(chart.roster, studentId);
+    document.body.classList.add('is-moving');
+    interactiveSeats().forEach(function (el) {
+      var seatId = el.getAttribute('data-seat-id'), occ = chart.roster[seatId];
+      if (seatId === here) return;
+      var bad = Needs.checkStudent(st.needs, seatId, chart.features).length > 0;
+      if (occ !== undefined && here !== undefined && byId()[occ]) {
+        bad = bad || Needs.checkStudent(byId()[occ].needs, here, chart.features).length > 0;
+      }
+      el.classList.add(bad ? 'drop-warn' : occ !== undefined ? 'drop-swap' : 'drop-ok');
+    });
+  }
+  function clearFits() {
+    document.body.classList.remove('is-moving');
+    Array.prototype.forEach.call(document.querySelectorAll('.drop-ok, .drop-warn, .drop-swap'), function (n) {
+      n.classList.remove('drop-ok', 'drop-warn', 'drop-swap');
+    });
+  }
+
+  // ---- loading a saved JSON file ----
+
+  function loadJsonFile(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      guard(function () {
+        var next = Store.deserialize(reader.result);
+        if (hasWork() && !root.confirm('Replace the current chart with ' + file.name + '? You can Undo this, and the old chart is kept under Settings > Data safety.')) return;
+        backupBefore('Before loading ' + file.name);
+        chart = next;
+        syncHeaderInputs();
+        view = 'after';
+        swapFrom = null;
+        commit();
+        notify('Loaded ' + file.name + '.');
+      });
+    };
+    reader.onerror = function () { notify('Could not read that file.', true); };
+    reader.readAsText(file);
   }
 
   // ---- wiring ----
@@ -333,6 +496,7 @@
 
     B.dragdrop.attach(document, {
       onMessage: function (m) { notify(m); },
+      onLift: showFits, onRelease: clearFits, isPaused: function () { return swapMode; },
       onDropSeat: function (studentId, seatId) { guard(function () { chart.roster = Roster.place(chart.roster, chart.layout, studentId, seatId); commit(); }); },
       onDropPool: function (studentId) { chart.roster = Roster.unassign(chart.roster, studentId); commit(); }
     });
@@ -381,7 +545,7 @@
       var st = chart.students.filter(function (s) { return s.id === id; })[0];
       if (!st) return;
       var seated = Roster.seatOf(chart.roster, id) !== undefined;
-      if (!root.confirm('Delete ' + st.name + '?' + (seated ? ' Their seat will be freed.' : '') + ' This cannot be undone.')) return;
+      if (!root.confirm('Delete ' + st.name + '?' + (seated ? ' Their seat will be freed.' : '') + ' You can Undo this.')) return;
       chart.roster = Roster.unassign(chart.roster, id);
       var inBaseline = chart.baseline && Object.keys(chart.baseline.roster).some(function (seat) { return chart.baseline.roster[seat] === id; });
       if (inBaseline) chart.students = chart.students.map(function (s) { return s.id === id ? Object.assign({}, s, { removed: true }) : s; });
@@ -436,7 +600,8 @@
     });
     $('clear-roster').addEventListener('click', function () {
       if (!chart.students.length) return;
-      if (!root.confirm('Remove all students, the baseline and change reasons? Seat features and the bus layout are kept.')) return;
+      if (!root.confirm('Remove all students, the baseline and change reasons? Seat features and the bus layout are kept. You can Undo this.')) return;
+      backupBefore('Before clearing the roster');
       chart.students = []; chart.roster = {}; chart.baseline = null; chart.reasons = {}; chart.logSnapshot = null;
       commit();
     });
@@ -462,26 +627,63 @@
     $('export-pdf').addEventListener('click', exportPdf);
     $('load-json').addEventListener('change', function (e) {
       var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function () {
-        guard(function () {
-          chart = Store.deserialize(reader.result);
-          $('route-name').value = chart.routeName;
-          $('prepared-by').value = chart.preparedBy;
-          view = 'after';
-          commit();
-          notify('Loaded ' + file.name + '.');
-        });
-      };
-      reader.onerror = function () { notify('Could not read that file.', true); };
-      reader.readAsText(file);
+      if (file) loadJsonFile(file);
       e.target.value = '';
+    });
+    $('onb-json').addEventListener('change', function (e) {
+      var file = e.target.files[0];
+      if (file) loadJsonFile(file);
+      e.target.value = '';
+    });
+    $('export-preview').addEventListener('click', previewExport);
+    $('preview-close').addEventListener('click', function () { $('preview-box').hidden = true; $('preview-img').removeAttribute('src'); });
+
+    $('undo').addEventListener('click', undo);
+    $('redo').addEventListener('click', redo);
+    $('swap-mode').addEventListener('click', function () { setSwapMode(!swapMode); });
+    // Capture phase so swap mode sees seat clicks before the tap-to-move handler does.
+    document.addEventListener('click', function (e) {
+      if (!swapMode || !e.target.closest || e.target.closest('button')) return;
+      var seat = e.target.closest('.seat[data-drop="true"]');
+      if (!seat) return;
+      e.stopImmediatePropagation();
+      swapClick(seat.getAttribute('data-seat-id'));
+    }, true);
+    document.addEventListener('keydown', function (e) {
+      var t = e.target, typing = t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName);
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && !typing) {
+        var k = e.key.toLowerCase();
+        if (k === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+        if (k === 'y') { e.preventDefault(); redo(); return; }
+      }
+      if (!swapMode || typing) return;
+      if (e.key === 'Escape' && swapFrom !== null) { swapFrom = null; markSwap(); notify('Swap cancelled.'); return; }
+      if ((e.key === 'Enter' || e.key === ' ') && t && t.classList && t.classList.contains('seat') && t.getAttribute('data-drop') === 'true') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        swapClick(t.getAttribute('data-seat-id'));
+      }
+    }, true);
+
+    $('onb-setup').addEventListener('click', function () { popover.open(); });
+    $('onb-import').addEventListener('click', function () {
+      $('students-box').open = true;
+      $('import-box').open = true;
+      $('csv-text').focus();
+    });
+    $('onb-sample').addEventListener('click', function () { actions.loadSampleData(true); });
+    root.addEventListener('beforeunload', function (e) {
+      // Only when browser storage is failing: otherwise every change is already saved.
+      if (autosaveOk) return;
+      e.preventDefault();
+      e.returnValue = '';
     });
 
     popover = B.settingsPopover.create({
       button: $('settings-button'), panel: $('settings-panel'), actions: actions,
-      getState: function () { return { layout: chart.layout, templateNames: Store.listTemplates(templates) }; }
+      getState: function () {
+        return { layout: chart.layout, templateNames: Store.listTemplates(templates), theme: theme, backup: Store.loadBackup(storage()), autosaveOk: autosaveOk };
+      }
     });
   }
 

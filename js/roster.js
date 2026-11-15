@@ -62,6 +62,21 @@
     return next;
   }
 
+  // Click-to-swap: move the student in seat `from` to seat `to`. An occupied target swaps places;
+  // an empty target just moves them. Throws when `from` is empty or either seat does not exist.
+  function moveOrSwap(state, layout, from, to) {
+    var ok = validSpotIds(layout);
+    if (!ok[from] || !ok[to]) throw new Error('roster: no such seat');
+    if (state[from] === undefined) throw new Error('roster: seat "' + from + '" is empty');
+    if (from === to) return state;
+    var next = Object.assign({}, state);
+    var mover = state[from], other = state[to];
+    delete next[from];
+    next[to] = mover;
+    if (other !== undefined) next[from] = other;
+    return next;
+  }
+
   function prune(state, layout) {
     var ok = validSpotIds(layout), next = {};
     for (var id in state) if (ok[id]) next[id] = state[id];
@@ -72,7 +87,7 @@
     return studentIds.filter(function (id) { return seatOf(state, id) === undefined; });
   }
 
-  var api = { create: create, assign: assign, place: place, unassign: unassign, swap: swap, prune: prune,
+  var api = { create: create, assign: assign, place: place, unassign: unassign, swap: swap, moveOrSwap: moveOrSwap, prune: prune,
     unseated: unseated, studentAt: studentAt, seatOf: seatOf, isWheelchairSpot: isWheelchairSpot };
   root.BusApp = root.BusApp || {};
   root.BusApp.roster = api;

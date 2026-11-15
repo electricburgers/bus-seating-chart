@@ -89,3 +89,15 @@ test('place: unseated student dropped on an occupied seat sends the occupant to 
 test('place: invalid seat still throws', () => {
   assert.throws(() => R.place(R.create(), layout, 'ann', 'nope'));
 });
+
+test('moveOrSwap: swaps an occupied target, moves into an empty one', () => {
+  const base = { '1-driver-1': 'ann', '1-driver-2': 'bo' };
+  assert.deepStrictEqual(R.moveOrSwap(base, layout, '1-driver-1', '1-driver-2'), { '1-driver-1': 'bo', '1-driver-2': 'ann' });
+  assert.deepStrictEqual(R.moveOrSwap(base, layout, '1-driver-1', '2-driver-1'), { '1-driver-2': 'bo', '2-driver-1': 'ann' });
+  assert.strictEqual(R.moveOrSwap(base, layout, '1-driver-1', '1-driver-1'), base);
+});
+
+test('moveOrSwap: rejects an empty source or unknown seat', () => {
+  assert.throws(() => R.moveOrSwap({}, layout, '1-driver-1', '1-driver-2'), /empty/);
+  assert.throws(() => R.moveOrSwap({ '1-driver-1': 'ann' }, layout, '1-driver-1', 'nope'), /no such seat/);
+});

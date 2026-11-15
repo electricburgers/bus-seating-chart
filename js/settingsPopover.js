@@ -24,7 +24,7 @@
     function run(fn) { fn(); render(); }
 
     // Which sections are expanded survives re-renders (every change re-draws the panel).
-    var openSections = { setup: true, windows: false, overrides: false, templates: false, demo: false };
+    var openSections = { setup: true, windows: false, overrides: false, templates: false, appearance: false, safety: false, demo: false };
 
     function section(key, title, kids) {
       var d = h('details', { 'class': 'set-section', open: openSections[key] }, [h('summary', { text: title })].concat(kids));
@@ -36,6 +36,9 @@
       var st = opts.getState(), layout = st.layout, v = root.BusApp.version;
       var side = layout.doorSide, Lib = root.BusApp.busLayout, wc = layout.wheelchair;
       var scrollTop = panel.scrollTop;
+      // The emergency-window table scrolls on its own; remember where it was so a click does not jump it to the top.
+      var oldWrap = panel.querySelector('.window-table-wrap');
+      var winScroll = oldWrap ? oldWrap.scrollTop : 0;
       panel.textContent = '';
 
       // Header stays visible while the sections scroll.
@@ -121,7 +124,32 @@
       }
       panel.appendChild(section('templates', 'Bus templates', tpl));
 
-      // 5. Sample data
+      // 5. Appearance
+      var themeSel = h('select', { 'aria-label': 'Theme' }, [
+        h('option', { value: 'auto', text: 'Match my device' }), h('option', { value: 'light', text: 'Light' }), h('option', { value: 'dark', text: 'Dark' })]);
+      themeSel.value = st.theme || 'auto';
+      themeSel.addEventListener('change', function () { run(function () { actions.setTheme(themeSel.value); }); });
+      panel.appendChild(section('appearance', 'Appearance', [
+        h('label', { 'class': 'field' }, ['Theme ', themeSel]),
+        h('p', { 'class': 'hint', text: 'Exports and printouts always use the light look.' })
+      ]));
+
+      // 6. Data safety
+      var safety = [h('p', { 'class': st.autosaveOk ? 'hint' : 'warn-note',
+        text: st.autosaveOk ? 'Auto-save is on: your chart is saved in this browser after every change. Use Undo (Ctrl/Cmd+Z) for mistakes.'
+          : 'Auto-save is failing, so your work may be lost. Use Save JSON to keep it.' })];
+      if (st.backup) {
+        var when = st.backup.savedAt ? new Date(st.backup.savedAt).toLocaleString() : 'earlier';
+        var restore = h('button', { type: 'button', text: 'Restore previous chart' });
+        restore.addEventListener('click', function () { run(actions.restoreBackup); });
+        safety.push(h('p', { 'class': 'hint', text: 'Backup of the chart you replaced (' + (st.backup.reason || 'unknown action') + ') at ' + when + '.' }));
+        safety.push(h('div', { 'class': 'row' }, [restore]));
+      } else {
+        safety.push(h('p', { 'class': 'hint', text: 'No backup yet. One is kept automatically before a chart is replaced (load JSON, fake data, clear roster).' }));
+      }
+      panel.appendChild(section('safety', 'Data safety', safety));
+
+      // 7. Sample data
       var demo = h('button', { type: 'button', text: 'Generate fake names and layout' });
       demo.addEventListener('click', function () { run(function () { actions.loadSampleData(true); }); });
       var demoPlain = h('button', { type: 'button', text: 'Generate fake names, no wheelchair area' });
@@ -132,6 +160,8 @@
       ]));
 
       panel.scrollTop = scrollTop;
+      var newWrap = panel.querySelector('.window-table-wrap');
+      if (newWrap) newWrap.scrollTop = winScroll;
     }
 
     button.addEventListener('click', function () { if (isOpen()) close(); else open(); });

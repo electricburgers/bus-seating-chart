@@ -15,3 +15,8 @@ body { background: #fff; color: #000; font-size: 11px; }
 .chip { cursor: default; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 .change-table input.reason { border: 0; padding: 0; font: inherit; background: none; }
 .feature.on { background: #000 !important; color: #fff !important; border-color: #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+/* Always print with the light look, even when the page is in dark mode. */
+:root[data-theme] { --border: #6b7580; --accent: #1f5fbf; --warn: #c62828; --changed: #f9a825; --panel: #fff; --text: #000; --muted: #5b6570; --muted2: #3b444d;
+  --seat: #fff; --chip: #eee; --chip-seated: #dde1e5; --hover: #eaf1fc; --wc: #eef5fc; --line: #e2e6ea; --line2: #c9d0d7; --head: #eef2f6;
+  --marker: #dfe5ea; --door: #cdebd0; --wc-door: #d7e6f7; --rear: #f6d8d8; --bus-border: #44505c; color-scheme: light; }
+.onboarding, .legend, .pick-bar { display: none !important; }

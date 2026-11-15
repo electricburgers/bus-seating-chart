@@ -78,9 +78,41 @@
           <button type="button" data-view="before" aria-pressed="false">Before</button>
           <button type="button" data-view="side" aria-pressed="false">Side by side</button>
         </div>
-        <button id="set-baseline" type="button">Set baseline</button>
+        <button id="undo" type="button" disabled title="Undo (Ctrl/Cmd+Z)">&#8630; Undo</button>
+      <button id="redo" type="button" disabled title="Redo (Ctrl/Cmd+Shift+Z)">Redo &#8631;</button>
+      <button id="swap-mode" type="button" aria-pressed="false" title="Click one seat, then another, to swap the two students">&#8646; Swap mode</button>
+      <button id="set-baseline" type="button">Set baseline</button>
         <span id="baseline-note" class="hint"></span>
       </div>
+      <section id="onboarding" class="onboarding" hidden>
+        <h2>Welcome! Let&rsquo;s build your first seating chart</h2>
+        <ol>
+          <li><strong>Set up the bus.</strong> Rows, seats per bench, door side and wheelchair area.</li>
+          <li><strong>Add students.</strong> Import a CSV (<code>name,school</code>) or type names in one at a time.</li>
+          <li><strong>Seat them.</strong> Drag a student onto a seat, or tap a student then a seat.</li>
+          <li><strong>Set a baseline</strong> before you make changes, then export a PDF with the change log.</li>
+        </ol>
+        <div class="row">
+          <button id="onb-setup" type="button">1. Bus setup</button>
+          <button id="onb-import" type="button">2. Add students</button>
+          <button id="onb-sample" type="button">Try it with fake names</button>
+          <label class="file-btn">Load saved JSON <input id="onb-json" type="file" accept=".json,application/json"></label>
+        </div>
+      </section>
+      <details id="legend" class="legend">
+        <summary>Legend: badges and colors</summary>
+        <ul>
+          <li><span class="feature on" aria-hidden="true">&#9733;</span> Car seat: this seat has a 5-star belt.</li>
+          <li><span class="feature on feature-harness" aria-hidden="true">H</span> Harness attachment on this seat.</li>
+          <li><span class="flag legend-flag" aria-hidden="true">&#9873;</span> Warning: the student needs a seat feature or area this seat does not have.</li>
+          <li><span class="legend-swatch sw-changed" aria-hidden="true"></span> Gold double border: seat changed since the baseline.</li>
+          <li><span class="legend-swatch sw-warn" aria-hidden="true"></span> Red dashed student: has a warning.</li>
+          <li><span class="legend-swatch sw-school" aria-hidden="true"></span> Student color: one color per school.</li>
+          <li><span class="legend-swatch sw-wc" aria-hidden="true"></span> Blue seat: wheelchair spot.</li>
+          <li><span class="window-exit legend-exit" aria-hidden="true">EXIT</span> Emergency window exit.</li>
+          <li><span class="legend-swatch sw-ok" aria-hidden="true"></span> While dragging: green is an empty seat that works, amber is a seat that would trigger a warning, blue is a swap.</li>
+        </ul>
+      </details>
       <div id="views" class="views"></div>
 
       <section class="changelog">
@@ -99,6 +131,24 @@
           <button id="export-json" type="button">Save JSON</button>
           <label class="file-btn">Load JSON <input id="load-json" type="file" accept=".json,application/json"></label>
         </div>
+      <details id="export-options" class="sub-box">
+        <summary>Export options</summary>
+        <div class="row">
+          <label>Paper <select id="opt-paper"><option value="letter">Letter</option><option value="a4">A4</option></select></label>
+          <label>Orientation <select id="opt-orient"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+          <label>Quality <select id="opt-quality"><option value="1.5">Draft</option><option value="2" selected>Standard</option><option value="3">High</option></select></label>
+          <label class="inline"><input id="opt-summary" type="checkbox" checked> Change summary page in PDF</label>
+        </div>
+        <div class="row">
+          <button id="export-preview" type="button">Preview</button>
+          <span class="hint">Shows the chart as it will be exported (uses the frame and Before options above).</span>
+        </div>
+        <div id="preview-box" class="preview-box" hidden>
+          <img id="preview-img" alt="Export preview">
+          <button id="preview-close" type="button">Close preview</button>
+        </div>
+      </details>
+
       </section>
     </section>
   </main>
@@ -115,6 +165,7 @@
   <script src="js/sampleData.js"></script>
   <script src="js/rosterPrompt.js"></script>
   <script src="js/changeLog.js"></script>
+  <script src="js/history.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/exporter.js"></script>
   <script src="js/ui.js"></script>
