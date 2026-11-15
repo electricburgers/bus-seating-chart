@@ -104,7 +104,7 @@
     pool.textContent = '';
     UI.renderPool(chart, Needs.getWarnings(chart.roster, needsById(), chart.features)).forEach(function (li) { pool.appendChild(li); });
 
-    $('student-count').textContent = '(' + chart.students.length + ')';
+    $('student-count').textContent = '(' + activeStudents().length + ')';
 
     var rows = Log.getRows(changes, chart.reasons);
     var log = $('changelog');
@@ -158,7 +158,7 @@
       });
     },
     loadSampleData: function (wheelchair) {
-      var hasWork = chart.students.length || Object.keys(chart.roster).length;
+      var hasWork = activeStudents().length || Object.keys(chart.roster).length;
       if (hasWork && !root.confirm('Replace the current chart with fake names and a fake layout? This cannot be undone (save JSON first if you need it).')) return;
       guard(function () {
         var d = B.sampleData.generate(null, { wheelchair: wheelchair !== false });
@@ -186,6 +186,8 @@
 
   // ---- students ----
 
+  function activeStudents() { return chart.students.filter(function (s) { return !s.removed; }); }
+
   function nextStudentId() {
     var max = 0;
     chart.students.forEach(function (s) { var n = /^s(\d+)$/.exec(s.id); if (n) max = Math.max(max, +n[1]); });
@@ -194,7 +196,7 @@
   function importCsv(text) {
     var result = Csv.parse(text);
     var seen = {};
-    chart.students.forEach(function (s) { seen[s.name.toLowerCase() + '\u0000' + s.school.toLowerCase()] = true; });
+    activeStudents().forEach(function (s) { seen[s.name.toLowerCase() + '\u0000' + s.school.toLowerCase()] = true; });
     var added = 0, already = 0;
     result.students.forEach(function (rec) {
       var key = rec.name.toLowerCase() + '\u0000' + rec.school.toLowerCase();
@@ -366,11 +368,26 @@
       reader.onerror = function () { notify('Could not read that file.', true); };
       reader.readAsText(file);
     });
+    $('pool').addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('[data-delete-student]');
+      if (!btn) return;
+      var id = btn.getAttribute('data-delete-student');
+      var st = chart.students.filter(function (s) { return s.id === id; })[0];
+      if (!st) return;
+      var seated = Roster.seatOf(chart.roster, id) !== undefined;
+      if (!root.confirm('Delete ' + st.name + '?' + (seated ? ' Their seat will be freed.' : '') + ' This cannot be undone.')) return;
+      chart.roster = Roster.unassign(chart.roster, id);
+      var inBaseline = chart.baseline && Object.keys(chart.baseline.roster).some(function (seat) { return chart.baseline.roster[seat] === id; });
+      if (inBaseline) chart.students = chart.students.map(function (s) { return s.id === id ? Object.assign({}, s, { removed: true }) : s; });
+      else chart.students = chart.students.filter(function (s) { return s.id !== id; });
+      notify('Deleted ' + st.name + '.');
+      commit();
+    });
     $('add-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var name = $('add-name').value.trim(), school = $('add-school').value.trim();
       if (!name) { notify('Enter a student name.', true); return; }
-      var dup = chart.students.some(function (s) { return s.name.toLowerCase() === name.toLowerCase() && s.school.toLowerCase() === school.toLowerCase(); });
+      var dup = activeStudents().some(function (s) { return s.name.toLowerCase() === name.toLowerCase() && s.school.toLowerCase() === school.toLowerCase(); });
       if (dup) { notify(name + ' is already in the roster.', true); return; }
       chart.students.push({ id: nextStudentId(), name: name, school: school, needs: {} });
       $('add-name').value = ''; $('add-school').value = '';
@@ -398,6 +415,7 @@
 
     $('set-baseline').addEventListener('click', function () {
       chart.baseline = Log.createBaseline(chart.roster, chart.features);
+      chart.students = activeStudents();
       chart.reasons = {};
       chart.logSnapshot = null;
       notify('Baseline set. Changes from here on are tracked.');

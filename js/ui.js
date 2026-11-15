@@ -135,7 +135,7 @@
 
   function renderPool(chart, warnings) {
     var R = lib('roster'), E = lib('exporter');
-    var list = chart.students.slice().sort(function (a, b) {
+    var list = chart.students.filter(function (s) { return !s.removed; }).sort(function (a, b) {
       var sa = R.seatOf(chart.roster, a.id) !== undefined, sb = R.seatOf(chart.roster, b.id) !== undefined;
       return sa === sb ? a.name.localeCompare(b.name) : (sa ? 1 : -1);
     });
@@ -153,7 +153,8 @@
         studentChip(s, w),
         seatId !== undefined ? h('div', { 'class': 'seat-note', text: E.formatSeat(seatId) }) : null,
         w ? h('div', { 'class': 'warn-note', text: warningText(w) }) : null,
-        needs
+        needs,
+        h('button', { type: 'button', 'class': 'danger delete-student', 'data-delete-student': s.id, 'aria-label': 'Delete ' + s.name, text: 'Delete student' })
       ]);
     });
   }

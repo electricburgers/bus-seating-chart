@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.11.0] - 2026-11-15 08:41 EST
+
+### Added
+- "Delete student" button on each student in the list, with a confirmation. A seated student's seat is freed. A student who was in the baseline is kept out of sight so the Before chart and change log still show their name.
+
+### Fixed
+- Yellow bus frame export no longer lets wide bus layouts spill over the right edge of the frame. The exported sheet now grows to fit the chart.
+
 ## [0.10.0] - 2026-11-15 08:40 EST
 
 ### Added

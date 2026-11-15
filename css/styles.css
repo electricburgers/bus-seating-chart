@@ -102,7 +102,7 @@ span.feature { display: inline-block; line-height: 20px; border: 1px solid var(-
 .change-table th, .change-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid #e2e6ea; vertical-align: top; }
 .reason { width: 100%; }
 
-.export-sheet { position: fixed; left: -10000px; top: 0; width: 700px; padding: 16px; background: #fff; }
+.export-sheet { position: fixed; left: -10000px; top: 0; box-sizing: border-box; width: max-content; min-width: 700px; padding: 16px; background: #fff; }
 .export-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
 
 @media (max-width: 800px) { .layout { grid-template-columns: minmax(0, 1fr); } }
@@ -140,7 +140,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .chip:focus-visible, .seat:focus-visible, .pool:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* Optional yellow bus frame for PDF/JPEG export (captured off-screen by html2canvas) */
-.export-sheet.framed { width: 760px; padding: 36px 36px 58px; background: #f9c80e; border: 6px solid #1b1f24; border-radius: 48px 48px 18px 18px; }
+.export-sheet.framed { min-width: 760px; padding: 36px 36px 58px; background: #f9c80e; border: 6px solid #1b1f24; border-radius: 48px 48px 18px 18px; }
 .export-sheet.framed .export-header, .export-sheet.framed .bus-figure { background: #fff; }
 .export-sheet.framed .export-header { margin: 0; padding: 8px 12px; border-radius: 10px 10px 0 0; }
 .export-sheet.framed .bus-figure { padding: 8px 12px 12px; border-radius: 0 0 10px 10px; }

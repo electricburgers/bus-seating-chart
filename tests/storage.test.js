@@ -175,3 +175,11 @@ test('finalized change log snapshot round-trips; missing or bad snapshot means n
   data.logSnapshot = 'nope';
   assert.strictEqual(S.deserialize(JSON.stringify(data)).logSnapshot, null);
 });
+
+test('a deleted student kept for the baseline stays flagged as removed after a save and load', () => {
+  const chart = sampleChart();
+  chart.students = chart.students.concat([{ id: 'gone', name: 'Gone', school: 'Oak', needs: {}, removed: true }]);
+  const back = S.deserialize(S.serialize(chart));
+  assert.strictEqual(back.students.find((s) => s.id === 'gone').removed, true);
+  assert.strictEqual(back.students.find((s) => s.id !== 'gone').removed, undefined);
+});
