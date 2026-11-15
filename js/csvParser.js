@@ -4,7 +4,8 @@
   var TRUE_VALUES = ['true', 'yes', 'y', 'x', '1'];
   var COLUMN_KEYS = {
     name: 'name', school: 'school',
-    carseat: 'carSeat', fivestarbelt: 'fiveStarBelt', fivestarseatbelt: 'fiveStarBelt',
+    carseat: 'carSeat', fivestarbelt: 'carSeat', fivestarseatbelt: 'carSeat', fivestarcarseat: 'carSeat', // 5-star and car seat are the same thing
+   
     harnessattachment: 'harnessAttachment', harness: 'harnessAttachment', wheelchair: 'wheelchair'
   };
 

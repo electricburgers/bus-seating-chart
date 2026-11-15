@@ -28,3 +28,13 @@ test('fake route is valid: unique names, everyone seated once, wheelchair spots 
 test('works with the default random source', () => {
   assert.strictEqual(S.generate().students.length, 34);
 });
+
+test('no-wheelchair sample has no wheelchair area or wheelchair students', () => {
+  for (let seed = 1; seed <= 25; seed++) {
+    const d = S.generate(S.mulberry(seed), { wheelchair: false });
+    assert.ok(!d.layout.wheelchair.enabled);
+    assert.strictEqual(d.students.length, 34);
+    assert.ok(d.students.every((s) => !s.needs.wheelchair));
+    assert.strictEqual(new Set(Object.values(d.roster)).size, d.students.length);
+  }
+});

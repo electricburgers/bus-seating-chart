@@ -2,9 +2,9 @@
   'use strict';
 
   // Pure helpers for exports. Drawing the PDF and JPEG (html2canvas, jsPDF) happens in the UI layer.
-  var FEATURE_LABELS = { carSeat: 'car seat', fiveStarBelt: '5-star belt', harnessAttachment: 'harness attachment' };
+  var FEATURE_LABELS = { carSeat: '5-star car seat', harnessAttachment: 'harness attachment' };
   var CSV_COLUMNS = ['route', 'date', 'seat', 'side', 'row', 'student', 'school',
-    'car_seat', 'five_star_belt', 'harness_attachment', 'wheelchair'];
+    'car_seat', 'harness_attachment', 'wheelchair'];
 
   function lib(name) {
     return (typeof require === 'function' && typeof module !== 'undefined')
@@ -47,7 +47,7 @@
       var s = byId[chart.roster[seatId]];
       var f = (chart.features && chart.features[seatId]) || {};
       rows.push([chart.routeName || '', exportDate, seatId, side, row, s ? s.name : '', s ? s.school : '',
-        yesNo(f.carSeat), yesNo(f.fiveStarBelt), yesNo(f.harnessAttachment), yesNo(isWheelchair)]);
+        yesNo(f.carSeat), yesNo(f.harnessAttachment), yesNo(isWheelchair)]);
     }
     var order = L.sideOrder(chart.layout);
     L.getBenches(chart.layout).forEach(function (bench) {

@@ -32,11 +32,25 @@
     });
   }
 
+  // Older saves had a separate fiveStarBelt flag. A 5-star belt is a car seat, so fold it into carSeat.
+  function mergeLegacy(flags) {
+    if (!isObject(flags) || !('fiveStarBelt' in flags)) return flags;
+    var out = Object.assign({}, flags);
+    if (out.fiveStarBelt) out.carSeat = true;
+    delete out.fiveStarBelt;
+    return out;
+  }
+  function mergeLegacyFeatures(features) {
+    var out = {};
+    Object.keys(features).forEach(function (seat) { out[seat] = mergeLegacy(features[seat]); });
+    return out;
+  }
+
   function cleanStudents(list) {
     if (!Array.isArray(list)) return [];
     return list.filter(function (s) { return isObject(s) && s.id !== undefined && s.id !== ''; })
       .map(function (s) {
-        return { id: String(s.id), name: str(s.name), school: str(s.school), needs: isObject(s.needs) ? clone(s.needs) : {} };
+        return { id: String(s.id), name: str(s.name), school: str(s.school), needs: isObject(s.needs) ? mergeLegacy(clone(s.needs)) : {} };
       });
   }
 
@@ -49,7 +63,7 @@
 
   function cleanBaseline(b) {
     if (!isObject(b)) return null;
-    return { roster: isObject(b.roster) ? clone(b.roster) : {}, features: isObject(b.features) ? clone(b.features) : {} };
+    return { roster: isObject(b.roster) ? clone(b.roster) : {}, features: isObject(b.features) ? mergeLegacyFeatures(clone(b.features)) : {} };
   }
 
   function deserialize(json) {
@@ -75,7 +89,7 @@
     var features = {};
     if (isObject(data.features)) {
       Object.keys(data.features).forEach(function (seat) {
-        if (seats[seat] && isObject(data.features[seat])) features[seat] = clone(data.features[seat]);
+        if (seats[seat] && isObject(data.features[seat])) features[seat] = mergeLegacy(clone(data.features[seat]));
       });
     }
 
@@ -105,7 +119,9 @@
 
   function loadTemplate(templates, name) {
     if (!Object.prototype.hasOwnProperty.call(templates, name)) fail('no template "' + name + '"');
-    return clone(templates[name]);
+    var t = clone(templates[name]);
+    if (isObject(t.features)) t.features = mergeLegacyFeatures(t.features);
+    return t;
   }
 
   function deleteTemplate(templates, name) {

@@ -135,11 +135,11 @@
         notify('Loaded template "' + name + '". Students no longer on a seat were moved back to the list.');
       });
     },
-    loadSampleData: function () {
+    loadSampleData: function (wheelchair) {
       var hasWork = chart.students.length || Object.keys(chart.roster).length;
       if (hasWork && !root.confirm('Replace the current chart with fake names and a fake layout? This cannot be undone (save JSON first if you need it).')) return;
       guard(function () {
-        var d = B.sampleData.generate();
+        var d = B.sampleData.generate(null, { wheelchair: wheelchair !== false });
         chart = Object.assign(newChart(), {
           routeName: chart.routeName || 'Route 12 (sample)', preparedBy: chart.preparedBy || 'Sample Driver',
           layout: d.layout, students: d.students, features: d.features, roster: d.roster,
@@ -152,7 +152,7 @@
         $('prepared-by').value = chart.preparedBy;
         view = 'after';
         commit();
-        notify('Loaded fake names and layout. Try the exports below.');
+        notify((wheelchair === false ? 'Loaded fake names and a layout without a wheelchair area. Try the exports below.' : 'Loaded fake names and layout. Try the exports below.'));
       });
     },
     deleteTemplate: function (name) {

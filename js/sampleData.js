@@ -23,8 +23,10 @@
     return (typeof require === 'function' && typeof module !== 'undefined') ? require('./' + name + '.js') : root.BusApp[name];
   }
 
-  function generate(rng) {
+  // options.wheelchair (default true): false makes a plain bus with no wheelchair area or wheelchair students.
+  function generate(rng, options) {
     rng = rng || Math.random;
+    var withWc = !(options && options.wheelchair === false);
     var Layout = dep('busLayout'), Features = dep('seatFeatures'), Roster = dep('roster');
     function pick(list) { return list[Math.floor(rng() * list.length)]; }
     function shuffle(list) {
@@ -33,7 +35,7 @@
       return a;
     }
 
-    var layout = Layout.createLayout({ rows: 11, driverSeats: 3, doorSeats: 2, wheelchair: { enabled: true, rows: 2 } });
+    var layout = Layout.createLayout({ rows: 11, driverSeats: 3, doorSeats: 2, wheelchair: { enabled: withWc, rows: 2 } });
     var seats = Layout.getSeats(layout).map(function (s) { return s.id; });
     var wcSpots = Layout.getWheelchairSpots(layout).map(function (s) { return s.id; });
 
@@ -46,12 +48,12 @@
       students.push({ id: 's' + (students.length + 1), name: name, school: pick(SCHOOLS), needs: {} });
     }
 
-    // The last two students use wheelchairs; a few others need a car seat, 5-star belt or harness.
-    var needKeys = ['carSeat', 'fiveStarBelt', 'harnessAttachment'];
-    students[students.length - 1].needs.wheelchair = true;
-    students[students.length - 2].needs.wheelchair = true;
-    var needy = shuffle(students.slice(0, students.length - 2)).slice(0, 6);
-    needy.forEach(function (s, i) { s.needs[needKeys[i % 3]] = true; });
+    // The last two students use wheelchairs; a few others need a 5-star car seat or harness.
+    var needKeys = ['carSeat', 'harnessAttachment'];
+    var wcCount = withWc ? 2 : 0;
+    for (var w = 1; w <= wcCount; w++) students[students.length - w].needs.wheelchair = true;
+    var needy = shuffle(students.slice(0, students.length - wcCount)).slice(0, 6);
+    needy.forEach(function (s, i) { s.needs[needKeys[i % 2]] = true; });
 
     var order = shuffle(seats), roster = {}, features = {};
     function placeStudent(s, seatId) { roster = Roster.assign(roster, layout, s.id, seatId); }

@@ -11,7 +11,7 @@ Drag-and-drop seating charts for a school bus. Plain HTML, CSS and JavaScript: n
 
 1. **Import students** (`name,school` CSV, header optional). **Copy prompt** gives you a prompt for Claude Code that turns a messy roster into this format.
 2. **Seat them**: drag a student onto a seat, or use the keyboard: Enter on a student picks them up, Enter on a seat (or the student list) puts them down, Escape cancels. Dropping on an occupied seat swaps.
-3. Toggle seat features (car seat, 5-star belt, harness attachment) and set student needs. A red flag marks a student in a seat that doesn't meet their needs.
+3. Toggle seat features (5-star car seat, harness attachment) and set student needs. A red flag marks a student in a seat that doesn't meet their needs.
 4. **Set baseline**, then make changes. Use the Before / After / Side by side views and write a reason for each change in the Change Log.
 5. **Export** PDF, JPEG, CSV or JSON, or print the page (print styles show just the chart and change log).
 

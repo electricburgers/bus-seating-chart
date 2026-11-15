@@ -41,7 +41,7 @@ test('optional needs columns by header, any common spelling', () => {
   const csv = 'name,school,car seat,five_star_belt,Harness Attachment,wheelchair\nAnn,Oak,yes,,x,\nBob,Elm,no,1,,TRUE';
   const { students } = parse(csv);
   assert.deepStrictEqual(students[0].needs, { carSeat: true, harnessAttachment: true });
-  assert.deepStrictEqual(students[1].needs, { fiveStarBelt: true, wheelchair: true });
+  assert.deepStrictEqual(students[1].needs, { carSeat: true, wheelchair: true }); // 5-star column means car seat
 });
 
 test('empty input', () => {

@@ -4,8 +4,7 @@
   // DOM builders only. No state lives here; app.js passes everything in.
   // Text is always set with textContent, so names from a CSV can never inject markup.
   var FEATURE_BUTTONS = [
-    { key: 'carSeat', short: 'C', label: 'Car seat' },
-    { key: 'fiveStarBelt', short: '5', label: '5-star belt' },
+    { key: 'carSeat', short: 'C', label: 'Car seat (5-star)' },
     { key: 'harnessAttachment', short: 'H', label: 'Harness attachment' }
   ];
 
@@ -122,7 +121,7 @@
   }
 
   var NEED_LABELS = [
-    { key: 'carSeat', label: 'Car seat' }, { key: 'fiveStarBelt', label: '5-star belt' },
+    { key: 'carSeat', label: 'Car seat (5-star)' },
     { key: 'harnessAttachment', label: 'Harness' }, { key: 'wheelchair', label: 'Wheelchair' }
   ];
 

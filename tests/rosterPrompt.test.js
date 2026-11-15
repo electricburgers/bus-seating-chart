@@ -4,7 +4,7 @@ const P = require('../js/rosterPrompt.js');
 const CSV = require('../js/csvParser.js');
 
 test('prompt names every column the importer understands', () => {
-  ['name', 'school', 'carSeat', 'fiveStarBelt', 'harnessAttachment', 'wheelchair'].forEach((c) => {
+  ['name', 'school', 'carSeat', 'harnessAttachment', 'wheelchair'].forEach((c) => {
     assert.ok(P.getPrompt().includes(c), c);
   });
 });

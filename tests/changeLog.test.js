@@ -41,8 +41,8 @@ test('a swap is two moves', () => {
 test('seat feature changes are listed, and revert cleanly', () => {
   const cur = state({ '1-driver-1': 'ann', '1-driver-2': 'bob' }, { '1-driver-1': { carSeat: true } });
   assert.deepStrictEqual(C.diff(base, cur), [{ type: 'featureChanged', seat: '1-driver-1',
-    from: { carSeat: false, fiveStarBelt: false, harnessAttachment: false },
-    to: { carSeat: true, fiveStarBelt: false, harnessAttachment: false } }]);
+    from: { carSeat: false, harnessAttachment: false },
+    to: { carSeat: true, harnessAttachment: false } }]);
   assert.deepStrictEqual(C.diff(base, state(base.roster, { '1-driver-1': {} })), []);
 });
 

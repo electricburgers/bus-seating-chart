@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 
-  var FEATURE_NAMES = ['carSeat', 'fiveStarBelt', 'harnessAttachment'];
+  var FEATURE_NAMES = ['carSeat', 'harnessAttachment'];
 
   function copyFeatures(features) {
     var out = {};

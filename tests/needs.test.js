@@ -8,7 +8,7 @@ const L = require('../js/busLayout.js');
 const layout = L.setWheelchair(L.createLayout(), { enabled: true });
 
 test('need names', () => {
-  assert.deepStrictEqual(N.NEEDS, ['carSeat', 'fiveStarBelt', 'harnessAttachment', 'wheelchair']);
+  assert.deepStrictEqual(N.NEEDS, ['carSeat', 'harnessAttachment', 'wheelchair']);
 });
 
 test('no needs, no warnings', () => {
@@ -38,12 +38,12 @@ test('wheelchair spots have no seat features to miss', () => {
 test('getWarnings covers all seated students, skips unseated', () => {
   let r = R.assign(R.create(), layout, 'ann', '1-driver-1');
   r = R.assign(r, layout, 'bob', 'wc-9');
-  const needs = { ann: { fiveStarBelt: true }, bob: { wheelchair: true }, cy: { carSeat: true } };
+  const needs = { ann: { harnessAttachment: true }, bob: { wheelchair: true }, cy: { carSeat: true } };
   assert.deepStrictEqual(N.getWarnings(r, needs, F.create()),
-    { ann: [{ type: 'missingFeature', feature: 'fiveStarBelt' }] });
+    { ann: [{ type: 'missingFeature', feature: 'harnessAttachment' }] });
 });
 
 test('describe gives readable text', () => {
-  assert.strictEqual(N.describe({ type: 'missingFeature', feature: 'fiveStarBelt' }), 'Needs a 5-star belt');
+  assert.strictEqual(N.describe({ type: 'missingFeature', feature: 'carSeat' }), 'Needs a 5-star car seat');
   assert.strictEqual(N.describe({ type: 'wheelchairOutsideArea' }), 'Needs the wheelchair area');
 });

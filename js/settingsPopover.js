@@ -86,8 +86,10 @@
 
       panel.appendChild(h('h3', { text: 'Try it out' }));
       var demo = h('button', { type: 'button', text: 'Generate fake names and layout' });
-      demo.addEventListener('click', function () { run(actions.loadSampleData); });
-      panel.appendChild(demo);
+      demo.addEventListener('click', function () { run(function () { actions.loadSampleData(true); }); });
+      var demoPlain = h('button', { type: 'button', text: 'Generate fake names, no wheelchair area' });
+      demoPlain.addEventListener('click', function () { run(function () { actions.loadSampleData(false); }); });
+      panel.appendChild(h('div', { 'class': 'row' }, [demo, demoPlain]));
       panel.appendChild(h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' }));
 
       var done = h('button', { type: 'button', text: 'Close' });

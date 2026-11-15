@@ -5,7 +5,7 @@
   // (spreadsheet paste, PDF text, email list...) to get CSV this app can import.
   // The header and values must stay in sync with js/csvParser.js.
   var EXAMPLE_CSV = [
-    'name,school,carSeat,fiveStarBelt,harnessAttachment,wheelchair',
+    'name,school,carSeat,harnessAttachment,wheelchair',
     'Ann Lee,Oak Elementary,yes,,,',
     '"Smith, Bob",Elm Middle,,,,yes'
   ].join('\n');
@@ -15,10 +15,10 @@
     '',
     'Output format:',
     '- Plain CSV, UTF-8, one student per line. Write it to a file named roster.csv.',
-    '- Start with this header row, exactly: name,school,carSeat,fiveStarBelt,harnessAttachment,wheelchair',
+    '- Start with this header row, exactly: name,school,carSeat,harnessAttachment,wheelchair',
     '- name: the student\'s full name as "First Last" (convert "Last, First" if needed). Fix obvious capitalization problems and extra spaces. Wrap the field in double quotes if it contains a comma.',
     '- school: the student\'s school. Leave it empty if the roster does not say.',
-    '- carSeat, fiveStarBelt, harnessAttachment, wheelchair: write yes if the roster says the student needs it, otherwise leave the cell empty.',
+    '- carSeat, harnessAttachment, wheelchair: write yes if the roster says the student needs it, otherwise leave the cell empty.',
     '',
     'Rules:',
     '- Do not invent data. If something is unclear, leave the cell empty and list it for me afterward.',

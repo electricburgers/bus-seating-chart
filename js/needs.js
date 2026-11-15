@@ -1,15 +1,15 @@
 (function (root) {
   'use strict';
 
-  var NEEDS = ['carSeat', 'fiveStarBelt', 'harnessAttachment', 'wheelchair'];
-  var LABELS = { carSeat: 'a car seat', fiveStarBelt: 'a 5-star belt', harnessAttachment: 'a harness attachment' };
+  var NEEDS = ['carSeat', 'harnessAttachment', 'wheelchair'];
+  var LABELS = { carSeat: 'a 5-star car seat', harnessAttachment: 'a harness attachment' };
 
   // needs: { carSeat: true, ... } for one student. seatFeaturesState: see seatFeatures.js.
   function checkStudent(needs, seatId, seatFeaturesState) {
     var warnings = [];
     var n = needs || {};
     var seat = seatFeaturesState[seatId] || {};
-    ['carSeat', 'fiveStarBelt', 'harnessAttachment'].forEach(function (f) {
+    ['carSeat', 'harnessAttachment'].forEach(function (f) {
       if (n[f] && !seat[f]) warnings.push({ type: 'missingFeature', feature: f });
     });
     if (n.wheelchair && !/^wc-\d+$/.test(seatId)) warnings.push({ type: 'wheelchairOutsideArea' });

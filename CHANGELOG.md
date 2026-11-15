@@ -17,6 +17,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.5.0] - 2026-11-15 08:04 EST
+
+### Added
+- Settings button "Generate fake names, no wheelchair area" for a plain-bus sample.
+
+### Changed
+- A 5-star belt is the same as a car seat: the separate 5-star belt feature, need, CSV column and export column are removed. The label is now "Car seat (5-star)". Old saves, templates and CSVs that use the 5-star flag are merged into car seat automatically.
+
+### Fixed
+- Phone layout (checked at 360 and 390 px): the page no longer scrolls sideways, seat names no longer break mid-word, the bus scrolls inside its own box, and the student list is height-limited on small screens.
+
 ## [0.4.0] - 2026-11-15 07:53 EST
 
 ### Changed

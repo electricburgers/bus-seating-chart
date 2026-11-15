@@ -153,3 +153,15 @@ test('templates persist through a storage object', () => {
   store.setItem(S.TEMPLATES_KEY, 'garbage');
   assert.deepStrictEqual(S.loadTemplates(store), {});
 });
+
+test('old saves with a separate fiveStarBelt flag are folded into carSeat', () => {
+  const data = JSON.parse(S.serialize(sampleChart()));
+  data.students[0].needs = { fiveStarBelt: true, harnessAttachment: true };
+  const seat = Object.keys(data.features)[0] || Object.keys(data.roster)[0];
+  data.features[seat] = { fiveStarBelt: true };
+  data.baseline = { roster: {}, features: { [seat]: { fiveStarBelt: true } } };
+  const chart = S.deserialize(JSON.stringify(data));
+  assert.deepStrictEqual(chart.students[0].needs, { harnessAttachment: true, carSeat: true });
+  assert.deepStrictEqual(chart.features[seat], { carSeat: true });
+  assert.deepStrictEqual(chart.baseline.features[seat], { carSeat: true });
+});

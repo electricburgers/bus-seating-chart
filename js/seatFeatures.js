@@ -1,12 +1,12 @@
 (function (root) {
   'use strict';
 
-  var FEATURES = ['carSeat', 'fiveStarBelt', 'harnessAttachment'];
+  var FEATURES = ['carSeat', 'harnessAttachment'];
 
   function checkFeature(f) {
     if (FEATURES.indexOf(f) < 0) throw new Error('seatFeatures: unknown feature "' + f + '"');
   }
-  function none() { return { carSeat: false, fiveStarBelt: false, harnessAttachment: false }; }
+  function none() { return { carSeat: false, harnessAttachment: false }; }
 
   // State is { seatId: { carSeat: true, ... } } holding only the features that are on.
   function create() { return {}; }
