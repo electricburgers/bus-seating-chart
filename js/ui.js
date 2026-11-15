@@ -82,7 +82,7 @@
   }
 
   function exitCell(side) {
-    return h('span', { 'class': 'window-exit', role: 'img', 'aria-label': 'Emergency window exit, ' + side + ' side', title: 'Emergency window exit', text: 'EXIT' });
+    return h('span', { 'class': 'window-exit', role: 'img', 'aria-label': 'Emergency window exit, ' + side + ' side', title: 'Emergency window exit' }, ['E', 'X', 'I', 'T'].map(function (c) { return h('span', { 'aria-hidden': 'true', text: c }); }));
   }
 
   function markerCell(text, cls) { return h('div', { 'class': 'marker ' + cls, text: text }); }

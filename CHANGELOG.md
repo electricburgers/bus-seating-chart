@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.7.0] - 2026-11-15 08:21 EST
+
+### Fixed
+- EXIT labels no longer print upside down or garbled in PDF and JPEG exports, and line up with their row.
+- Every seat container is now the same fixed size (96 x 84 px); long names and schools are clamped to two lines.
+
 ## [0.6.0] - 2026-11-15 08:15 EST
 
 ### Added
