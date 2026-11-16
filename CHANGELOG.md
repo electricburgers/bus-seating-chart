@@ -17,6 +17,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.27.0] - 2026-11-16
+
+### Added
+- Row id size dropdown (Small to Extra large) for row numbers and seat ids, applied to the web view and exports.
+
+### Changed
+- Student first name is always on its own line in a seat, even in Extra wide.
+- Student name sits a little lower in the seat, clear of the seat id (A1, A2, etc.).
+
 ## [0.26.0] - 2026-11-16
 
 ### Added

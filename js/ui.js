@@ -66,6 +66,11 @@
   function fitSeatNames(container) {
     try { fitNames(container); } finally { placeFeatureBars(container); }
   }
+  // First name always sits on its own line: break before the last word.
+  function firstOnOwnLine(text) {
+    var i = text.lastIndexOf(' ');
+    return i < 0 ? text : text.slice(0, i) + '\n' + text.slice(i + 1);
+  }
   function fitNames(container) {
     var fit = lib('nameFit');
     var base = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'), 10) || 14;
@@ -74,7 +79,7 @@
       var list = fit.tiers(el.getAttribute('data-full-name') || el.textContent, SMALL_SIZE, FLOOR_SIZE);
       function overflows() { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }
       for (var i = 0; i < list.length; i++) {
-        el.textContent = list[i].text;
+        el.textContent = firstOnOwnLine(list[i].text);
         el.style.fontSize = list[i].size ? list[i].size + 'px' : '';
         if (!overflows()) return;
       }

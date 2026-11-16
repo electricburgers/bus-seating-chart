@@ -86,7 +86,7 @@ label.file-btn input { max-width: 190px; }
 .bench-side.right { justify-content: flex-end; }
 .front-row .bench-side.left { justify-content: flex-end; }
 .front-row .bench-side.right { justify-content: flex-start; }
-.seat-label { position: absolute; top: -10px; left: 6px; z-index: 1; padding: 0 4px; border-radius: 4px; background: var(--panel); border: 1px solid var(--border); font-size: 14px; font-weight: 700; line-height: 18px; color: var(--muted); }
+.seat-label { position: absolute; top: -10px; left: 6px; z-index: 1; padding: 0 4px; border-radius: 4px; background: var(--panel); border: 1px solid var(--border); font-size: var(--row-size, 14px); font-weight: 700; line-height: 18px; color: var(--muted); }
 .col-head { box-sizing: border-box; width: var(--seat-w, 96px); flex: 0 0 auto; text-align: center; font-weight: 700; font-size: 13px; color: var(--muted); }
 .notes-field { flex: 1 1 220px; }
 .notes-field textarea { flex: 1; min-width: 0; font: inherit; resize: vertical; }
@@ -99,7 +99,7 @@ label.file-btn input { max-width: 190px; }
 /* Emergency window exit: a red tab beside the seats of its row, stretched to the seat height */
 .window-exit { align-self: stretch; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 42px; padding: 0 4px; font-size: 13px; line-height: 1; font-weight: 700; letter-spacing: .04em; color: #fff; background: #b3261e; border-radius: 4px; }
 .window-exit-spacer { flex: 0 0 42px; }
-.window-num { flex: 0 0 28px; align-self: center; text-align: center; font-size: 18px; font-weight: 700; color: var(--muted); }
+.window-num { flex: 0 0 28px; align-self: center; text-align: center; font-size: calc(var(--row-size, 14px) + 4px); font-weight: 700; color: var(--muted); }
 .window-table-wrap { max-height: 190px; overflow: auto; border: 1px solid var(--border); border-radius: 4px; }
 .window-table { width: 100%; border-collapse: collapse; }
 .window-table th, .window-table td { padding: 3px 8px; text-align: left; border-bottom: 1px solid var(--line); }
@@ -243,7 +243,7 @@ body.is-moving .pool { border-color: var(--line2); }
 .nickname-edit input { width: 9em; }
 
 /* Seat names: first and last name wrap at the space, and nameFit shrinks or shortens the first name when needed. */
-.seat .chip-name { overflow-wrap: normal; word-break: normal; line-height: 1.15; font-size: var(--name-size, 14px); }
+.seat .chip-name { padding-top: 6px; white-space: pre-line; overflow-wrap: normal; word-break: normal; line-height: 1.15; font-size: var(--name-size, 14px); }
 /* The exported chart does not have to look like a long, narrow bus, so seats are wider and names fit more easily. */
 .export-sheet .seat, .export-sheet .col-head { width: var(--seat-w, 140px); }
 
