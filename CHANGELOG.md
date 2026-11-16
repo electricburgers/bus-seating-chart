@@ -17,6 +17,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.25.1] - 2026-11-16
+
+### Changed
+
+- Car seat and harness (H) badges now sit at the bottom right of the seat, just above the school name.
+- Row numbers and seat ids are a little bigger.
+
 ## [0.25.0] - 2026-11-16
 
 ### Added

@@ -86,12 +86,12 @@ label.file-btn input { max-width: 190px; }
 .bench-side.right { justify-content: flex-end; }
 .front-row .bench-side.left { justify-content: flex-end; }
 .front-row .bench-side.right { justify-content: flex-start; }
-.seat-label { position: absolute; top: -8px; left: 6px; z-index: 1; padding: 0 4px; border-radius: 4px; background: var(--panel); border: 1px solid var(--border); font-size: 11px; font-weight: 700; line-height: 14px; color: var(--muted); }
+.seat-label { position: absolute; top: -10px; left: 6px; z-index: 1; padding: 0 4px; border-radius: 4px; background: var(--panel); border: 1px solid var(--border); font-size: 14px; font-weight: 700; line-height: 18px; color: var(--muted); }
 .col-head { box-sizing: border-box; width: var(--seat-w, 96px); flex: 0 0 auto; text-align: center; font-weight: 700; font-size: 13px; color: var(--muted); }
 .notes-field { flex: 1 1 220px; }
 .notes-field textarea { flex: 1; min-width: 0; font: inherit; resize: vertical; }
 .export-notes { font-size: 13px; margin-bottom: 8px; white-space: pre-wrap; }
-.aisle { text-align: center; font-size: 11px; color: var(--muted); }
+.aisle { text-align: center; font-size: 15px; font-weight: 700; color: var(--muted); }
 .marker { padding: 4px 14px; font-size: 18px; font-weight: 700; letter-spacing: .04em; border-radius: 6px; background: var(--marker); text-align: center; }
 .door-marker { background: var(--door); }
 .front-row .aisle { font-size: 13px; font-weight: 600; }
