@@ -53,9 +53,10 @@
 
   // Seat names that do not fit step down through nameFit tiers: smaller text first, then a shortened first name.
   // Needs the seats to be in the page so the text can be measured. Safe to call again after every render.
-  var SMALL_SIZE = 12, FLOOR_SIZE = 10;
   function fitSeatNames(container) {
     var fit = lib('nameFit');
+    var base = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'), 10) || 14;
+    var SMALL_SIZE = Math.max(9, base - 2), FLOOR_SIZE = Math.max(8, base - 4);
     Array.prototype.forEach.call(container.querySelectorAll('.seat .chip-name'), function (el) {
       var list = fit.tiers(el.getAttribute('data-full-name') || el.textContent, SMALL_SIZE, FLOOR_SIZE);
       function overflows() { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }

@@ -767,6 +767,24 @@
     b.addEventListener('click', function () { setSeatWidth(parseInt(b.getAttribute('data-seat-width'), 10), true); render(); });
   });
 
+  // Student name and school name font sizes are view settings too. They apply to the web view and to exports.
+  function setupSizePick(id, cssVar, key, allowed, fallback) {
+    var sel = $(id);
+    if (!sel) return;
+    function apply(px, save) {
+      px = allowed.indexOf(px) >= 0 ? px : fallback;
+      document.documentElement.style.setProperty(cssVar, px + 'px');
+      sel.value = String(px);
+      if (save) { try { storage().setItem(key, String(px)); } catch (e) { /* storage unavailable */ } }
+    }
+    var saved = fallback;
+    try { saved = parseInt(storage().getItem(key), 10) || fallback; } catch (e) { /* storage unavailable */ }
+    apply(saved, false);
+    sel.addEventListener('change', function () { apply(parseInt(sel.value, 10), true); render(); });
+  }
+  setupSizePick('name-size', '--name-size', 'busNameSize', [12, 14, 16, 18], 14);
+  setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 12, 14, 16], 14);
+
   wire();
   render();
 

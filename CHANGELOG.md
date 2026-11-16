@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.25.0] - 2026-11-16
+
+### Added
+
+- Separate font size dropdowns for student name and school name above the chart. The choices are remembered and apply to the web view and to exports.
+
 ## [0.24.0] - 2026-11-16
 
 ### Added

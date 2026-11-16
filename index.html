@@ -89,6 +89,16 @@
           <button type="button" data-seat-width="140" aria-pressed="true">Wide</button>
           <button type="button" data-seat-width="180" aria-pressed="false">Extra wide</button>
         </div>
+        <label class="size-pick">Student name size
+          <select id="name-size" aria-label="Student name font size">
+            <option value="12">Small</option><option value="14" selected>Medium</option><option value="16">Large</option><option value="18">Extra large</option>
+          </select>
+        </label>
+        <label class="size-pick">School name size
+          <select id="school-size" aria-label="School name font size">
+            <option value="11">Small</option><option value="12">Medium</option><option value="14" selected>Large</option><option value="16">Extra large</option>
+          </select>
+        </label>
         <button id="undo" type="button" disabled title="Undo (Ctrl/Cmd+Z)">&#8630; Undo</button>
       <button id="redo" type="button" disabled title="Redo (Ctrl/Cmd+Shift+Z)">Redo &#8631;</button>
       <button id="swap-mode" type="button" aria-pressed="false" title="Click one seat, then another, to swap the two students">&#8646; Swap mode</button>

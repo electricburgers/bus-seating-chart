@@ -242,7 +242,7 @@ body.is-moving .pool { border-color: var(--line2); }
 .nickname-edit input { width: 9em; }
 
 /* Seat names: first and last name wrap at the space, and nameFit shrinks or shortens the first name when needed. */
-.seat .chip-name { overflow-wrap: normal; word-break: normal; line-height: 1.15; }
+.seat .chip-name { overflow-wrap: normal; word-break: normal; line-height: 1.15; font-size: var(--name-size, 14px); }
 /* The exported chart does not have to look like a long, narrow bus, so seats are wider and names fit more easily. */
 .export-sheet .seat, .export-sheet .col-head { width: var(--seat-w, 140px); }
 
@@ -251,7 +251,7 @@ body.is-moving .pool { border-color: var(--line2); }
 .features { align-items: flex-end; }
 
 /* School sits at the bottom of the seat, big and bold, with a rule above it. It is plain text so it reads the same in color, gray and black and white. */
-.seat .chip-school { margin-top: auto; padding-top: 2px; border-top: 1px solid #3b444d; font-size: 14px; font-weight: 700; line-height: 1.15; color: #1b1f24; }
+.seat .chip-school { margin-top: auto; padding-top: 2px; border-top: 1px solid #3b444d; font-size: var(--school-size, 14px); font-weight: 700; line-height: 1.15; color: #1b1f24; }
 /* Badges straddle the top edge of the seat, so leave room under them. */
 .seat.has-feat .chip { padding-top: 14px; }
 
@@ -265,3 +265,5 @@ body.is-moving .pool { border-color: var(--line2); }
 .export-sheet.bw .marker, .export-sheet.bw .rear-exit, .export-sheet.bw .wc-door { background: #fff; border: 1px solid #000; color: #000; }
 .export-sheet.bw .window-exit, .export-sheet.bw .flag { background: #000; color: #fff; }
 .export-sheet.bw .feature.on { background: #000; color: #fff; border-color: #000; }
+
+.size-pick { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
