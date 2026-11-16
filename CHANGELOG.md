@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.20.0] - 2026-11-16
+
+### Changed
+- Build date in Settings > About now reads MMM-DD-YYYY (for example Nov-16-2026).
+
 ## [0.19.0] - 2026-11-16
 
 ### Added

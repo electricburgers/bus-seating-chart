@@ -13,8 +13,8 @@ function parts(date, timeZone, options) {
 
 // timeZone is optional; undefined means the machine's local zone.
 function formatDate(date, timeZone) {
-  const p = parts(date, timeZone, { year: 'numeric', month: '2-digit', day: '2-digit' });
-  return p.year + '-' + p.month + '-' + p.day;
+  const p = parts(date, timeZone, { year: 'numeric', month: 'short', day: '2-digit' });
+  return p.month + '-' + p.day + '-' + p.year;
 }
 
 function formatTime(date, timeZone) {

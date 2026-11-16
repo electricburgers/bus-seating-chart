@@ -9,9 +9,9 @@ const ROOT = path.join(__dirname, '..');
 const when = new Date('2026-11-15T12:28:05Z');
 
 test('formatDate is YYYY-MM-DD in the given time zone', () => {
-  assert.strictEqual(St.formatDate(when, 'America/New_York'), '2026-11-15');
+  assert.strictEqual(St.formatDate(when, 'America/New_York'), 'Nov-15-2026');
   assert.strictEqual(St.formatDate(new Date('2026-11-16T03:30:00Z'), 'America/New_York'), '2026-11-15');
-  assert.strictEqual(St.formatDate(new Date('2026-03-05T09:00:00Z'), 'UTC'), '2026-03-05');
+  assert.strictEqual(St.formatDate(new Date('2026-03-05T09:00:00Z'), 'UTC'), 'Mar-05-2026');
 });
 
 test('formatTime is 24-hour HH:MM plus the zone abbreviation', () => {
@@ -23,7 +23,7 @@ test('buildSource makes a classic script that sets BusApp.version and module.exp
   const src = St.buildSource('1.2.3', when, 'UTC');
   const sandbox = { window: {}, module: { exports: {} } };
   new Function('window', 'module', src)(sandbox.window, sandbox.module);
-  const expected = { version: '1.2.3', buildDate: '2026-11-15', buildTime: '12:28 UTC' };
+  const expected = { version: '1.2.3', buildDate: 'Nov-15-2026', buildTime: '12:28 UTC' };
   assert.deepStrictEqual(sandbox.module.exports, expected);
   assert.deepStrictEqual(sandbox.window.BusApp.version, expected);
 });
@@ -47,7 +47,7 @@ function tmpProject(version, changelog) {
 test('stamp writes js/version.js using the package.json version', () => {
   const dir = tmpProject('0.4.0', '## [0.4.0] - 2026-01-01\n');
   const out = St.stamp({ root: dir, now: when, timeZone: 'UTC' });
-  assert.deepStrictEqual(out, { version: '0.4.0', buildDate: '2026-11-15', buildTime: '12:28 UTC' });
+  assert.deepStrictEqual(out, { version: '0.4.0', buildDate: 'Nov-15-2026', buildTime: '12:28 UTC' });
   assert.deepStrictEqual(require(path.join(dir, 'js', 'version.js')), out);
 });
 
@@ -60,7 +60,7 @@ test('stamp refuses when CHANGELOG.md has no entry for the version, and writes n
 test('the committed js/version.js matches package.json and the formats', () => {
   const v = require('../js/version.js');
   assert.strictEqual(v.version, require('../package.json').version);
-  assert.match(v.buildDate, /^\d{4}-\d{2}-\d{2}$/);
+  assert.match(v.buildDate, /^[A-Z][a-z]{2}-\d{2}-\d{4}$/);
   assert.match(v.buildTime, /^\d{2}:\d{2} [A-Z0-9+-]+$/);
   assert.strictEqual(St.hasChangelogEntry(fs.readFileSync(path.join(ROOT, 'CHANGELOG.md'), 'utf8'), v.version), true);
 });
