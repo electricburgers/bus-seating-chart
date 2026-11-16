@@ -8,9 +8,9 @@ const St = require('../scripts/stamp-version.js');
 const ROOT = path.join(__dirname, '..');
 const when = new Date('2026-11-15T12:28:05Z');
 
-test('formatDate is YYYY-MM-DD in the given time zone', () => {
+test('formatDate is MMM-DD-YYYY in the given time zone', () => {
   assert.strictEqual(St.formatDate(when, 'America/New_York'), 'Nov-15-2026');
-  assert.strictEqual(St.formatDate(new Date('2026-11-16T03:30:00Z'), 'America/New_York'), '2026-11-15');
+  assert.strictEqual(St.formatDate(new Date('2026-11-16T03:30:00Z'), 'America/New_York'), 'Nov-15-2026');
   assert.strictEqual(St.formatDate(new Date('2026-03-05T09:00:00Z'), 'UTC'), 'Mar-05-2026');
 });
 
