@@ -784,6 +784,8 @@
   }
   setupSizePick('name-size', '--name-size', 'busNameSize', [12, 14, 16, 18], 14);
   setupSizePick('row-size', '--row-size', 'busRowSize', [12, 14, 18, 22], 14);
+  setupSizePick('col-size', '--col-size', 'busColSize', [11, 13, 18, 22], 13);
+  setupSizePick('rownum-size', '--rownum-size', 'busRowNumSize', [14, 18, 24, 30], 18);
   setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 12, 14, 16], 14);
 
   wire();

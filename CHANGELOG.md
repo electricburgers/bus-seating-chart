@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.28.0] - 2026-11-16
+
+### Added
+- Column header size dropdown (A B C) and Row number size dropdown (1 2 3 4), applied web view exports.
+
+### Changed
+- Row id size dropdown renamed Seat id size, now only affects seat ids (A1, A2, etc.).
+
 ## [0.27.0] - 2026-11-16
 
 ### Added
