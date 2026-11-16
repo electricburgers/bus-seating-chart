@@ -30,15 +30,14 @@ A locally opened, offline-capable web page for placing students into a school bu
 
 Independent toggles per seat, combinable:
 
-- Car seat (`carSeat`)
-- 5-star seat belt (`fiveStarBelt`)
-- Harness attachment, for students with physical needs (`harnessAttachment`)
+- Car seat, 5-star belt (`carSeat`)
+- Harness attachment "H", for students with physical needs (`harnessAttachment`). Harness and 5-star are treated as one thing in the notes; the H is kept.
 
 ## Students
 
 - CSV import with columns `name,school`. Header row optional. Quotes, blank lines and duplicates handled. Optional extra "needs" columns accepted.
 - **Copy prompt button** next to the CSV import: copies a Claude Code prompt (`js/rosterPrompt.js`) that turns a messy roster into this CSV format. The button itself is wired in step 10.
-- Needs are set per student in the app: car seat, 5-star belt, harness attachment, wheelchair.
+- Needs are set per student in the app: car seat (5-star), harness attachment (H), wheelchair.
 - **Wrong-seat warning:** a student who needs a feature gets a red flag when seated in a seat without it, or when a wheelchair student is outside the wheelchair area.
 - School is shown on the seat (label and/or color per school).
 
@@ -63,7 +62,7 @@ Independent toggles per seat, combinable:
 - Header on every export: **route name, your name, date exported** (editable, defaults to today).
 - **PDF (multiple pages):** header, After chart, Before chart (optional checkbox), then the Change Summary table with student, from, to and reason.
 - **JPEG:** one image of the chart with the header.
-- **CSV:** one row per seat: `route, date, seat, side, row, student, school, car_seat, five_star_belt, harness_attachment, wheelchair`.
+- **CSV:** one row per seat: `route, date, seat, side, row, student, school, car_seat, harness_attachment, wheelchair`.
 - **JSON:** full save and load of the whole chart, including baseline and reasons.
 
 ## Saving

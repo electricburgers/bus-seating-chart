@@ -9,13 +9,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Bus layout with driver side left, door side right (3 seats per bench driver side, 2 door side, both configurable, per-bench overrides).
 - Optional wheelchair area (off by default) at the rear, at least 2 full rows (replacing the entire row), with the wheelchair door on the right side.
 - Driver, door and rear exit markers.
-- Seat toggles: car seat, 5-star seat belt, harness attachment.
+- Seat toggles: car seat (5-star belt), harness attachment (H).
 - Drag-and-drop student assignment with wrong-seat warnings.
 - CSV student import (`name,school`), with a Copy button for a Claude Code prompt that reformats a messy roster.
 - Baseline, Before/After view, and change log with reasons.
 - Export to PDF (multiple pages), JPEG, CSV and JSON, with route name, your name and export date.
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
+
+## [0.21.0] - 2026-11-16
+
+### Changed
+- Planning notes no longer list 5-star belt separately from the harness; the H harness badge is kept.
 
 ## [0.20.0] - 2026-11-16
 
