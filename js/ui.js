@@ -41,6 +41,7 @@
       style: schoolStyle(student.school)
     }, [
       h('span', { 'class': 'chip-name', text: student.name }),
+      student.nickname ? h('span', { 'class': 'chip-nickname', text: '“' + student.nickname + '”' }) : null,
       student.school ? h('span', { 'class': 'chip-school', text: student.school }) : null
     ]);
     if (warnings && warnings.length) {
@@ -175,6 +176,7 @@
         studentChip(s, w),
         seatId !== undefined ? h('div', { 'class': 'seat-note', text: E.formatSeat(seatId, chart.layout) }) : null,
         w ? h('div', { 'class': 'warn-note', text: warningText(w) }) : null,
+        h('label', { 'class': 'nickname-edit' }, ['Preferred name ', h('input', { type: 'text', 'class': 'nickname-input', 'data-nickname': s.id, value: s.nickname || '', placeholder: 'Nickname' })]),
         needs,
         h('button', { type: 'button', 'class': 'danger delete-student', 'data-delete-student': s.id, 'aria-label': 'Delete ' + s.name, text: 'Delete student' })
       ]);

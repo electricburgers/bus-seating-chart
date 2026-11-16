@@ -219,3 +219,12 @@ test('theme preference defaults to auto', () => {
   mem['busSeatingChart.theme'] = 'purple';
   assert.strictEqual(S2.loadTheme(store), 'auto');
 });
+
+test('student nicknames survive a round trip and blank ones are dropped', () => {
+  const chart = sampleChart();
+  chart.students[0].nickname = 'Annie';
+  chart.students[1].nickname = '   ';
+  const back = S.deserialize(S.serialize(chart));
+  assert.strictEqual(back.students[0].nickname, 'Annie');
+  assert.ok(!('nickname' in back.students[1]));
+});

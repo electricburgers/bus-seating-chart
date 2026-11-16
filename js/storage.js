@@ -60,6 +60,7 @@
     return list.filter(function (s) { return isObject(s) && s.id !== undefined && s.id !== ''; })
       .map(function (s) {
         var out = { id: String(s.id), name: str(s.name), school: str(s.school), needs: isObject(s.needs) ? mergeLegacy(clone(s.needs)) : {} };
+        if (str(s.nickname).trim()) out.nickname = str(s.nickname).trim();
         if (s.removed === true) out.removed = true; // deleted, but still in the baseline so the Before chart and change log can name them
         return out;
       });

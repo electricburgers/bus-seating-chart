@@ -545,6 +545,18 @@
       if (v) { view = v.getAttribute('data-view'); render(); }
     });
     document.addEventListener('change', function (e) {
+      var nickId = e.target.getAttribute && e.target.getAttribute('data-nickname');
+      if (nickId) {
+        var nick = e.target.value.trim();
+        chart.students = chart.students.map(function (s) {
+          if (s.id !== nickId) return s;
+          var next = Object.assign({}, s);
+          if (nick) next.nickname = nick; else delete next.nickname;
+          return next;
+        });
+        commit();
+        return;
+      }
       var n = e.target.getAttribute && e.target.getAttribute('data-need');
       if (!n) return;
       var id = e.target.getAttribute('data-student-id');
@@ -618,8 +630,11 @@
       if (!name) { notify('Enter a student name.', true); return; }
       var dup = activeStudents().some(function (s) { return s.name.toLowerCase() === name.toLowerCase() && s.school.toLowerCase() === school.toLowerCase(); });
       if (dup) { notify(name + ' is already in the roster.', true); return; }
-      chart.students.push({ id: nextStudentId(), name: name, school: school, needs: {} });
-      $('add-name').value = ''; $('add-school').value = '';
+      var nick = $('add-nickname').value.trim();
+      var rec = { id: nextStudentId(), name: name, school: school, needs: {} };
+      if (nick) rec.nickname = nick;
+      chart.students.push(rec);
+      $('add-name').value = ''; $('add-school').value = ''; $('add-nickname').value = '';
       $('add-name').focus();
       notify('Added ' + name + '.');
       commit();
