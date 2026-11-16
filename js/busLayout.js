@@ -49,7 +49,7 @@
   function createLayout(options) {
     var o = options || {};
     return validate({
-      rows: o.rows === undefined ? 10 : o.rows,
+      rows: o.rows === undefined ? 11 : o.rows,
       driverSeats: o.driverSeats === undefined ? 3 : o.driverSeats,
       doorSeats: o.doorSeats === undefined ? 2 : o.doorSeats,
       overrides: Object.assign({}, o.overrides),
@@ -118,11 +118,20 @@
 
   function wheelchairDoorSide(layout) { return layout.doorSide; }
 
+  var LETTERS = 'ABCDEFGHIJKL';
+  // Official chart labels: the driver side takes the odd numbers (1, 3, 5...) and the door side the even ones (2, 4, 6...),
+  // so the seat behind the driver is A1 and the seat behind the door is A2. The letter A is always the window seat.
+  function seatLabel(layout, row, side, index, count) {
+    var windowFirst = sideOrder(layout)[0] === side; // left column counts from the window outward, right column from the aisle
+    var letter = LETTERS.charAt(windowFirst ? index - 1 : count - index);
+    return letter + (side === 'driver' ? 2 * row - 1 : 2 * row);
+  }
+
   function seatsOnBench(layout, row, side) {
     var key = overrideKey(row, side);
     var n = Object.prototype.hasOwnProperty.call(layout.overrides, key) ? layout.overrides[key] : layout[side + 'Seats'];
     var seats = [];
-    for (var i = 1; i <= n; i++) seats.push({ id: row + '-' + side + '-' + i, row: row, side: side, index: i });
+    for (var i = 1; i <= n; i++) seats.push({ id: row + '-' + side + '-' + i, row: row, side: side, index: i, label: seatLabel(layout, row, side, i, n) });
     return seats;
   }
 
@@ -170,7 +179,7 @@
     createLayout: createLayout, setSeatsPerSide: setSeatsPerSide,
     setEmergencyWindow: setEmergencyWindow, hasEmergencyWindow: hasEmergencyWindow,
     setBenchOverride: setBenchOverride, clearBenchOverride: clearBenchOverride,
-    flipDoorSide: flipDoorSide, setWheelchair: setWheelchair, sideOrder: sideOrder,
+    flipDoorSide: flipDoorSide, seatLabel: seatLabel, setWheelchair: setWheelchair, sideOrder: sideOrder,
     wheelchairDoorSide: wheelchairDoorSide, getBenches: getBenches, getSeats: getSeats,
     getMarkers: getMarkers, getWheelchairSpots: getWheelchairSpots, MIN_WHEELCHAIR_ROWS: MIN_WHEELCHAIR_ROWS
   };

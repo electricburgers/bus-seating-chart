@@ -17,6 +17,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.16.0] - 2026-11-16 17:50 EST
+
+### Added
+- Official seat labels on every seat: the driver side takes the odd numbers (1, 3, 5...) and the door side the even ones (2, 4, 6...), with the letter A at the window. The seat behind the driver is A1 and the seat behind the door is A2. Labels also appear in the student list, change log and PDF.
+
+### Changed
+- Default bus layout is now 11 rows (was 10).
+- Seats on a shorter bench now line up under their column letter (A stays at the window) instead of sitting against the aisle.
+
 ## [0.15.0] - 2026-11-16 17:43 EST
 
 ### Added

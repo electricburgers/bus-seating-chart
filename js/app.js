@@ -135,7 +135,7 @@
     return UI.h('div', {}, [
       stale ? UI.h('p', { 'class': 'warn-note', role: 'status', text: 'Seating has changed since this log was finalized. Press Refresh to update it.' })
         : UI.h('p', { 'class': 'hint', text: 'Finalized. Add a reason for each change.' }),
-      UI.renderChangeLog(rows, Exp.changeTableRows(rows, chart.students)),
+      UI.renderChangeLog(rows, Exp.changeTableRows(rows, chart.students, chart.layout)),
       btn]);
   }
 
@@ -390,7 +390,7 @@
   function drawChangeSummary(doc, pw, ph) {
     var info = Exp.headerLines(exportInfo());
     var changes = chart.logSnapshot || Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
-    var rows = Exp.changeTableRows(Log.getRows(changes, chart.reasons), chart.students);
+    var rows = Exp.changeTableRows(Log.getRows(changes, chart.reasons), chart.students, chart.layout);
     var total = pw - 72, fr = [0.2, 0.267, 0.267, 0.233], widths = fr.map(function (f) { return Math.floor(total * f) - 6; });
     var x = [36, 36 + total * fr[0], 36 + total * (fr[0] + fr[1]), 36 + total * (fr[0] + fr[1] + fr[2])], y = 36;
     doc.addPage();
@@ -436,7 +436,7 @@
       chart.roster = Roster.moveOrSwap(chart.roster, chart.layout, from, seatId);
       swapFrom = null;
       commit();
-      notify(b !== undefined ? 'Swapped ' + studentName(a) + ' and ' + studentName(b) + '.' : 'Moved ' + studentName(a) + ' to ' + Exp.formatSeat(seatId) + '.');
+      notify(b !== undefined ? 'Swapped ' + studentName(a) + ' and ' + studentName(b) + '.' : 'Moved ' + studentName(a) + ' to ' + Exp.formatSeat(seatId, chart.layout) + '.');
     });
   }
   function setSwapMode(on) {

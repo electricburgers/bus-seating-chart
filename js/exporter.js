@@ -19,12 +19,18 @@
     return (slug(routeName) || 'bus') + '_' + date + '.' + ext;
   }
 
-  function formatSeat(id) {
+  // Pass the layout to get the official label first, like "A1 (row 1, driver side)".
+  function formatSeat(id, layout) {
     if (!id) return '';
     var wc = /^wc-(\d+)$/.exec(id);
     if (wc) return 'Wheelchair area, row ' + wc[1];
     var m = /^(\d+)-(driver|door)-(\d+)$/.exec(id);
-    return m ? 'Row ' + m[1] + ', ' + m[2] + ' side, seat ' + m[3] : id;
+    if (!m) return id;
+    if (layout) {
+      var seat = lib('busLayout').getSeats(layout).filter(function (s) { return s.id === id; })[0];
+      if (seat) return seat.label + ' (row ' + m[1] + ', ' + m[2] + ' side)';
+    }
+    return 'Row ' + m[1] + ', ' + m[2] + ' side, seat ' + m[3];
   }
 
   function headerLines(info) {
@@ -81,18 +87,18 @@
   }
 
   // rows come from changeLog.getRows. Returns plain rows for the Change Summary table.
-  function changeTableRows(rows, students) {
+  function changeTableRows(rows, students, layout) {
     var names = {};
     students.forEach(function (s) { names[s.id] = s.name; });
     return rows.map(function (r) {
       if (r.type === 'featureChanged') {
-        var seat = formatSeat(r.seat);
+        var seat = formatSeat(r.seat, layout);
         return { student: '', from: seat + ': ' + describeFeatures(r.from), to: seat + ': ' + describeFeatures(r.to), reason: r.reason };
       }
       return {
         student: names[r.student] || r.student,
-        from: r.type === 'added' ? '(new)' : formatSeat(r.from),
-        to: r.type === 'removed' ? '(removed)' : formatSeat(r.to),
+        from: r.type === 'added' ? '(new)' : formatSeat(r.from, layout),
+        to: r.type === 'removed' ? '(removed)' : formatSeat(r.to, layout),
         reason: r.reason
       };
     });

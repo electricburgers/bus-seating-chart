@@ -50,7 +50,7 @@
     return chip;
   }
 
-  function renderSeat(seatId, ctx, isWheelchair) {
+  function renderSeat(seatId, ctx, isWheelchair, label) {
     var studentId = ctx.roster[seatId];
     var student = studentId !== undefined ? ctx.byId[studentId] : null;
     var feats = ctx.features[seatId] || {};
@@ -58,6 +58,7 @@
       'class': 'seat' + (isWheelchair ? ' wc' : '') + (student ? ' filled' : '') + (ctx.changed[seatId] ? ' changed' : ''),
       'data-seat-id': seatId, 'data-drop': ctx.interactive ? 'true' : false, tabindex: ctx.interactive ? '0' : false
     });
+    if (label) seat.appendChild(h('span', { 'class': 'seat-label', text: label }));
     if (student) {
       seat.appendChild(studentChip(student, ctx.warnings[studentId]));
     } else {
@@ -134,7 +135,7 @@
       }
       // The EXIT tab sits inside its side, on the window edge of the bus, right beside that row's seats.
       var cols = order.map(function (side, i) {
-        var kids = bench[side].map(function (s) { return renderSeat(s.id, ctx, false); });
+        var kids = bench[side].map(function (s) { return renderSeat(s.id, ctx, false, s.label); });
         // Rows without an exit get an invisible spacer so seat columns stay lined up when any row has one.
         var tab = bench[side + 'Window'] ? exitCell(side) : (anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null);
         if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
@@ -172,7 +173,7 @@
       var w = warnings[s.id];
       return h('li', { 'class': 'pool-item' + (seatId !== undefined ? ' seated' : '') }, [
         studentChip(s, w),
-        seatId !== undefined ? h('div', { 'class': 'seat-note', text: E.formatSeat(seatId) }) : null,
+        seatId !== undefined ? h('div', { 'class': 'seat-note', text: E.formatSeat(seatId, chart.layout) }) : null,
         w ? h('div', { 'class': 'warn-note', text: warningText(w) }) : null,
         needs,
         h('button', { type: 'button', 'class': 'danger delete-student', 'data-delete-student': s.id, 'aria-label': 'Delete ' + s.name, text: 'Delete student' })

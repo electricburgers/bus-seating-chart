@@ -27,17 +27,17 @@ test('missing seat feature is flagged per need', () => {
 test('wheelchair student outside the wheelchair area is flagged', () => {
   assert.deepStrictEqual(N.checkStudent({ wheelchair: true }, '1-door-1', F.create()),
     [{ type: 'wheelchairOutsideArea' }]);
-  assert.deepStrictEqual(N.checkStudent({ wheelchair: true }, 'wc-9', F.create()), []);
+  assert.deepStrictEqual(N.checkStudent({ wheelchair: true }, 'wc-10', F.create()), []);
 });
 
 test('wheelchair spots have no seat features to miss', () => {
-  assert.deepStrictEqual(N.checkStudent({ carSeat: true }, 'wc-9', F.create()),
+  assert.deepStrictEqual(N.checkStudent({ carSeat: true }, 'wc-10', F.create()),
     [{ type: 'missingFeature', feature: 'carSeat' }]);
 });
 
 test('getWarnings covers all seated students, skips unseated', () => {
   let r = R.assign(R.create(), layout, 'ann', '1-driver-1');
-  r = R.assign(r, layout, 'bob', 'wc-9');
+  r = R.assign(r, layout, 'bob', 'wc-10');
   const needs = { ann: { harnessAttachment: true }, bob: { wheelchair: true }, cy: { carSeat: true } };
   assert.deepStrictEqual(N.getWarnings(r, needs, F.create()),
     { ann: [{ type: 'missingFeature', feature: 'harnessAttachment' }] });

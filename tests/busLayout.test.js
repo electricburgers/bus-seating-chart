@@ -2,16 +2,16 @@ const test = require('node:test');
 const assert = require('node:assert');
 const L = require('../js/busLayout.js');
 
-test('defaults: 10 rows, 3 driver-side, 2 door-side, door on right, no wheelchair', () => {
+test('defaults: 11 rows, 3 driver-side, 2 door-side, door on right, no wheelchair', () => {
   const layout = L.createLayout();
-  assert.strictEqual(layout.rows, 10);
+  assert.strictEqual(layout.rows, 11);
   assert.strictEqual(layout.doorSide, 'right');
   assert.strictEqual(layout.wheelchair.enabled, false);
   const benches = L.getBenches(layout);
-  assert.strictEqual(benches.length, 10);
+  assert.strictEqual(benches.length, 11);
   assert.strictEqual(benches[0].driver.length, 3);
   assert.strictEqual(benches[0].door.length, 2);
-  assert.strictEqual(L.getSeats(layout).length, 50);
+  assert.strictEqual(L.getSeats(layout).length, 55);
 });
 
 test('seat ids are unique and stable', () => {
@@ -57,14 +57,14 @@ test('wheelchair area replaces the whole rear rows, min 2 rows', () => {
   const layout = L.setWheelchair(L.createLayout(), { enabled: true });
   assert.strictEqual(layout.wheelchair.rows, 2);
   const benches = L.getBenches(layout);
-  assert.strictEqual(benches.length, 10);
-  assert.strictEqual(benches[7].wheelchair, false);
-  for (const b of benches.slice(8)) {
+  assert.strictEqual(benches.length, 11);
+  assert.strictEqual(benches[8].wheelchair, false);
+  for (const b of benches.slice(9)) {
     assert.strictEqual(b.wheelchair, true);
     assert.strictEqual(b.driver.length, 0);
     assert.strictEqual(b.door.length, 0);
   }
-  assert.strictEqual(L.getSeats(layout).length, 8 * 5);
+  assert.strictEqual(L.getSeats(layout).length, 9 * 5);
 });
 
 test('wheelchair rows can grow but not go below 2', () => {
@@ -92,7 +92,7 @@ test('validation rejects bad input', () => {
   assert.throws(() => L.createLayout({ rows: 2.5 }));
   assert.throws(() => L.setSeatsPerSide(L.createLayout(), 'middle', 2));
   assert.throws(() => L.setSeatsPerSide(L.createLayout(), 'door', -1));
-  assert.throws(() => L.setBenchOverride(L.createLayout(), 11, 'door', 2));
+  assert.throws(() => L.setBenchOverride(L.createLayout(), 12, 'door', 2));
   assert.throws(() => L.createLayout({ rows: 3, wheelchair: { enabled: true, rows: 3 } }));
 });
 
@@ -119,4 +119,16 @@ test('emergency windows never show on wheelchair rows and survive other layout c
   assert.strictEqual(L.getBenches(layout)[4].doorWindow, false);
   layout = L.flipDoorSide(L.setSeatsPerSide(L.setEmergencyWindow(layout, 2, 'driver', true), 'door', 3));
   assert.strictEqual(L.hasEmergencyWindow(layout, 2, 'driver'), true);
+});
+
+test('seat labels: driver side odd, door side even, A is the window seat', () => {
+  const layout = L.createLayout();
+  const [b1, b2] = L.getBenches(layout);
+  assert.deepStrictEqual(b1.driver.map(s => s.label), ['A1', 'B1', 'C1']);
+  assert.deepStrictEqual(b1.door.map(s => s.label), ['B2', 'A2']);
+  assert.deepStrictEqual(b2.driver.map(s => s.label), ['A3', 'B3', 'C3']);
+  assert.deepStrictEqual(b2.door.map(s => s.label), ['B4', 'A4']);
+  const flipped = L.getBenches(L.flipDoorSide(layout))[0];
+  assert.deepStrictEqual(flipped.driver.map(s => s.label), ['C1', 'B1', 'A1']);
+  assert.deepStrictEqual(flipped.door.map(s => s.label), ['A2', 'B2']);
 });

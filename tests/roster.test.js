@@ -8,7 +8,7 @@ const wcLayout = L.setWheelchair(layout, { enabled: true });
 
 test('wheelchair spots: one per wheelchair row, none when disabled', () => {
   assert.deepStrictEqual(L.getWheelchairSpots(layout), []);
-  assert.deepStrictEqual(L.getWheelchairSpots(wcLayout).map(s => s.id), ['wc-9', 'wc-10']);
+  assert.deepStrictEqual(L.getWheelchairSpots(wcLayout).map(s => s.id), ['wc-10', 'wc-11']);
 });
 
 test('assign and look up', () => {
@@ -50,9 +50,9 @@ test('unknown seats are rejected; regular seats under wheelchair rows are gone',
 });
 
 test('wheelchair spots can be assigned', () => {
-  const r = R.assign(R.create(), wcLayout, 'ann', 'wc-9');
-  assert.strictEqual(R.isWheelchairSpot('wc-9'), true);
-  assert.strictEqual(R.seatOf(r, 'ann'), 'wc-9');
+  const r = R.assign(R.create(), wcLayout, 'ann', 'wc-10');
+  assert.strictEqual(R.isWheelchairSpot('wc-10'), true);
+  assert.strictEqual(R.seatOf(r, 'ann'), 'wc-10');
 });
 
 test('does not mutate', () => {
