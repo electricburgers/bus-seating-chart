@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.26.0] - 2026-11-16
+
+### Added
+
+- Row numbers along both window sides of each row, odd numbers on the driver side and even numbers on the door side, to match the official handwritten sheet.
+
 ## [0.25.1] - 2026-11-16
 
 ### Changed

@@ -99,6 +99,7 @@ label.file-btn input { max-width: 190px; }
 /* Emergency window exit: a red tab beside the seats of its row, stretched to the seat height */
 .window-exit { align-self: stretch; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 42px; padding: 0 4px; font-size: 13px; line-height: 1; font-weight: 700; letter-spacing: .04em; color: #fff; background: #b3261e; border-radius: 4px; }
 .window-exit-spacer { flex: 0 0 42px; }
+.window-num { flex: 0 0 28px; align-self: center; text-align: center; font-size: 18px; font-weight: 700; color: var(--muted); }
 .window-table-wrap { max-height: 190px; overflow: auto; border: 1px solid var(--border); border-radius: 4px; }
 .window-table { width: 100%; border-collapse: collapse; }
 .window-table th, .window-table td { padding: 3px 8px; text-align: left; border-bottom: 1px solid var(--line); }

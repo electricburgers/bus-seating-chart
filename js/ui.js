@@ -134,6 +134,8 @@
       if (i === 1) kids.reverse();
       var tab = anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null;
       if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
+      var pad = h('span', { 'class': 'window-num window-num-spacer', 'aria-hidden': 'true' });
+      if (i === 0) kids.unshift(pad); else kids.push(pad);
       return h('div', { 'class': 'bench-side col-heads ' + (i === 0 ? 'left' : 'right') }, kids);
     });
     return h('div', { 'class': 'bench col-head-row', 'aria-hidden': 'true' }, [cols[0], h('div', { 'class': 'aisle', text: '' }), cols[1]]);
@@ -171,6 +173,9 @@
         // Rows without an exit get an invisible spacer so seat columns stay lined up when any row has one.
         var tab = bench[side + 'Window'] ? exitCell(side) : (anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null);
         if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
+        // Row number on the window edge: odd numbers on the driver side, even on the door side, as on the official sheet.
+        var num = h('span', { 'class': 'window-num', title: 'Row number', text: String(side === 'driver' ? 2 * bench.row - 1 : 2 * bench.row) });
+        if (i === 0) kids.unshift(num); else kids.push(num);
         return h('div', { 'class': 'bench-side ' + (i === 0 ? 'left' : 'right') }, kids);
       });
       bus.appendChild(h('div', { 'class': 'bench', 'data-row': bench.row }, [
