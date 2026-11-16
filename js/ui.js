@@ -53,7 +53,20 @@
 
   // Seat names that do not fit step down through nameFit tiers: smaller text first, then a shortened first name.
   // Needs the seats to be in the page so the text can be measured. Safe to call again after every render.
+  // Car seat and harness badges sit at the bottom right of the seat, just above the school line.
+  function placeFeatureBars(container) {
+    Array.prototype.forEach.call(container.querySelectorAll('.seat'), function (seat) {
+      var bar = seat.querySelector('.features'), school = seat.querySelector('.chip-school');
+      if (!bar) return;
+      var gap = school ? seat.getBoundingClientRect().bottom - school.getBoundingClientRect().top + 2 : 4;
+      bar.style.bottom = Math.max(4, Math.round(gap)) + 'px';
+    });
+  }
+
   function fitSeatNames(container) {
+    try { fitNames(container); } finally { placeFeatureBars(container); }
+  }
+  function fitNames(container) {
     var fit = lib('nameFit');
     var base = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'), 10) || 14;
     var SMALL_SIZE = Math.max(9, base - 2), FLOOR_SIZE = Math.max(8, base - 4);
