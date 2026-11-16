@@ -17,6 +17,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.24.0] - 2026-11-16
+
+### Added
+
+- Seat width buttons (Compact, Wide, Extra wide) above the chart. The choice is remembered and applies to the web view and to exports.
+- Export color setting: Color, Grayscale, or Black and white (no tints, black on white) for printing or emailing.
+
+### Changed
+
+- Student's school now sits at the bottom of the seat in larger bold text with a rule above it, so it reads the same in color, gray and black and white.
+- Seats are taller (116px) and the car seat and harness badges sit on the top edge of the seat, out of the school line.
+- Harness H badge is larger (32px) and the rear emergency exit label is bigger (14px).
+
 ## [0.23.0] - 2026-11-16
 
 ### Changed

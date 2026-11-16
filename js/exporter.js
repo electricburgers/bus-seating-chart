@@ -104,7 +104,16 @@
     });
   }
 
-  var api = { CSV_COLUMNS: CSV_COLUMNS, buildFilename: buildFilename, formatSeat: formatSeat, headerLines: headerLines,
+  // Turns RGBA pixel data (like canvas ImageData.data) to gray in place. Alpha is left alone.
+  function toGrayscale(data) {
+    for (var i = 0; i + 3 < data.length; i += 4) {
+      var g = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+      data[i] = data[i + 1] = data[i + 2] = g;
+    }
+    return data;
+  }
+
+  var api = { toGrayscale: toGrayscale, CSV_COLUMNS: CSV_COLUMNS, buildFilename: buildFilename, formatSeat: formatSeat, headerLines: headerLines,
     csvRows: csvRows, toCsv: toCsv, describeFeatures: describeFeatures, changeTableRows: changeTableRows };
   root.BusApp = root.BusApp || {};
   root.BusApp.exporter = api;

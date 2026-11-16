@@ -75,6 +75,7 @@
       'class': 'seat' + (isWheelchair ? ' wc' : '') + (student ? ' filled' : '') + (ctx.changed[seatId] ? ' changed' : ''),
       'data-seat-id': seatId, 'data-drop': ctx.interactive ? 'true' : false, tabindex: ctx.interactive ? '0' : false
     });
+    if (!isWheelchair && (ctx.interactive || feats.carSeat || feats.harnessAttachment)) seat.classList.add('has-feat');
     if (label) seat.appendChild(h('span', { 'class': 'seat-label', text: label }));
     if (student) {
       seat.appendChild(studentChip(student, ctx.warnings[studentId]));

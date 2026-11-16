@@ -97,3 +97,9 @@ test('describeFeatures lists features or says none', () => {
   assert.strictEqual(X.describeFeatures({ carSeat: true, harnessAttachment: true }), '5-star car seat, harness attachment');
   assert.strictEqual(X.describeFeatures({}), 'no seat features');
 });
+
+test('toGrayscale makes each pixel gray with the same alpha', () => {
+  const data = Uint8ClampedArray.from([255, 0, 0, 255, 0, 0, 0, 128, 255, 255, 255, 255]);
+  X.toGrayscale(data);
+  assert.deepStrictEqual(Array.from(data), [76, 76, 76, 255, 0, 0, 0, 128, 255, 255, 255, 255]);
+});

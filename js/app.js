@@ -350,11 +350,21 @@
         sheet.appendChild(UI.h('div', { 'class': 'bus-light ' + c }));
       });
     }
+    var colorMode = $('opt-color').value;
+    if (colorMode === 'bw') sheet.classList.add('bw');
     document.body.appendChild(sheet);
     UI.fitSeatNames(sheet);
     var scale = parseFloat($('opt-quality').value) || 2;
     return root.html2canvas(sheet, { scale: scale, backgroundColor: '#ffffff' }).then(
-      function (canvas) { sheet.remove(); return canvas; },
+      function (canvas) {
+        sheet.remove();
+        if (colorMode !== 'color') {
+          var ctx = canvas.getContext('2d'), img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          Exp.toGrayscale(img.data);
+          ctx.putImageData(img, 0, 0);
+        }
+        return canvas;
+      },
       function (e) { sheet.remove(); throw e; });
   }
 
@@ -740,6 +750,22 @@
       }
     });
   }
+
+  // Seat width is a view setting (not part of the chart). It applies to the web view and to exports.
+  function setSeatWidth(px, save) {
+    px = [96, 140, 180].indexOf(px) >= 0 ? px : 140;
+    document.documentElement.style.setProperty('--seat-w', px + 'px');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-seat-width]'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-seat-width') === String(px) ? 'true' : 'false');
+    });
+    if (save) { try { storage().setItem('busSeatWidth', String(px)); } catch (e) { /* storage unavailable */ } }
+  }
+  var savedWidth = 140;
+  try { savedWidth = parseInt(storage().getItem('busSeatWidth'), 10) || 140; } catch (e) { /* storage unavailable */ }
+  setSeatWidth(savedWidth, false);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-seat-width]'), function (b) {
+    b.addEventListener('click', function () { setSeatWidth(parseInt(b.getAttribute('data-seat-width'), 10), true); render(); });
+  });
 
   wire();
   render();
