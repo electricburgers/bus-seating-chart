@@ -154,6 +154,7 @@
     if (view !== 'before') {
       views.appendChild(UI.renderBus(busContext(chart.roster, chart.features, true, changedSeats(changes, 'after'), 'After (current)')));
     }
+    UI.fitSeatNames(views);
 
     var pool = $('pool');
     pool.textContent = '';
@@ -350,6 +351,7 @@
       });
     }
     document.body.appendChild(sheet);
+    UI.fitSeatNames(sheet);
     var scale = parseFloat($('opt-quality').value) || 2;
     return root.html2canvas(sheet, { scale: scale, backgroundColor: '#ffffff' }).then(
       function (canvas) { sheet.remove(); return canvas; },

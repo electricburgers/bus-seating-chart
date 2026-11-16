@@ -17,6 +17,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.23.0] - 2026-11-16
+
+### Changed
+
+- Long student names fit their seat: text shrinks first, then first name is shortened (Maxim. Nguyen, Max. Nguyen, M. Nguyen). Last name always shown in full. Full name appears on hover.
+- Exported chart is wider (150px seats instead of 96px) so more characters fit.
+
 ## [0.22.0] - 2026-11-16
 
 ### Added

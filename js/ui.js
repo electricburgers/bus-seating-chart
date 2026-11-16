@@ -40,7 +40,7 @@
       draggable: 'true', tabindex: '0', role: 'button', 'data-student-id': student.id,
       style: schoolStyle(student.school)
     }, [
-      h('span', { 'class': 'chip-name', text: student.name }),
+      h('span', { 'class': 'chip-name', title: student.name, 'data-full-name': student.name, text: student.name }),
       student.nickname ? h('span', { 'class': 'chip-nickname', text: '“' + student.nickname + '”' }) : null,
       student.school ? h('span', { 'class': 'chip-school', text: student.school }) : null
     ]);
@@ -49,6 +49,22 @@
       chip.appendChild(h('span', { 'class': 'flag', title: warningText(warnings), 'aria-label': 'Warning: ' + warningText(warnings), text: '⚑' }));
     }
     return chip;
+  }
+
+  // Seat names that do not fit step down through nameFit tiers: smaller text first, then a shortened first name.
+  // Needs the seats to be in the page so the text can be measured. Safe to call again after every render.
+  var SMALL_SIZE = 12, FLOOR_SIZE = 10;
+  function fitSeatNames(container) {
+    var fit = lib('nameFit');
+    Array.prototype.forEach.call(container.querySelectorAll('.seat .chip-name'), function (el) {
+      var list = fit.tiers(el.getAttribute('data-full-name') || el.textContent, SMALL_SIZE, FLOOR_SIZE);
+      function overflows() { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }
+      for (var i = 0; i < list.length; i++) {
+        el.textContent = list[i].text;
+        el.style.fontSize = list[i].size ? list[i].size + 'px' : '';
+        if (!overflows()) return;
+      }
+    });
   }
 
   function renderSeat(seatId, ctx, isWheelchair, label) {
@@ -202,7 +218,7 @@
     ]);
   }
 
-  var api = { h: h, renderBus: renderBus, renderPool: renderPool, renderChangeLog: renderChangeLog, FEATURE_BUTTONS: FEATURE_BUTTONS };
+  var api = { h: h, fitSeatNames: fitSeatNames, renderBus: renderBus, renderPool: renderPool, renderChangeLog: renderChangeLog, FEATURE_BUTTONS: FEATURE_BUTTONS };
   root.BusApp = root.BusApp || {};
   root.BusApp.ui = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

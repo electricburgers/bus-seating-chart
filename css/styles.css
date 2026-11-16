@@ -240,3 +240,8 @@ body.is-moving .pool { border-color: var(--line2); }
 .seat .chip-nickname { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .nickname-edit { display: block; font-size: 12px; margin-top: 2px; }
 .nickname-edit input { width: 9em; }
+
+/* Seat names: first and last name wrap at the space, and nameFit shrinks or shortens the first name when needed. */
+.seat .chip-name { overflow-wrap: normal; word-break: normal; line-height: 1.15; }
+/* The exported chart does not have to look like a long, narrow bus, so seats are wider and names fit more easily. */
+.export-sheet .seat, .export-sheet .col-head { width: 150px; }
