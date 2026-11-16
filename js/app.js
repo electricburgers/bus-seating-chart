@@ -319,6 +319,12 @@
   function exportInfo() { return { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, driver: chart.driver, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, exportDate: $('export-date').value || today() }; }
   function fileName(ext) { var i = exportInfo(); return Exp.buildFilename(i.routeName, i.exportDate, ext); }
 
+  // "Route: X" becomes a bold "Route:" followed by the value.
+  function headerField(text) {
+    var i = text.indexOf(': ');
+    return UI.h('span', {}, [UI.h('strong', { text: text.slice(0, i + 1) }), document.createTextNode(text.slice(i + 1))]);
+  }
+
   // Draws one chart with the export header in an off-screen sheet and returns a canvas.
   // withLabel: show the "Before" / "After" caption. Only needed when both charts are in the same export.
   function captureSheet(which, withLabel) {
@@ -330,7 +336,8 @@
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
-        UI.h('strong', { text: info.route }), UI.h('span', { text: info.driver }), UI.h('span', { text: info.aide }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
+        UI.h('div', { 'class': 'export-header-row' }, [headerField(info.route), headerField(info.driver)]),
+        UI.h('div', { 'class': 'export-header-row' }, [headerField(info.aide), headerField(info.date)])]),
         info.notes ? UI.h('div', { 'class': 'export-notes', text: 'Notes: ' + info.notes }) : null,
       UI.renderBus(busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)'))
     ]);
@@ -410,7 +417,16 @@
     doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
     doc.text('Change Summary', 36, y); y += 18;
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    [info.route, info.driver, info.aide, info.preparedBy, info.date].forEach(function (line) { doc.text(line, 36, y); y += 14; });
+    [[info.route, info.driver], [info.aide, info.date]].forEach(function (pair) {
+      var x = 36;
+      pair.forEach(function (t) {
+        var i = t.indexOf(': '), label = t.slice(0, i + 1), value = t.slice(i + 1);
+        doc.setFont('helvetica', 'bold'); doc.text(label, x, y);
+        doc.setFont('helvetica', 'normal'); doc.text(value, x + doc.getTextWidth(label), y);
+        x += pw / 2 - 36;
+      });
+      y += 14;
+    });
     y += 8;
     if (!rows.length) { doc.text(chart.baseline ? 'No changes since the baseline.' : 'No baseline was set.', 36, y); return; }
     function line(cells, bold) {

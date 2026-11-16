@@ -41,7 +41,6 @@
       driver: 'Driver: ' + (String(info.driver || '').trim() || '(none)'),
       aide: 'Aide: ' + (String(info.aide || '').trim() || '(none)'),
       notes: String(info.notes || '').trim(),
-      preparedBy: 'Prepared by: ' + (String(info.preparedBy || '').trim() || '(not set)'),
       date: 'Date: ' + info.exportDate
     };
   }

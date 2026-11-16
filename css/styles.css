@@ -127,7 +127,8 @@ span.feature { display: inline-block; line-height: 20px; border: 1px solid var(-
 .reason { width: 100%; }
 
 .export-sheet { position: fixed; left: -10000px; top: 0; box-sizing: border-box; width: max-content; padding: 16px; background: #fff; }
-.export-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+.export-header { margin-bottom: 10px; font-size: 18px; line-height: 1.5; }
+.export-header-row { display: flex; justify-content: space-between; gap: 24px; }
 
 @media (max-width: 800px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 .main-panel, .side-panel { min-width: 0; }

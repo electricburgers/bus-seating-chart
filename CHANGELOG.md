@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.18.0] - 2026-11-16
+
+### Changed
+- PDF/JPEG header is now two larger rows (Route and Driver, then Aide and Date) with bold field names, so it reads at a glance.
+- Removed "Prepared by" from the export header and change summary.
+
 ## [0.17.0] - 2026-11-16
 
 ### Changed
