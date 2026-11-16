@@ -51,8 +51,9 @@ function stamp(options) {
     throw new Error('CHANGELOG.md has no entry for version ' + version + '. Add "## [' + version + '] - date" first.');
   }
   const now = o.now || new Date();
-  fs.writeFileSync(path.join(root, 'js', 'version.js'), buildSource(version, now, o.timeZone));
-  return { version, buildDate: formatDate(now, o.timeZone), buildTime: formatTime(now, o.timeZone) };
+  const timeZone = o.timeZone || 'America/New_York'; // build time is always US Eastern
+  fs.writeFileSync(path.join(root, 'js', 'version.js'), buildSource(version, now, timeZone));
+  return { version, buildDate: formatDate(now, timeZone), buildTime: formatTime(now, timeZone) };
 }
 
 module.exports = { formatDate, formatTime, buildSource, hasChangelogEntry, stamp };

@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.19.0] - 2026-11-16
+
+### Added
+- Settings now has an About section (version, build date and time in US Eastern time) and a What's new section listing the last three new things and changes.
+
+### Changed
+- Build stamp is always US Eastern time. The version line moved from the Settings header into About.
+
 ## [0.18.0] - 2026-11-16
 
 ### Changed

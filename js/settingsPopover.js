@@ -1,6 +1,19 @@
 (function (root) {
   'use strict';
 
+  var WHATS_NEW = {
+    added: [
+      'About and What\u2019s new sections in Settings, with the build date in US Eastern time.',
+      'Official seat labels on every seat (driver side odd, door side even).',
+      'Route #, AM/PM/Both, aide and notes fields in the top bar.'
+    ],
+    changed: [
+      'PDF/JPEG header is now two larger rows with bold field names.',
+      'PDF export is always portrait and sizes the chart as large as possible.',
+      'Default bus layout is now 11 rows.'
+    ]
+  };
+
   // Gear-button popover: version info, then collapsible sections (bus setup, emergency windows, bench overrides, templates, sample data).
   // actions is app.js's set of handlers; each one may throw, and app.js shows the message.
   function create(opts) {
@@ -24,7 +37,7 @@
     function run(fn) { fn(); render(); }
 
     // Which sections are expanded survives re-renders (every change re-draws the panel).
-    var openSections = { setup: true, windows: false, overrides: false, templates: false, appearance: false, safety: false, demo: false };
+    var openSections = { setup: true, windows: false, overrides: false, templates: false, appearance: false, safety: false, demo: false, whatsnew: false, about: false };
 
     function section(key, title, kids) {
       var d = h('details', { 'class': 'set-section', open: openSections[key] }, [h('summary', { text: title })].concat(kids));
@@ -45,8 +58,7 @@
       var closeX = h('button', { type: 'button', 'class': 'set-close', 'aria-label': 'Close settings', text: '×' });
       closeX.addEventListener('click', function () { close(); button.focus(); });
       panel.appendChild(h('div', { 'class': 'set-head' }, [
-        h('div', {}, [h('h2', { text: 'Settings' }),
-          h('p', { 'class': 'version', text: 'Version ' + v.version + ' · built ' + v.buildDate + ' ' + v.buildTime })]),
+        h('div', {}, [h('h2', { text: 'Settings' })]),
         closeX]));
 
       // 1. Bus setup
@@ -157,6 +169,19 @@
       panel.appendChild(section('demo', 'Try it out', [
         h('div', { 'class': 'row' }, [demo, demoPlain]),
         h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' })
+      ]));
+
+      // 8. What's new (last three new things and last three changes; update with each release)
+      function list(items) { return h('ul', { 'class': 'hint' }, items.map(function (t) { return h('li', { text: t }); })); }
+      panel.appendChild(section('whatsnew', "What's new", [
+        h('p', {}, [h('strong', { text: 'New' })]), list(WHATS_NEW.added),
+        h('p', {}, [h('strong', { text: 'Changed' })]), list(WHATS_NEW.changed)
+      ]));
+
+      // 9. About
+      panel.appendChild(section('about', 'About', [
+        h('p', { 'class': 'version', text: 'Version ' + v.version }),
+        h('p', { 'class': 'hint', text: 'Built ' + v.buildDate + ' ' + v.buildTime + ' (US Eastern time)' })
       ]));
 
       panel.scrollTop = scrollTop;
