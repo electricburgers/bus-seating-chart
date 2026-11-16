@@ -25,9 +25,10 @@ test('formatSeat gives readable labels', () => {
 
 test('headerLines uses route, name and date, with fallbacks', () => {
   assert.deepStrictEqual(X.headerLines({ routeName: 'Route 12', preparedBy: 'Pat', exportDate: '2026-11-15' }),
-    { route: 'Route: Route 12', aide: 'Aide: (none)', notes: '', preparedBy: 'Prepared by: Pat', date: 'Date: 2026-11-15' });
-  const r = X.headerLines({ routeName: 'North', routeNumber: '42', shift: 'AM', aide: 'Sam', notes: 'Wet floors', exportDate: '2026-11-15' });
+    { route: 'Route: Route 12', driver: 'Driver: (none)', aide: 'Aide: (none)', notes: '', preparedBy: 'Prepared by: Pat', date: 'Date: 2026-11-15' });
+  const r = X.headerLines({ routeName: 'North', routeNumber: '42', shift: 'AM', driver: 'Lee', aide: 'Sam', notes: 'Wet floors', exportDate: '2026-11-15' });
   assert.strictEqual(r.route, 'Route: North #42 (AM)');
+  assert.strictEqual(r.driver, 'Driver: Lee');
   assert.strictEqual(r.aide, 'Aide: Sam');
   assert.strictEqual(r.notes, 'Wet floors');
   const h = X.headerLines({ routeName: ' ', preparedBy: '', exportDate: '2026-11-15' });

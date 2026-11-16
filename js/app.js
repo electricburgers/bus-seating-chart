@@ -13,7 +13,7 @@
   }
   function storage() { try { return root.localStorage; } catch (e) { return null; } }
   function newChart() {
-    return { routeName: '', routeNumber: '', shift: '', aide: '', notes: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null };
+    return { routeName: '', routeNumber: '', shift: '', driver: '', aide: '', notes: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null };
   }
 
   var chart = Store.loadAutosave(storage()) || newChart();
@@ -59,13 +59,14 @@
     $('route-name').value = chart.routeName;
     $('route-number').value = chart.routeNumber;
     $('route-shift').value = chart.shift;
+    $('driver-name').value = chart.driver;
     $('aide-name').value = chart.aide;
     $('route-notes').value = chart.notes;
     $('prepared-by').value = chart.preparedBy;
   }
   // Route name, preparer and change reasons are typed text, so they stay as they are when you undo or redo.
   function restoreSnapshot(text, message) {
-    var keep = { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, reasons: chart.reasons };
+    var keep = { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, driver: chart.driver, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, reasons: chart.reasons };
     chart = Object.assign(Store.deserialize(text), keep);
     swapFrom = null;
     syncHeaderInputs();
@@ -315,7 +316,7 @@
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
-  function exportInfo() { return { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, exportDate: $('export-date').value || today() }; }
+  function exportInfo() { return { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, driver: chart.driver, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, exportDate: $('export-date').value || today() }; }
   function fileName(ext) { var i = exportInfo(); return Exp.buildFilename(i.routeName, i.exportDate, ext); }
 
   // Draws one chart with the export header in an off-screen sheet and returns a canvas.
@@ -329,7 +330,7 @@
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
-        UI.h('strong', { text: info.route }), UI.h('span', { text: info.aide }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
+        UI.h('strong', { text: info.route }), UI.h('span', { text: info.driver }), UI.h('span', { text: info.aide }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
         info.notes ? UI.h('div', { 'class': 'export-notes', text: 'Notes: ' + info.notes }) : null,
       UI.renderBus(busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)'))
     ]);
@@ -358,15 +359,27 @@
     var J = root.jspdf && root.jspdf.jsPDF;
     if (!J) { notify('PDF export needs the vendored jsPDF library, which is not installed yet.', true); return; }
     var wantBefore = $('pdf-before').checked && chart.baseline;
-    var doc = new J({ unit: 'pt', format: $('opt-paper').value, orientation: $('opt-orient').value });
+    var doc = new J({ unit: 'pt', format: $('opt-paper').value, orientation: 'portrait' });
     var size = doc.internal.pageSize;
     var pw = size.getWidth ? size.getWidth() : size.width, ph = size.getHeight ? size.getHeight() : size.height;
+    var MARGIN = 18;
+    // Fits the chart on the portrait page as large as possible. A wide chart is turned 90 degrees
+    // when that makes it bigger than leaving it upright.
     function addImage(canvas, first) {
       if (!first) doc.addPage();
-      var maxW = pw - 72, maxH = ph - 72, ratio = canvas.width / canvas.height;
-      var w = maxW, hgt = w / ratio;
-      if (hgt > maxH) { hgt = maxH; w = hgt * ratio; }
-      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 36 + (maxW - w) / 2, 36, w, hgt);
+      var maxW = pw - 2 * MARGIN, maxH = ph - 2 * MARGIN;
+      var upright = Math.min(maxW / canvas.width, maxH / canvas.height);
+      var turned = Math.min(maxW / canvas.height, maxH / canvas.width);
+      var src = canvas;
+      if (turned > upright) {
+        src = document.createElement('canvas');
+        src.width = canvas.height; src.height = canvas.width;
+        var ctx = src.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, src.width, src.height);
+        ctx.translate(src.width, 0); ctx.rotate(Math.PI / 2); ctx.drawImage(canvas, 0, 0);
+      }
+      var k = Math.max(upright, turned), w = src.width * k, hgt = src.height * k;
+      doc.addImage(src.toDataURL('image/jpeg', 0.92), 'JPEG', MARGIN + (maxW - w) / 2, MARGIN + (maxH - hgt) / 2, w, hgt);
     }
     captureSheet('after', !!wantBefore).then(function (after) {
       addImage(after, true);
@@ -397,7 +410,7 @@
     doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
     doc.text('Change Summary', 36, y); y += 18;
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    [info.route, info.aide, info.preparedBy, info.date].forEach(function (line) { doc.text(line, 36, y); y += 14; });
+    [info.route, info.driver, info.aide, info.preparedBy, info.date].forEach(function (line) { doc.text(line, 36, y); y += 14; });
     y += 8;
     if (!rows.length) { doc.text(chart.baseline ? 'No changes since the baseline.' : 'No baseline was set.', 36, y); return; }
     function line(cells, bold) {
@@ -497,6 +510,7 @@
     $('route-name').addEventListener('input', function (e) { chart.routeName = e.target.value; save(); });
     $('route-number').addEventListener('input', function (e) { chart.routeNumber = e.target.value; save(); });
     $('route-shift').addEventListener('change', function (e) { chart.shift = e.target.value; save(); });
+    $('driver-name').addEventListener('input', function (e) { chart.driver = e.target.value; save(); });
     $('aide-name').addEventListener('input', function (e) { chart.aide = e.target.value; save(); });
     $('route-notes').addEventListener('input', function (e) { chart.notes = e.target.value; save(); });
     $('prepared-by').addEventListener('input', function (e) { chart.preparedBy = e.target.value; save(); });

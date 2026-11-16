@@ -17,6 +17,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.17.0] - 2026-11-16
+
+### Changed
+- PDF export is always portrait and sizes the chart as large as possible: margins cut to 18 pt, chart centered, and a wide chart is turned 90 degrees when that fills the page better.
+- Driver name field next to Aide; saved with the chart and shown in PDF/JPEG headers and the change summary.
+- Removed the Orientation option from export settings.
+
 ## [0.16.0] - 2026-11-16 17:50 EST
 
 ### Added

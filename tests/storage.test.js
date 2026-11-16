@@ -9,6 +9,7 @@ function sampleChart() {
     routeName: 'Route 12',
     routeNumber: '42',
     shift: 'Both',
+    driver: 'Lee',
     aide: 'Sam',
     notes: 'Note',
     preparedBy: 'Pat',
@@ -48,6 +49,7 @@ test('missing optional parts get defaults', () => {
   assert.strictEqual(chart.preparedBy, '');
   assert.strictEqual(chart.routeNumber, '');
   assert.strictEqual(chart.shift, '');
+  assert.strictEqual(chart.driver, '');
   assert.strictEqual(chart.aide, '');
   assert.strictEqual(chart.notes, '');
 });

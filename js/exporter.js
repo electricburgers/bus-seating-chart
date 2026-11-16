@@ -38,6 +38,7 @@
       route: 'Route: ' + (String(info.routeName || '').trim() || '(no route name)') +
         (String(info.routeNumber || '').trim() ? ' #' + String(info.routeNumber).trim() : '') +
         (info.shift ? ' (' + info.shift + ')' : ''),
+      driver: 'Driver: ' + (String(info.driver || '').trim() || '(none)'),
       aide: 'Aide: ' + (String(info.aide || '').trim() || '(none)'),
       notes: String(info.notes || '').trim(),
       preparedBy: 'Prepared by: ' + (String(info.preparedBy || '').trim() || '(not set)'),
