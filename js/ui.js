@@ -87,6 +87,25 @@
 
   function markerCell(text, cls) { return h('div', { 'class': 'marker ' + cls, text: text }); }
 
+  var LETTERS = 'ABCDEFGHIJKL';
+  // A is always the window seat, then B, then C next to the aisle. The left column reads window to aisle, the right column aisle to window.
+  function columnHeaders(layout, order, anyExit) {
+    var L = lib('busLayout');
+    var most = { driver: 0, door: 0 };
+    L.getBenches(layout).forEach(function (b) {
+      if (!b.wheelchair) { most.driver = Math.max(most.driver, b.driver.length); most.door = Math.max(most.door, b.door.length); }
+    });
+    var cols = order.map(function (side, i) {
+      var kids = [];
+      for (var n = 0; n < most[side]; n++) kids.push(h('div', { 'class': 'col-head', text: LETTERS.charAt(n) }));
+      if (i === 1) kids.reverse();
+      var tab = anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null;
+      if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
+      return h('div', { 'class': 'bench-side col-heads ' + (i === 0 ? 'left' : 'right') }, kids);
+    });
+    return h('div', { 'class': 'bench col-head-row', 'aria-hidden': 'true' }, [cols[0], h('div', { 'class': 'aisle', text: '' }), cols[1]]);
+  }
+
   // ctx: { chart, roster, features, interactive, changed: {seatId: true}, warnings, byId, title }
   function renderBus(ctx) {
     var L = lib('busLayout'), layout = ctx.chart.layout;
@@ -102,6 +121,8 @@
       h('div', { 'class': 'aisle', text: 'Front' }),
       h('div', { 'class': 'bench-side right' }, front.right)
     ]));
+
+    bus.appendChild(columnHeaders(layout, order, anyExit));
 
     L.getBenches(layout).forEach(function (bench) {
       if (bench.wheelchair) {

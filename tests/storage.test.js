@@ -7,6 +7,10 @@ function sampleChart() {
   const layout = B.setBenchOverride(B.createLayout({ rows: 10, wheelchair: { enabled: true, rows: 2 } }), 2, 'driver', 2);
   return {
     routeName: 'Route 12',
+    routeNumber: '42',
+    shift: 'Both',
+    aide: 'Sam',
+    notes: 'Note',
     preparedBy: 'Pat',
     layout,
     students: [
@@ -42,6 +46,10 @@ test('missing optional parts get defaults', () => {
   assert.deepStrictEqual(chart.reasons, {});
   assert.strictEqual(chart.routeName, '');
   assert.strictEqual(chart.preparedBy, '');
+  assert.strictEqual(chart.routeNumber, '');
+  assert.strictEqual(chart.shift, '');
+  assert.strictEqual(chart.aide, '');
+  assert.strictEqual(chart.notes, '');
 });
 
 test('rejects invalid JSON, other files, and newer schema versions', () => {

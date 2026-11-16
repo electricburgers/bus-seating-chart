@@ -84,6 +84,10 @@ label.file-btn input { max-width: 190px; }
 .bench-side { display: flex; gap: 4px; }
 .bench-side.left { justify-content: flex-end; }
 .bench-side.right { justify-content: flex-start; }
+.col-head { box-sizing: border-box; width: 96px; flex: 0 0 auto; text-align: center; font-weight: 700; font-size: 13px; color: var(--muted); }
+.notes-field { flex: 1 1 220px; }
+.notes-field textarea { flex: 1; min-width: 0; font: inherit; resize: vertical; }
+.export-notes { font-size: 13px; margin-bottom: 8px; white-space: pre-wrap; }
 .aisle { text-align: center; font-size: 11px; color: var(--muted); }
 .marker { padding: 4px 14px; font-size: 18px; font-weight: 700; letter-spacing: .04em; border-radius: 6px; background: var(--marker); text-align: center; }
 .door-marker { background: var(--door); }
@@ -143,6 +147,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   .views:focus-visible { outline: 2px solid var(--accent); }
   .bus { min-width: 300px; padding: 8px; }
   .seat { width: 88px; flex: 0 0 auto; }
+  .col-head { width: 88px; }
   .bench-side { flex-shrink: 0; }
   .bus { width: max-content; }
   .pool { max-height: 32vh; }

@@ -13,7 +13,7 @@
   }
   function storage() { try { return root.localStorage; } catch (e) { return null; } }
   function newChart() {
-    return { routeName: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null };
+    return { routeName: '', routeNumber: '', shift: '', aide: '', notes: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null };
   }
 
   var chart = Store.loadAutosave(storage()) || newChart();
@@ -57,11 +57,15 @@
 
   function syncHeaderInputs() {
     $('route-name').value = chart.routeName;
+    $('route-number').value = chart.routeNumber;
+    $('route-shift').value = chart.shift;
+    $('aide-name').value = chart.aide;
+    $('route-notes').value = chart.notes;
     $('prepared-by').value = chart.preparedBy;
   }
   // Route name, preparer and change reasons are typed text, so they stay as they are when you undo or redo.
   function restoreSnapshot(text, message) {
-    var keep = { routeName: chart.routeName, preparedBy: chart.preparedBy, reasons: chart.reasons };
+    var keep = { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, reasons: chart.reasons };
     chart = Object.assign(Store.deserialize(text), keep);
     swapFrom = null;
     syncHeaderInputs();
@@ -231,8 +235,7 @@
         var examples = ['Sibling seated together', 'Behavior seat change', 'New student added to route', 'Closer to the door'];
         rows.forEach(function (r, i) { chart.reasons = Log.setReason(chart.reasons, r.key, examples[i % examples.length]); });
         chart.logSnapshot = Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
-        $('route-name').value = chart.routeName;
-        $('prepared-by').value = chart.preparedBy;
+        syncHeaderInputs();
         view = 'after';
         commit();
         notify((wheelchair === false ? 'Loaded fake names and a layout without a wheelchair area. Try the exports below.' : 'Loaded fake names and layout. Try the exports below.'));
@@ -312,7 +315,7 @@
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
-  function exportInfo() { return { routeName: chart.routeName, preparedBy: chart.preparedBy, exportDate: $('export-date').value || today() }; }
+  function exportInfo() { return { routeName: chart.routeName, routeNumber: chart.routeNumber, shift: chart.shift, aide: chart.aide, notes: chart.notes, preparedBy: chart.preparedBy, exportDate: $('export-date').value || today() }; }
   function fileName(ext) { var i = exportInfo(); return Exp.buildFilename(i.routeName, i.exportDate, ext); }
 
   // Draws one chart with the export header in an off-screen sheet and returns a canvas.
@@ -326,7 +329,8 @@
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
-        UI.h('strong', { text: info.route }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
+        UI.h('strong', { text: info.route }), UI.h('span', { text: info.aide }), UI.h('span', { text: info.preparedBy }), UI.h('span', { text: info.date })]),
+        info.notes ? UI.h('div', { 'class': 'export-notes', text: 'Notes: ' + info.notes }) : null,
       UI.renderBus(busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)'))
     ]);
     if ($('export-frame').checked) {
@@ -393,7 +397,7 @@
     doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
     doc.text('Change Summary', 36, y); y += 18;
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    [info.route, info.preparedBy, info.date].forEach(function (line) { doc.text(line, 36, y); y += 14; });
+    [info.route, info.aide, info.preparedBy, info.date].forEach(function (line) { doc.text(line, 36, y); y += 14; });
     y += 8;
     if (!rows.length) { doc.text(chart.baseline ? 'No changes since the baseline.' : 'No baseline was set.', 36, y); return; }
     function line(cells, bold) {
@@ -488,10 +492,13 @@
   // ---- wiring ----
 
   function wire() {
-    $('route-name').value = chart.routeName;
-    $('prepared-by').value = chart.preparedBy;
+    syncHeaderInputs();
     $('export-date').value = today();
     $('route-name').addEventListener('input', function (e) { chart.routeName = e.target.value; save(); });
+    $('route-number').addEventListener('input', function (e) { chart.routeNumber = e.target.value; save(); });
+    $('route-shift').addEventListener('change', function (e) { chart.shift = e.target.value; save(); });
+    $('aide-name').addEventListener('input', function (e) { chart.aide = e.target.value; save(); });
+    $('route-notes').addEventListener('input', function (e) { chart.notes = e.target.value; save(); });
     $('prepared-by').addEventListener('input', function (e) { chart.preparedBy = e.target.value; save(); });
 
     B.dragdrop.attach(document, {

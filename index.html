@@ -11,8 +11,12 @@
   <header class="app-header">
     <h1>Bus Seating Chart</h1>
     <label>Route name <input id="route-name" type="text" autocomplete="off"></label>
+    <label>Route # <input id="route-number" type="text" autocomplete="off" size="6"></label>
+    <label>Run <select id="route-shift"><option value="">(choose)</option><option value="AM">AM</option><option value="PM">PM</option><option value="Both">Both</option></select></label>
+    <label>Aide <input id="aide-name" type="text" autocomplete="off"></label>
     <label>Your name <input id="prepared-by" type="text" autocomplete="off"></label>
     <label>Date <input id="export-date" type="date"></label>
+    <label class="notes-field">Notes <textarea id="route-notes" rows="1"></textarea></label>
     <span class="spacer"></span>
     <div class="settings-wrap">
       <button id="settings-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="settings-panel">&#9881; Settings</button>

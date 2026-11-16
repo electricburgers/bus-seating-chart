@@ -6,6 +6,7 @@
   var AUTOSAVE_KEY = 'busSeatingChart.autosave';
   var TEMPLATES_KEY = 'busSeatingChart.templates';
   var BACKUP_KEY = 'busSeatingChart.backup';
+  var SHIFTS = ['AM', 'PM', 'Both'];
   var THEME_KEY = 'busSeatingChart.theme';
 
   function fail(msg) { throw new Error('storage: ' + msg); }
@@ -24,6 +25,10 @@
       app: APP_TAG,
       schemaVersion: SCHEMA_VERSION,
       routeName: chart.routeName,
+      routeNumber: chart.routeNumber,
+      shift: chart.shift,
+      aide: chart.aide,
+      notes: chart.notes,
       preparedBy: chart.preparedBy,
       layout: chart.layout,
       students: chart.students,
@@ -100,6 +105,10 @@
 
     return {
       routeName: str(data.routeName),
+      routeNumber: str(data.routeNumber),
+      shift: SHIFTS.indexOf(data.shift) >= 0 ? data.shift : '',
+      aide: str(data.aide),
+      notes: str(data.notes),
       preparedBy: str(data.preparedBy),
       layout: layout,
       students: students,

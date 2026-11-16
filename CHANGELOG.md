@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.15.0] - 2026-11-16 17:43 EST
+
+### Added
+- Column headers above the seats: A is always the window seat, then B, then C next to the aisle (driver side). Mirrored on the right side so A stays at the window.
+- Route fields in the top bar: Route #, AM / PM / Both dropdown, Aide name and Notes. They are saved, undo-safe, and included in the PDF and JPEG export header and the change summary page.
+
 ## [0.14.0] - 2026-11-15 12:52 EST
 
 ### Added
