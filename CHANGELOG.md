@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.41.0] - 2026-11-17
+
+### Fixed
+- The row number in the aisle between the two sides of seats is always visible now. The aisle column keeps a minimum width and sits above the seats so they can no longer cover it.
+
 ## [0.40.0] - 2026-11-17
 
 ### Changed
