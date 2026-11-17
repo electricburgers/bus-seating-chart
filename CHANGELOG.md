@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.42.0] - 2026-11-17
+
+### Added
+- A Show legend checkbox in Save and export. Turn it off to leave the legend out of the Preview, JPEG, PDF and PDF view. It is on by default.
+
+### Changed
+- The export legend moves to the top, under the driver info, when the chart is wider than tall.
+
 ## [0.41.0] - 2026-11-17
 
 ### Fixed

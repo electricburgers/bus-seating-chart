@@ -388,7 +388,8 @@
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
     var ctx = busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)');
     var busFig = UI.renderBus(ctx);
-    var legend = exportLegend(roster, features, ctx, $('opt-color').value);
+    var showLegend = $('export-legend').checked;
+    var legend = showLegend ? exportLegend(roster, features, ctx, $('opt-color').value) : null;
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
         UI.h('div', { 'class': 'export-header-row' }, [headerField(info.route), headerField(info.driver)]),
@@ -413,7 +414,7 @@
     // move the legend to the top under the driver info instead.
     document.body.appendChild(sheet);
     var wide = sheet.offsetWidth > sheet.offsetHeight;
-    if (wide) sheet.querySelector('.export-body').classList.add('legend-top');
+    if (wide && showLegend) sheet.querySelector('.export-body').classList.add('legend-top');
     document.body.removeChild(sheet);
     return sheet;
   }
@@ -931,7 +932,7 @@
   setupStopPick('door-col', 'data-door-col', 'busDoorCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
 
   // PDF view shows the export options live, so redraw it when one changes.
-  ['opt-color', 'pdf-before', 'export-frame', 'export-date'].forEach(function (id) {
+  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-date'].forEach(function (id) {
     var el = $(id);
     if (el) el.addEventListener('change', function () { if (view === 'pdf') render(); });
   });

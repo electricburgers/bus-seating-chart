@@ -3,14 +3,14 @@
 
   var WHATS_NEW = {
     added: [
+      'Show legend checkbox in Save and export: leave the legend off the PDF, JPEG and PDF view.',
       'PDF view: see the chart on the page exactly as the PDF will print it.',
-      'Stop number shape (triangle, circle, square, squircle) and corner pickers.',
-      'Driver and Door labels can sit over any seat column.'
+      'Stop number shape (triangle, circle, square, squircle) and corner pickers.'
     ],
     changed: [
-      'The stop badge now shows correctly in the export Preview, JPEG and PDF.',
-      'PDF header fields sit closer to the center.',
-      'Rear at top orientation, and text sizes are sliders.'
+      'The legend moves to the top of the export when the chart is wider than tall.',
+      'The row number in the aisle always stays visible.',
+      'PDF header fields sit closer to the center.'
     ]
   };
 
