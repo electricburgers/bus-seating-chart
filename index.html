@@ -9,19 +9,22 @@
 </head>
 <body>
   <header class="app-header">
-    <h1>Bus Seating Chart</h1>
-    <label>Route name <input id="route-name" type="text" autocomplete="off"></label>
-    <label>Route # <input id="route-number" type="text" autocomplete="off" size="6"></label>
-    <label>Run <select id="route-shift"><option value="">(choose)</option><option value="AM">AM</option><option value="PM">PM</option><option value="Both">Both</option></select></label>
-    <label>Driver <input id="driver-name" type="text" autocomplete="off"></label>
-    <label>Aide <input id="aide-name" type="text" autocomplete="off"></label>
-    <label>Your name <input id="prepared-by" type="text" autocomplete="off"></label>
-    <label>Date <input id="export-date" type="date"></label>
-    <label class="notes-field">Notes <textarea id="route-notes" rows="1"></textarea></label>
-    <span class="spacer"></span>
-    <div class="settings-wrap">
-      <button id="settings-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="settings-panel">&#9881; Settings</button>
-      <div id="settings-panel" class="popover" role="dialog" aria-label="Settings" hidden></div>
+    <div class="app-title">
+      <h1>Bus Seating Chart</h1>
+      <div class="settings-wrap">
+        <button id="settings-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="settings-panel">&#9881; Settings</button>
+        <div id="settings-panel" class="popover" role="dialog" aria-label="Settings" hidden></div>
+      </div>
+    </div>
+    <div class="route-fields">
+      <label>Route name <input id="route-name" type="text" autocomplete="off"></label>
+      <label>Route # <input id="route-number" type="text" autocomplete="off" size="6"></label>
+      <label>Run <select id="route-shift"><option value="">(choose)</option><option value="AM">AM</option><option value="PM">PM</option><option value="Both">Both</option></select></label>
+      <label>Driver <input id="driver-name" type="text" autocomplete="off"></label>
+      <label>Aide <input id="aide-name" type="text" autocomplete="off"></label>
+      <label>Your name <input id="prepared-by" type="text" autocomplete="off"></label>
+      <label>Date <input id="export-date" type="date"></label>
+      <label class="notes-field">Notes <textarea id="route-notes" rows="1"></textarea></label>
     </div>
   </header>
 
@@ -79,46 +82,44 @@
 
     <section class="main-panel">
       <div class="toolbar">
-        <div class="seg" role="group" aria-label="View">
-          <button type="button" data-view="after" aria-pressed="true">After</button>
-          <button type="button" data-view="before" aria-pressed="false">Before</button>
-          <button type="button" data-view="side" aria-pressed="false">Side by side</button>
+        <div class="tool-group">
+          <span class="tool-label">View</span>
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" data-view="after" aria-pressed="true">After</button>
+            <button type="button" data-view="before" aria-pressed="false">Before</button>
+            <button type="button" data-view="side" aria-pressed="false">Side by side</button>
+          </div>
         </div>
-        <div class="seg" role="group" aria-label="Seat width">
-          <button type="button" data-seat-width="96" aria-pressed="false">Compact</button>
-          <button type="button" data-seat-width="140" aria-pressed="true">Wide</button>
-          <button type="button" data-seat-width="180" aria-pressed="false">Extra wide</button>
+        <div class="tool-group">
+          <span class="tool-label">Seat width</span>
+          <div class="seg" role="group" aria-label="Seat width">
+            <button type="button" data-seat-width="96" aria-pressed="false">Compact</button>
+            <button type="button" data-seat-width="140" aria-pressed="true">Wide</button>
+            <button type="button" data-seat-width="180" aria-pressed="false">Extra wide</button>
+          </div>
         </div>
-        <label class="size-pick">Student name size
-          <select id="name-size" aria-label="Student name font size">
-            <option value="12">Small</option><option value="14" selected>Medium</option><option value="16">Large</option><option value="18">Extra large</option>
-          </select>
-        </label>
-        <label class="size-pick">School name size
-          <select id="school-size" aria-label="School name font size">
-            <option value="11">Small</option><option value="12">Medium</option><option value="14" selected>Large</option><option value="16">Extra large</option>
-          </select>
-        </label>
-        <label class="size-pick">Seat id size
-          <select id="row-size" aria-label="Seat id font size">
-            <option value="12">Small</option><option value="14" selected>Medium</option><option value="18">Large</option><option value="22">Extra large</option>
-          </select>
-        </label>
-        <label class="size-pick">Column header size
-          <select id="col-size" aria-label="Column header (A B C) font size">
-            <option value="11">Small</option><option value="13" selected>Medium</option><option value="18">Large</option><option value="22">Extra large</option>
-          </select>
-        </label>
-        <label class="size-pick">Row number size
-          <select id="rownum-size" aria-label="Row number (1 2 3) font size">
-            <option value="14">Small</option><option value="18" selected>Medium</option><option value="24">Large</option><option value="30">Extra large</option>
-          </select>
-        </label>
-        <button id="undo" type="button" disabled title="Undo (Ctrl/Cmd+Z)">&#8630; Undo</button>
-      <button id="redo" type="button" disabled title="Redo (Ctrl/Cmd+Shift+Z)">Redo &#8631;</button>
-      <button id="swap-mode" type="button" aria-pressed="false" title="Click one seat, then another, to swap the two students">&#8646; Swap mode</button>
-      <button id="set-baseline" type="button">Set baseline</button>
-        <span id="baseline-note" class="hint"></span>
+        <div class="tool-group">
+          <span class="tool-label">Edit</span>
+          <div class="seg" role="group" aria-label="Edit">
+            <button id="undo" type="button" disabled title="Undo (Ctrl/Cmd+Z)">&#8630; Undo</button>
+            <button id="redo" type="button" disabled title="Redo (Ctrl/Cmd+Shift+Z)">Redo &#8631;</button>
+            <button id="swap-mode" type="button" aria-pressed="false" title="Click one seat, then another, to swap the two students">&#8646; Swap mode</button>
+          </div>
+        </div>
+        <div class="tool-group">
+          <span class="tool-label">Baseline</span>
+          <div class="baseline-row"><button id="set-baseline" type="button">Set baseline</button><span id="baseline-note" class="hint"></span></div>
+        </div>
+        <details class="text-sizes">
+          <summary>Text sizes</summary>
+          <div class="size-grid">
+          <label class="size-pick"><span>Student name</span><select id="name-size" aria-label="Student name font size"><option value="12">Small</option><option value="14" selected>Medium</option><option value="16">Large</option><option value="18">Extra large</option></select></label>
+          <label class="size-pick"><span>School name</span><select id="school-size" aria-label="School name font size"><option value="11">Small</option><option value="12">Medium</option><option value="14" selected>Large</option><option value="16">Extra large</option></select></label>
+          <label class="size-pick"><span>Seat id</span><select id="row-size" aria-label="Seat id font size"><option value="12">Small</option><option value="14" selected>Medium</option><option value="18">Large</option><option value="22">Extra large</option></select></label>
+          <label class="size-pick"><span>Column header</span><select id="col-size" aria-label="Column header (A B C) font size"><option value="11">Small</option><option value="13" selected>Medium</option><option value="18">Large</option><option value="22">Extra large</option></select></label>
+          <label class="size-pick"><span>Row number</span><select id="rownum-size" aria-label="Row number (1 2 3) font size"><option value="14">Small</option><option value="18" selected>Medium</option><option value="24">Large</option><option value="30">Extra large</option></select></label>
+          </div>
+        </details>
       </div>
       <section id="onboarding" class="onboarding" hidden>
         <h2>Welcome! Let&rsquo;s build your first seating chart</h2>

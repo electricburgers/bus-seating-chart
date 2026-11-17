@@ -17,6 +17,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.29.0] - 2026-11-16
+
+### Changed
+- Header: title and Settings on one row, route fields below with small labels above each input.
+- Toolbar grouped into labeled sections (View, Seat width, Edit, Baseline).
+- The five text size dropdowns moved into one tidy "Text sizes" menu.
+
 ## [0.28.0] - 2026-11-16
 
 ### Added
