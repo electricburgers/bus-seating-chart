@@ -55,12 +55,14 @@
   // Needs the seats to be in the page so the text can be measured. Safe to call again after every render.
   // Car seat and harness badges sit at the bottom right of the seat, just above the school line.
   function placeFeatureBars(container) {
+    var jobs = [];
     Array.prototype.forEach.call(container.querySelectorAll('.seat'), function (seat) {
       var bar = seat.querySelector('.features'), school = seat.querySelector('.chip-school');
       if (!bar) return;
       var gap = school ? seat.getBoundingClientRect().bottom - school.getBoundingClientRect().top + 2 : 4;
-      bar.style.bottom = Math.max(4, Math.round(gap)) + 'px';
+      jobs.push([bar, Math.max(4, Math.round(gap))]);
     });
+    jobs.forEach(function (j) { j[0].style.bottom = j[1] + 'px'; });
   }
 
   function fitSeatNames(container) {
@@ -75,15 +77,20 @@
     var fit = lib('nameFit');
     var base = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'), 10) || 14;
     var SMALL_SIZE = Math.max(9, base - 2), FLOOR_SIZE = Math.max(8, base - 4);
-    Array.prototype.forEach.call(container.querySelectorAll('.seat .chip-name'), function (el) {
-      var list = fit.tiers(el.getAttribute('data-full-name') || el.textContent, SMALL_SIZE, FLOOR_SIZE);
-      function overflows() { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }
-      for (var i = 0; i < list.length; i++) {
-        el.textContent = firstOnOwnLine(list[i].text);
-        el.style.fontSize = list[i].size ? list[i].size + 'px' : '';
-        if (!overflows()) return;
-      }
-    });
+    // Each pass writes every pending name's next tier, then reads all overflow flags together, so the browser
+    // lays out the page once per tier (at most a handful of times) instead of once per seat per tier.
+    var pending = Array.prototype.map.call(container.querySelectorAll('.seat .chip-name'), function (el) {
+      return { el: el, list: fit.tiers(el.getAttribute('data-full-name') || el.textContent, SMALL_SIZE, FLOOR_SIZE) };
+    }).filter(function (p) { return p.list.length > 0; });
+    function overflows(el) { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }
+    for (var tier = 0; pending.length; tier++) {
+      pending.forEach(function (p) {
+        var t = p.list[tier];
+        p.el.textContent = firstOnOwnLine(t.text);
+        p.el.style.fontSize = t.size ? t.size + 'px' : '';
+      });
+      pending = pending.filter(function (p) { return tier + 1 < p.list.length && overflows(p.el); });
+    }
   }
 
   function renderSeat(seatId, ctx, isWheelchair, label) {
@@ -199,13 +206,14 @@
 
   function renderPool(chart, warnings) {
     var R = lib('roster'), E = lib('exporter');
+    var seatIdx = R.seatIndex(chart.roster);
     var list = chart.students.filter(function (s) { return !s.removed; }).sort(function (a, b) {
-      var sa = R.seatOf(chart.roster, a.id) !== undefined, sb = R.seatOf(chart.roster, b.id) !== undefined;
+      var sa = seatIdx[a.id] !== undefined, sb = seatIdx[b.id] !== undefined;
       return sa === sb ? a.name.localeCompare(b.name) : (sa ? 1 : -1);
     });
     if (!list.length) return [h('li', { 'class': 'empty', text: 'No students yet. Open "Import CSV" above and paste or choose a file.' })];
     return list.map(function (s) {
-      var seatId = R.seatOf(chart.roster, s.id);
+      var seatId = seatIdx[s.id];
       var needs = h('div', { 'class': 'needs' }, NEED_LABELS.map(function (n) {
         return h('label', {}, [
           h('input', { type: 'checkbox', 'data-need': n.key, 'data-student-id': s.id, checked: !!(s.needs && s.needs[n.key]) }),

@@ -488,7 +488,8 @@
 
   // While a student is being moved, outline each seat: green fits, amber would raise a warning, blue swaps with someone.
   function showFits(studentId) {
-    var st = byId()[studentId];
+    var students = byId();
+    var st = students[studentId];
     if (!st) return;
     var here = Roster.seatOf(chart.roster, studentId);
     document.body.classList.add('is-moving');
@@ -496,8 +497,8 @@
       var seatId = el.getAttribute('data-seat-id'), occ = chart.roster[seatId];
       if (seatId === here) return;
       var bad = Needs.checkStudent(st.needs, seatId, chart.features).length > 0;
-      if (occ !== undefined && here !== undefined && byId()[occ]) {
-        bad = bad || Needs.checkStudent(byId()[occ].needs, here, chart.features).length > 0;
+      if (occ !== undefined && here !== undefined && students[occ]) {
+        bad = bad || Needs.checkStudent(students[occ].needs, here, chart.features).length > 0;
       }
       el.classList.add(bad ? 'drop-warn' : occ !== undefined ? 'drop-swap' : 'drop-ok');
     });

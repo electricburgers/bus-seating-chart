@@ -101,3 +101,19 @@ test('moveOrSwap: rejects an empty source or unknown seat', () => {
   assert.throws(() => R.moveOrSwap({}, layout, '1-driver-1', '1-driver-2'), /empty/);
   assert.throws(() => R.moveOrSwap({ '1-driver-1': 'ann' }, layout, '1-driver-1', 'nope'), /no such seat/);
 });
+
+test('seatIndex: inverts the roster in one pass and agrees with seatOf', () => {
+  const state = { '1-driver-1': 'ann', '2-door-1': 'bo' };
+  const idx = R.seatIndex(state);
+  assert.deepStrictEqual(idx, { ann: '1-driver-1', bo: '2-door-1' });
+  Object.keys(idx).forEach(id => assert.strictEqual(idx[id], R.seatOf(state, id)));
+  assert.strictEqual(idx.zed, undefined);
+});
+
+test('assign: still validates seats when the layout id set is cached', () => {
+  R.assign({}, layout, 'ann', '1-driver-1');
+  assert.throws(() => R.assign({}, layout, 'ann', 'nope'), /no such seat/);
+  const bigger = L.setWheelchair(layout, { enabled: true });
+  assert.doesNotThrow(() => R.assign({}, bigger, 'ann', 'wc-10'));
+  assert.throws(() => R.assign({}, layout, 'ann', 'wc-10'), /no such seat/);
+});

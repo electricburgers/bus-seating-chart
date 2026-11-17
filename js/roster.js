@@ -10,11 +10,16 @@
 
   function create() { return {}; }
 
+  // Layouts are replaced, never edited in place, so the id set is built once per layout object.
+  var validCache = typeof WeakMap === 'function' ? new WeakMap() : null;
   function validSpotIds(layout) {
+    var cached = validCache && validCache.get(layout);
+    if (cached) return cached;
     var L = layoutLib();
     var ids = {};
     L.getSeats(layout).forEach(function (s) { ids[s.id] = true; });
     L.getWheelchairSpots(layout).forEach(function (s) { ids[s.id] = true; });
+    if (validCache) validCache.set(layout, ids);
     return ids;
   }
 
@@ -23,6 +28,13 @@
   function seatOf(state, studentId) {
     for (var id in state) if (state[id] === studentId) return id;
     return undefined;
+  }
+
+  // { studentId: seatId } in one pass, so many lookups cost O(seats) in total instead of O(seats) each.
+  function seatIndex(state) {
+    var map = {};
+    for (var id in state) map[state[id]] = id;
+    return map;
   }
 
   function assign(state, layout, studentId, seatId) {
@@ -88,7 +100,7 @@
   }
 
   var api = { create: create, assign: assign, place: place, unassign: unassign, swap: swap, moveOrSwap: moveOrSwap, prune: prune,
-    unseated: unseated, studentAt: studentAt, seatOf: seatOf, isWheelchairSpot: isWheelchairSpot };
+    unseated: unseated, studentAt: studentAt, seatOf: seatOf, seatIndex: seatIndex, isWheelchairSpot: isWheelchairSpot };
   root.BusApp = root.BusApp || {};
   root.BusApp.roster = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

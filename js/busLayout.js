@@ -156,7 +156,7 @@
 
   function getSeats(layout) {
     var seats = [];
-    getBenches(layout).forEach(function (b) { seats = seats.concat(b.driver, b.door); });
+    getBenches(layout).forEach(function (b) { Array.prototype.push.apply(seats, b.driver); Array.prototype.push.apply(seats, b.door); });
     return seats;
   }
 

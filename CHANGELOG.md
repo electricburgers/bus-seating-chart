@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.30.0] - 2026-11-16
+
+### Changed
+- Faster rendering: student-to-seat lookups are built once per render instead of scanning every seat per student (O(students x seats) to O(students + seats)).
+- Valid seat ids and seat labels are cached per layout instead of being rebuilt on every drop or change-log row.
+- Seat names are fitted in batches (all writes, then all reads) so the browser lays out the page a few times instead of once per seat.
+- Seat list building and the drag "fits" outline no longer rebuild the student map for every seat.
+
 ## [0.29.0] - 2026-11-16
 
 ### Changed

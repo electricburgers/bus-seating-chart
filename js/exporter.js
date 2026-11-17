@@ -20,6 +20,17 @@
   }
 
   // Pass the layout to get the official label first, like "A1 (row 1, driver side)".
+  // seat id -> official label, built once per layout object (layouts are replaced, not edited in place).
+  var labelCache = typeof WeakMap === 'function' ? new WeakMap() : null;
+  function seatLabels(layout) {
+    var map = labelCache && labelCache.get(layout);
+    if (map) return map;
+    map = {};
+    lib('busLayout').getSeats(layout).forEach(function (s) { map[s.id] = s.label; });
+    if (labelCache) labelCache.set(layout, map);
+    return map;
+  }
+
   function formatSeat(id, layout) {
     if (!id) return '';
     var wc = /^wc-(\d+)$/.exec(id);
@@ -27,8 +38,8 @@
     var m = /^(\d+)-(driver|door)-(\d+)$/.exec(id);
     if (!m) return id;
     if (layout) {
-      var seat = lib('busLayout').getSeats(layout).filter(function (s) { return s.id === id; })[0];
-      if (seat) return seat.label + ' (row ' + m[1] + ', ' + m[2] + ' side)';
+      var label = seatLabels(layout)[id];
+      if (label) return label + ' (row ' + m[1] + ', ' + m[2] + ' side)';
     }
     return 'Row ' + m[1] + ', ' + m[2] + ' side, seat ' + m[3];
   }
