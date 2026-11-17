@@ -98,8 +98,6 @@ label.file-btn input { max-width: 190px; }
 .bench-side { display: flex; gap: 4px; }
 .bench-side.left { justify-content: flex-start; }
 .bench-side.right { justify-content: flex-end; }
-.front-row .bench-side.left { justify-content: flex-end; }
-.front-row .bench-side.right { justify-content: flex-start; }
 .seat-label { position: absolute; top: -10px; left: 6px; z-index: 1; padding: 0 4px; border-radius: 4px; background: var(--panel); border: 1px solid var(--border); font-size: var(--row-size, 14px); font-weight: 700; line-height: 18px; color: var(--muted); }
 .col-head { box-sizing: border-box; width: var(--seat-w, 96px); flex: 0 0 auto; text-align: center; font-weight: 700; font-size: var(--col-size, 13px); color: var(--muted); }
 .notes-field { flex: 1 1 260px; }
@@ -108,6 +106,7 @@ label.file-btn input { max-width: 190px; }
 .aisle { text-align: center; font-size: 15px; font-weight: 700; color: var(--muted); }
 .marker { padding: 4px 14px; font-size: 18px; font-weight: 700; letter-spacing: .04em; border-radius: 6px; background: var(--marker); text-align: center; }
 .door-marker { background: var(--door); }
+.col-head .marker { box-sizing: border-box; width: 100%; padding: 4px 0; }
 .front-row .aisle { font-size: 13px; font-weight: 600; }
 
 /* Emergency window exit: a red tab beside the seats of its row, stretched to the seat height */

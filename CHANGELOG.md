@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.34.0] - 2026-11-17
+
+### Added
+- Text sizes menu has Driver label column and Door label column options. The Driver and Door words slide to sit over the chosen seat column (A, B, C, D or the aisle seat), or under it when the rear is at the top. Applies to the web view and exports.
+
 ## [0.33.0] - 2026-11-17
 
 ### Added

@@ -884,6 +884,9 @@
   setupStopPick('stop-shape', 'data-stop-shape', 'busStopShape', ['triangle', 'circle', 'square', 'squircle'], 'triangle');
   setupStopPick('stop-corner', 'data-stop-corner', 'busStopCorner', ['bl', 'br', 'tl', 'tr'], 'bl');
 
+  setupStopPick('driver-col', 'data-driver-col', 'busDriverCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
+  setupStopPick('door-col', 'data-door-col', 'busDoorCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
+
   wire();
   render();
 

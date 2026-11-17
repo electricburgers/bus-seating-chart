@@ -167,23 +167,45 @@
 
   var LETTERS = 'ABCDEFGHIJKL';
   // A is always the window seat, then B, then C next to the aisle. The left column reads window to aisle, the right column aisle to window.
-  function columnHeaders(layout, order, anyExit) {
-    var L = lib('busLayout');
+  function sideCounts(layout) {
     var most = { driver: 0, door: 0 };
-    L.getBenches(layout).forEach(function (b) {
+    lib('busLayout').getBenches(layout).forEach(function (b) {
       if (!b.wheelchair) { most.driver = Math.max(most.driver, b.driver.length); most.door = Math.max(most.door, b.door.length); }
     });
-    var cols = order.map(function (side, i) {
-      var kids = [];
-      for (var n = 0; n < most[side]; n++) kids.push(h('div', { 'class': 'col-head', text: LETTERS.charAt(n) }));
-      if (i === 1) kids.reverse();
-      var tab = anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null;
-      if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
-      var pad = h('span', { 'class': 'window-num window-num-spacer', 'aria-hidden': 'true' });
-      if (i === 0) kids.unshift(pad); else kids.push(pad);
-      return h('div', { 'class': 'bench-side col-heads ' + (i === 0 ? 'left' : 'right') }, kids);
-    });
+    return most;
+  }
+  // One side of a header-style row: a slot per seat column plus the same spacers the seat rows have, so slots line up with the seats.
+  // slotFor(side, n) returns the content of column n (0 = A).
+  function slotRow(order, i, most, anyExit, slotFor) {
+    var side = order[i], kids = [];
+    for (var n = 0; n < most[side]; n++) kids.push(slotFor(side, n));
+    if (i === 1) kids.reverse();
+    var tab = anyExit ? h('span', { 'class': 'window-exit-spacer', 'aria-hidden': 'true' }) : null;
+    if (tab) { if (i === 0) kids.unshift(tab); else kids.push(tab); }
+    var pad = h('span', { 'class': 'window-num window-num-spacer', 'aria-hidden': 'true' });
+    if (i === 0) kids.unshift(pad); else kids.push(pad);
+    return h('div', { 'class': 'bench-side col-heads ' + (i === 0 ? 'left' : 'right') }, kids);
+  }
+  function columnHeaders(layout, order, anyExit) {
+    var most = sideCounts(layout);
+    function slot(side, n) { return h('div', { 'class': 'col-head', text: LETTERS.charAt(n) }); }
+    var cols = [0, 1].map(function (i) { return slotRow(order, i, most, anyExit, slot); });
     return h('div', { 'class': 'bench col-head-row', 'aria-hidden': 'true' }, [cols[0], h('div', { 'class': 'aisle', text: '' }), cols[1]]);
+  }
+  // Driver and Door labels sit over (or, with the rear at top, under) the seat column the user picked. Default is the aisle seat column.
+  function markerColumn(side, count) {
+    var v = document.documentElement.getAttribute('data-' + side + '-col') || 'aisle';
+    var n = v === 'aisle' ? count - 1 : LETTERS.indexOf(v);
+    return Math.max(0, Math.min(count - 1, n));
+  }
+  function frontRow(layout, order, anyExit) {
+    var most = sideCounts(layout);
+    function slot(side, n) {
+      var on = n === markerColumn(side, most[side]);
+      return h('div', { 'class': 'col-head' }, on ? [markerCell(side === 'driver' ? 'Driver' : 'Door', side + '-marker')] : []);
+    }
+    var cols = [0, 1].map(function (i) { return slotRow(order, i, most, anyExit, slot); });
+    return h('div', { 'class': 'bench front-row' }, [cols[0], h('div', { 'class': 'aisle', text: 'Front' }), cols[1]]);
   }
 
   // Aide's view: rotate the chart half a turn so the rear exit is at the top and the driver and door are at the bottom.
@@ -216,14 +238,7 @@
     var bus = h('div', { 'class': 'bus' });
     var anyExit = Object.keys(layout.emergencyWindows || {}).length > 0;
 
-    var front = { left: [], right: [] };
-    front[markers.driverSeat.side].push(markerCell('Driver', 'driver-marker'));
-    front[markers.frontDoor.side].push(markerCell('Door', 'door-marker'));
-    bus.appendChild(h('div', { 'class': 'bench front-row' }, [
-      h('div', { 'class': 'bench-side left' }, front.left),
-      h('div', { 'class': 'aisle', text: 'Front' }),
-      h('div', { 'class': 'bench-side right' }, front.right)
-    ]));
+    bus.appendChild(frontRow(layout, order, anyExit));
 
     bus.appendChild(columnHeaders(layout, order, anyExit));
 
