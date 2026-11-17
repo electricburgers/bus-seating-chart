@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.31.0] - 2026-11-17
+
+### Added
+- Bus stop number: each student can have a stop number (up to 3 characters), set in the student list. It shows in a triangle at the bottom left of the seat, above the school name.
+- Text sizes menu has Stop triangle and Stop number size options, which apply to the web view and exports.
+
 ## [0.30.0] - 2026-11-16
 
 ### Changed
