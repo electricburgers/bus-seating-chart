@@ -349,11 +349,12 @@
     if (anyHarness) item(h('span', { 'class': 'feature on feature-harness', text: 'H' }), 'Harness attachment');
     if (anyStop) {
       var tri = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      tri.setAttribute('viewBox', '0 0 100 90'); tri.setAttribute('class', 'legend-tri');
-      var p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      p.setAttribute('points', '50,4 97,86 3,86'); p.setAttribute('class', 'stop-tri');
+      var shape = UI.currentStopShape();
+      tri.setAttribute('viewBox', root.BusApp.stopShape.VIEWBOX); tri.setAttribute('class', 'legend-tri');
+      var p = UI.stopShapeEl(shape);
+      p.setAttribute('class', 'stop-tri');
       tri.appendChild(p);
-      item(tri, 'Number in triangle: bus stop');
+      item(tri, 'Number in ' + (shape === 'squircle' ? 'squircle' : shape) + ': bus stop');
     }
     if (Object.keys(ctx.warnings).length) item(h('span', { 'class': 'flag legend-flag', text: '\u2691' }), 'Warning: needs a seat feature this seat lacks');
     if (Layout.getWheelchairSpots(layout).length) item(h('span', { 'class': 'legend-swatch sw-wc' }), 'Wheelchair spot');

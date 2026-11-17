@@ -34,30 +34,27 @@
 
   function warningText(list) { return list.map(lib('needs').describe).join('; '); }
 
+  function currentStopShape() { return document.documentElement.getAttribute('data-stop-shape') || 'triangle'; }
+  function stopShapeEl(shape) {
+    var sp = lib('stopShape').spec(shape);
+    var el = document.createElementNS('http://www.w3.org/2000/svg', sp.tag);
+    Object.keys(sp.attrs).forEach(function (k) { el.setAttribute(k, sp.attrs[k]); });
+    return el;
+  }
+
   // Bus stop number in a triangle. An SVG so the outline and number stay crisp in color, gray and black and white.
   function stopBadge(stop) {
     var ns = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('class', 'chip-stop');
-    svg.setAttribute('viewBox', '0 0 100 90');
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', 'Bus stop ' + stop);
-    var shape = document.documentElement.getAttribute('data-stop-shape') || 'triangle';
-    var tri;
-    if (shape === 'circle') {
-      tri = document.createElementNS(ns, 'ellipse');
-      tri.setAttribute('cx', '50'); tri.setAttribute('cy', '45'); tri.setAttribute('rx', '44'); tri.setAttribute('ry', '41');
-    } else if (shape === 'square' || shape === 'squircle') {
-      tri = document.createElementNS(ns, 'rect');
-      tri.setAttribute('x', '5'); tri.setAttribute('y', '4'); tri.setAttribute('width', '90'); tri.setAttribute('height', '82');
-      if (shape === 'squircle') { tri.setAttribute('rx', '30'); tri.setAttribute('ry', '30'); }
-    } else {
-      tri = document.createElementNS(ns, 'polygon');
-      tri.setAttribute('points', '50,4 97,86 3,86');
-    }
+    var shape = currentStopShape();
+    svg.setAttribute('viewBox', lib('stopShape').VIEWBOX);
+    var tri = stopShapeEl(shape);
     tri.setAttribute('class', 'stop-tri');
     var t = document.createElementNS(ns, 'text');
-    t.setAttribute('x', '50'); t.setAttribute('y', shape === 'triangle' ? '78' : '64'); t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('x', '50'); t.setAttribute('y', String(lib('stopShape').numberY(shape))); t.setAttribute('text-anchor', 'middle');
     t.setAttribute('class', 'stop-num');
     t.textContent = stop;
     svg.appendChild(tri); svg.appendChild(t);
@@ -324,7 +321,7 @@
     ]);
   }
 
-  var api = { schoolStyle: schoolStyle, setRearTop: setRearTop, h: h, fitSeatNames: fitSeatNames, renderBus: renderBus, renderPool: renderPool, renderChangeLog: renderChangeLog, FEATURE_BUTTONS: FEATURE_BUTTONS };
+  var api = { stopShapeEl: stopShapeEl, currentStopShape: currentStopShape, schoolStyle: schoolStyle, setRearTop: setRearTop, h: h, fitSeatNames: fitSeatNames, renderBus: renderBus, renderPool: renderPool, renderChangeLog: renderChangeLog, FEATURE_BUTTONS: FEATURE_BUTTONS };
   root.BusApp = root.BusApp || {};
   root.BusApp.ui = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

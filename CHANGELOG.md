@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.36.0] - 2026-11-17
+
+### Fixed
+- Stop shapes (circles especially) were clipped at the edge in the export Preview, JPEG and PDF. The badge now has a padded viewBox so the outline always fits, with a test that checks every shape fits.
+- The export legend now shows the chosen stop shape instead of always showing a triangle.
+
 ## [0.35.0] - 2026-11-17
 
 ### Fixed
