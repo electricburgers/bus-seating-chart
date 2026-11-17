@@ -44,3 +44,12 @@ test('the number sits inside every shape', () => {
     assert.ok(y > e.t && y < e.b, name);
   });
 });
+
+test('corner names resolve to a vertical and horizontal side, bottom left by default', () => {
+  assert.deepStrictEqual(S.corner('tr'), { id: 'tr', top: true, right: true });
+  assert.deepStrictEqual(S.corner('bl'), { id: 'bl', top: false, right: false });
+  assert.deepStrictEqual(S.corner('br'), { id: 'br', top: false, right: true });
+  assert.deepStrictEqual(S.corner('tl'), { id: 'tl', top: true, right: false });
+  assert.deepStrictEqual(S.corner('nope'), { id: 'bl', top: false, right: false });
+  assert.deepStrictEqual(S.corner(), { id: 'bl', top: false, right: false });
+});

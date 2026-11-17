@@ -17,7 +17,13 @@
   // Baseline of the number, so it sits in the wide part of the shape.
   function numberY(shape) { return shape === 'circle' || shape === 'square' || shape === 'squircle' ? 64 : 78; }
 
-  var api = { VIEWBOX: VIEWBOX, STROKE: STROKE, SHAPES: SHAPES, spec: spec, numberY: numberY };
+  // Which seat corner the badge sits in: 'tl', 'tr', 'bl' (default) or 'br'.
+  function corner(c) {
+    var id = ['tl', 'tr', 'bl', 'br'].indexOf(c) < 0 ? 'bl' : c;
+    return { id: id, top: id.charAt(0) === 't', right: id.charAt(1) === 'r' };
+  }
+
+  var api = { corner: corner, VIEWBOX: VIEWBOX, STROKE: STROKE, SHAPES: SHAPES, spec: spec, numberY: numberY };
   root.BusApp = root.BusApp || {};
   root.BusApp.stopShape = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

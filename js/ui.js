@@ -47,6 +47,8 @@
     var ns = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('class', 'chip-stop');
+    // The corner is stored on the badge itself, not on the page root: the export capture works on a copy where root attributes do not exist.
+    svg.setAttribute('data-corner', lib('stopShape').corner(document.documentElement.getAttribute('data-stop-corner')).id);
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', 'Bus stop ' + stop);
     var shape = currentStopShape();
@@ -84,13 +86,13 @@
   // Car seat and harness badges sit at the bottom right of the seat, just above the school line.
   function placeFeatureBars(container) {
     var jobs = [];
-    var topCorner = /^t/.test(document.documentElement.getAttribute('data-stop-corner') || '');
     Array.prototype.forEach.call(container.querySelectorAll('.seat'), function (seat) {
       var bar = seat.querySelector('.features'), stop = seat.querySelector('.chip-stop'), school = seat.querySelector('.chip-school');
-      if (!bar && !(stop && !topCorner)) return;
+      if (stop && lib('stopShape').corner(stop.getAttribute('data-corner')).top) stop = null;
+      if (!bar && !stop) return;
       var gap = school ? seat.getBoundingClientRect().bottom - school.getBoundingClientRect().top + 2 : 4;
       if (bar) jobs.push([bar, Math.max(4, Math.round(gap))]);
-      if (stop && !topCorner) jobs.push([stop, Math.max(4, Math.round(gap))]);
+      if (stop) jobs.push([stop, Math.max(4, Math.round(gap))]);
     });
     jobs.forEach(function (j) { j[0].style.bottom = j[1] + 'px'; });
   }

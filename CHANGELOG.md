@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.38.0] - 2026-11-17
+
+### Fixed
+- The stop number moved to a top or right corner now shows in that corner in the export Preview, JPEG and PDF. The corner is stored on the badge itself, because the capture library works on a copy of the page that does not have the page's root settings.
+- Text size, seat width and stop size settings are now carried onto the export sheet for the same reason, so the export matches the page.
+
 ## [0.37.0] - 2026-11-17
 
 ### Added

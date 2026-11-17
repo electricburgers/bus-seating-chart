@@ -405,6 +405,10 @@
       });
     }
     if ($('opt-color').value === 'bw') sheet.classList.add('bw');
+    // The capture library copies the sheet into a fresh document that has none of the page's root settings (text sizes,
+    // seat width, stop size). Carry them on the sheet itself so the export matches the page.
+    var rs = document.documentElement.style;
+    for (var i = 0; i < rs.length; i++) if (rs[i].indexOf('--') === 0) sheet.style.setProperty(rs[i], rs.getPropertyValue(rs[i]));
     return sheet;
   }
 
