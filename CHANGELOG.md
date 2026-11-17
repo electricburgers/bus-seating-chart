@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.39.0] - 2026-11-17
+
+### Fixed
+- The stop number badge was missing from the export Preview, JPEG and PDF in every shape and corner. The export capture bakes an element's computed style into a standalone image, and a badge that was itself absolutely positioned was shifted out of view. The positioned part is now a wrapper and the SVG inside stays static. Checked by running the real export in headless Chrome.
+
 ## [0.38.0] - 2026-11-17
 
 ### Fixed

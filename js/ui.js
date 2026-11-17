@@ -45,10 +45,14 @@
   // Bus stop number in a triangle. An SVG so the outline and number stay crisp in color, gray and black and white.
   function stopBadge(stop) {
     var ns = 'http://www.w3.org/2000/svg';
+    // The positioned wrapper holds the corner and size. The SVG inside stays static: the export capture bakes an element's
+    // computed style into a standalone image, and an SVG that is itself absolutely positioned ends up shifted out of view.
+    var wrap = document.createElement('span');
+    wrap.className = 'chip-stop';
     var svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('class', 'chip-stop');
+    svg.setAttribute('class', 'stop-svg');
     // The corner is stored on the badge itself, not on the page root: the export capture works on a copy where root attributes do not exist.
-    svg.setAttribute('data-corner', lib('stopShape').corner(document.documentElement.getAttribute('data-stop-corner')).id);
+    wrap.setAttribute('data-corner', lib('stopShape').corner(document.documentElement.getAttribute('data-stop-corner')).id);
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', 'Bus stop ' + stop);
     var shape = currentStopShape();
@@ -60,7 +64,8 @@
     t.setAttribute('class', 'stop-num');
     t.textContent = stop;
     svg.appendChild(tri); svg.appendChild(t);
-    return svg;
+    wrap.appendChild(svg);
+    return wrap;
   }
 
   function studentChip(student, warnings, extraClass) {
