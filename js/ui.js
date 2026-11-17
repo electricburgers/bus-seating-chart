@@ -174,6 +174,29 @@
     return h('div', { 'class': 'bench col-head-row', 'aria-hidden': 'true' }, [cols[0], h('div', { 'class': 'aisle', text: '' }), cols[1]]);
   }
 
+  // Aide's view: rotate the chart half a turn so the rear exit is at the top and the driver and door are at the bottom.
+  // Rows run rear to front and each row is mirrored (the driver side moves to the right), as the aide sees it facing the back.
+  var rearTop = false;
+  function setRearTop(on) { rearTop = !!on; }
+  function rotateBus(bus) {
+    Array.prototype.forEach.call(bus.querySelectorAll('.bench'), function (bench) {
+      var kids = Array.prototype.slice.call(bench.children);
+      if (kids.length === 3) {
+        kids.forEach(function (side) {
+          if (side.classList.contains('bench-side')) {
+            side.classList.toggle('left'); side.classList.toggle('right');
+            Array.prototype.slice.call(side.children).reverse().forEach(function (c) { side.appendChild(c); });
+          }
+        });
+        kids.reverse().forEach(function (c) { bench.appendChild(c); });
+      } else {
+        kids.reverse().forEach(function (c) { bench.appendChild(c); });
+      }
+    });
+    Array.prototype.slice.call(bus.children).reverse().forEach(function (c) { bus.appendChild(c); });
+    bus.classList.add('rear-top');
+  }
+
   // ctx: { chart, roster, features, interactive, changed: {seatId: true}, warnings, byId, title }
   function renderBus(ctx) {
     var L = lib('busLayout'), layout = ctx.chart.layout;
@@ -217,6 +240,7 @@
     });
     bus.appendChild(h('div', { 'class': 'rear-exit', text: 'Rear emergency exit' }));
 
+    if (rearTop) rotateBus(bus);
     return h('figure', { 'class': 'bus-figure' }, [ctx.title ? h('figcaption', { text: ctx.title }) : null, bus]);
   }
 
@@ -273,7 +297,7 @@
     ]);
   }
 
-  var api = { h: h, fitSeatNames: fitSeatNames, renderBus: renderBus, renderPool: renderPool, renderChangeLog: renderChangeLog, FEATURE_BUTTONS: FEATURE_BUTTONS };
+  var api = { schoolStyle: schoolStyle, setRearTop: setRearTop, h: h, fitSeatNames: fitSeatNames, renderBus: renderBus, renderPool: renderPool, renderChangeLog: renderChangeLog, FEATURE_BUTTONS: FEATURE_BUTTONS };
   root.BusApp = root.BusApp || {};
   root.BusApp.ui = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

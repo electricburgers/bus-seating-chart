@@ -326,6 +326,47 @@
     return UI.h('span', {}, [UI.h('strong', { text: text.slice(0, i + 1) }), document.createTextNode(text.slice(i + 1))]);
   }
 
+  // Legend for the exported chart. Lists only what shows up on this chart, so a plain chart gets a short legend.
+  function exportLegend(roster, features, ctx, colorMode) {
+    var seated = {}, schools = {}, anyStop = false, anyCar = false, anyHarness = false;
+    Object.keys(roster).forEach(function (seatId) {
+      var st = ctx.byId[roster[seatId]];
+      if (!st) return;
+      seated[seatId] = st;
+      if (st.stop) anyStop = true;
+      if (st.school) schools[st.school] = true;
+      var f = features[seatId] || {};
+      if (f.carSeat) anyCar = true;
+      if (f.harnessAttachment) anyHarness = true;
+    });
+    Object.keys(features).forEach(function (seatId) {
+      if (features[seatId] && features[seatId].carSeat) anyCar = true;
+      if (features[seatId] && features[seatId].harnessAttachment) anyHarness = true;
+    });
+    var layout = chart.layout, h = UI.h, items = [];
+    function item(icon, text) { items.push(h('li', {}, [icon, h('span', { text: text })])); }
+    if (anyCar) item(h('span', { 'class': 'feature on', text: '\u2605' }), 'Car seat (5-star belt)');
+    if (anyHarness) item(h('span', { 'class': 'feature on feature-harness', text: 'H' }), 'Harness attachment');
+    if (anyStop) {
+      var tri = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      tri.setAttribute('viewBox', '0 0 100 90'); tri.setAttribute('class', 'legend-tri');
+      var p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      p.setAttribute('points', '50,4 97,86 3,86'); p.setAttribute('class', 'stop-tri');
+      tri.appendChild(p);
+      item(tri, 'Number in triangle: bus stop');
+    }
+    if (Object.keys(ctx.warnings).length) item(h('span', { 'class': 'flag legend-flag', text: '\u2691' }), 'Warning: needs a seat feature this seat lacks');
+    if (Layout.getWheelchairSpots(layout).length) item(h('span', { 'class': 'legend-swatch sw-wc' }), 'Wheelchair spot');
+    if (Object.keys(layout.emergencyWindows || {}).length) item(h('span', { 'class': 'window-exit legend-exit', text: 'EXIT' }), 'Emergency window exit');
+    if (colorMode === 'color') {
+      Object.keys(schools).sort().forEach(function (sc) {
+        item(h('span', { 'class': 'legend-swatch', style: UI.schoolStyle(sc) + 'border-width:2px;border-style:solid;' }), sc);
+      });
+    }
+    if (!items.length) return null;
+    return h('div', { 'class': 'export-legend' }, [h('div', { 'class': 'export-legend-title', text: 'Legend' }), h('ul', {}, items)]);
+  }
+
   // Draws one chart with the export header in an off-screen sheet and returns a canvas.
   // withLabel: show the "Before" / "After" caption. Only needed when both charts are in the same export.
   function captureSheet(which, withLabel) {
@@ -335,12 +376,15 @@
     var info = Exp.headerLines(exportInfo());
     var isBefore = which === 'before';
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
+    var ctx = busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)');
+    var busFig = UI.renderBus(ctx);
+    var legend = exportLegend(roster, features, ctx, $('opt-color').value);
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
         UI.h('div', { 'class': 'export-header-row' }, [headerField(info.route), headerField(info.driver)]),
         UI.h('div', { 'class': 'export-header-row' }, [headerField(info.aide), headerField(info.date)])]),
         info.notes ? UI.h('div', { 'class': 'export-notes', text: 'Notes: ' + info.notes }) : null,
-      UI.renderBus(busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)'))
+      UI.h('div', { 'class': 'export-body' }, [busFig, legend])
     ]);
     if ($('export-frame').checked) {
       // Optional fun frame: a yellow school-bus outline with wheels around the chart.
@@ -780,28 +824,47 @@
     b.addEventListener('click', function () { setSeatWidth(parseInt(b.getAttribute('data-seat-width'), 10), true); render(); });
   });
 
+  // Orientation is a view setting too. "Rear at top" shows the bus as the aide and driver see the students.
+  function setOrient(rear, save) {
+    UI.setRearTop(rear);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-orient]'), function (b) {
+      b.setAttribute('aria-pressed', (b.getAttribute('data-orient') === 'rear') === rear ? 'true' : 'false');
+    });
+    if (save) { try { storage().setItem('busRearTop', rear ? '1' : '0'); } catch (e) { /* storage unavailable */ } }
+  }
+  var savedRear = false;
+  try { savedRear = storage().getItem('busRearTop') === '1'; } catch (e) { /* storage unavailable */ }
+  setOrient(savedRear, false);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-orient]'), function (b) {
+    b.addEventListener('click', function () { setOrient(b.getAttribute('data-orient') === 'rear', true); render(); });
+  });
+
   // Student name and school name font sizes are view settings too. They apply to the web view and to exports.
-  function setupSizePick(id, cssVar, key, allowed, fallback) {
+  function setupSizePick(id, cssVar, key, range, fallback) {
     var sel = $(id);
     if (!sel) return;
+    var out = sel.parentNode.querySelector('output');
     function apply(px, save) {
-      px = allowed.indexOf(px) >= 0 ? px : fallback;
+      px = isFinite(px) ? Math.min(range[1], Math.max(range[0], px)) : fallback;
       document.documentElement.style.setProperty(cssVar, px + 'px');
       sel.value = String(px);
+      if (out) out.textContent = px + ' px';
       if (save) { try { storage().setItem(key, String(px)); } catch (e) { /* storage unavailable */ } }
     }
     var saved = fallback;
     try { saved = parseInt(storage().getItem(key), 10) || fallback; } catch (e) { /* storage unavailable */ }
     apply(saved, false);
+    // Drag shows the new size right away through the CSS variable; the chart is redrawn and saved when the slider is let go.
+    sel.addEventListener('input', function () { apply(parseInt(sel.value, 10), false); });
     sel.addEventListener('change', function () { apply(parseInt(sel.value, 10), true); render(); });
   }
-  setupSizePick('name-size', '--name-size', 'busNameSize', [12, 14, 16, 18], 14);
-  setupSizePick('row-size', '--row-size', 'busRowSize', [12, 14, 18, 22], 14);
-  setupSizePick('col-size', '--col-size', 'busColSize', [11, 13, 18, 22], 13);
-  setupSizePick('rownum-size', '--rownum-size', 'busRowNumSize', [14, 18, 24, 30], 18);
-  setupSizePick('stop-size', '--stop-size', 'busStopSize', [26, 34, 44, 56], 34);
-  setupSizePick('stop-num-size', '--stop-num-size', 'busStopNumSize', [40, 50, 60, 70], 50);
-  setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 12, 14, 16], 14);
+  setupSizePick('name-size', '--name-size', 'busNameSize', [12, 18], 14);
+  setupSizePick('row-size', '--row-size', 'busRowSize', [12, 22], 14);
+  setupSizePick('col-size', '--col-size', 'busColSize', [11, 22], 13);
+  setupSizePick('rownum-size', '--rownum-size', 'busRowNumSize', [14, 30], 18);
+  setupSizePick('stop-size', '--stop-size', 'busStopSize', [26, 56], 34);
+  setupSizePick('stop-num-size', '--stop-num-size', 'busStopNumSize', [40, 70], 50);
+  setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 16], 14);
 
   wire();
   render();

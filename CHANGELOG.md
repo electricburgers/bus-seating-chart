@@ -17,6 +17,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.32.0] - 2026-11-17
+
+### Added
+- Orientation setting (Front at top / Rear at top). Rear at top turns the chart half a turn so the rear emergency exit is at the top and the driver and door are at the bottom, as the aide and driver see the students. Applies to the web view and exports, and is remembered in the browser.
+- Exported PDF and JPEG charts print a legend on the right side listing only what appears on that chart.
+
+### Changed
+- Text sizes are now sliders with a live px value instead of dropdowns.
+
 ## [0.31.0] - 2026-11-17
 
 ### Added

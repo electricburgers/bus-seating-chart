@@ -99,6 +99,15 @@
           </div>
         </div>
         <div class="tool-group">
+        </div>
+        <div class="tool-group">
+          <span class="tool-label">Orientation</span>
+          <div class="seg" role="group" aria-label="Orientation">
+            <button type="button" data-orient="front" aria-pressed="true" title="Front of the bus at the top">Front at top</button>
+            <button type="button" data-orient="rear" aria-pressed="false" title="Rear exit at the top, driver and door at the bottom, as the aide sees the students">Rear at top</button>
+          </div>
+        </div>
+        <div class="tool-group">
           <span class="tool-label">Edit</span>
           <div class="seg" role="group" aria-label="Edit">
             <button id="undo" type="button" disabled title="Undo (Ctrl/Cmd+Z)">&#8630; Undo</button>
@@ -113,13 +122,13 @@
         <details class="text-sizes">
           <summary>Text sizes</summary>
           <div class="size-grid">
-          <label class="size-pick"><span>Student name</span><select id="name-size" aria-label="Student name font size"><option value="12">Small</option><option value="14" selected>Medium</option><option value="16">Large</option><option value="18">Extra large</option></select></label>
-          <label class="size-pick"><span>School name</span><select id="school-size" aria-label="School name font size"><option value="11">Small</option><option value="12">Medium</option><option value="14" selected>Large</option><option value="16">Extra large</option></select></label>
-          <label class="size-pick"><span>Stop triangle</span><select id="stop-size" aria-label="Stop triangle size"><option value="26">Small</option><option value="34" selected>Medium</option><option value="44">Large</option><option value="56">Extra large</option></select></label>
-          <label class="size-pick"><span>Stop number</span><select id="stop-num-size" aria-label="Stop number size inside triangle"><option value="40">Small</option><option value="50" selected>Medium</option><option value="60">Large</option><option value="70">Extra large</option></select></label>
-          <label class="size-pick"><span>Seat id</span><select id="row-size" aria-label="Seat id font size"><option value="12">Small</option><option value="14" selected>Medium</option><option value="18">Large</option><option value="22">Extra large</option></select></label>
-          <label class="size-pick"><span>Column header</span><select id="col-size" aria-label="Column header (A B C) font size"><option value="11">Small</option><option value="13" selected>Medium</option><option value="18">Large</option><option value="22">Extra large</option></select></label>
-          <label class="size-pick"><span>Row number</span><select id="rownum-size" aria-label="Row number (1 2 3) font size"><option value="14">Small</option><option value="18" selected>Medium</option><option value="24">Large</option><option value="30">Extra large</option></select></label>
+          <label class="size-pick"><span>Student name</span><input id="name-size" type="range" min="12" max="18" step="1" value="14" aria-label="Student name font size"><output for="name-size">14</output></label>
+          <label class="size-pick"><span>School name</span><input id="school-size" type="range" min="11" max="16" step="1" value="14" aria-label="School name font size"><output for="school-size">14</output></label>
+          <label class="size-pick"><span>Stop triangle</span><input id="stop-size" type="range" min="26" max="56" step="1" value="34" aria-label="Stop triangle size"><output for="stop-size">34</output></label>
+          <label class="size-pick"><span>Stop number</span><input id="stop-num-size" type="range" min="40" max="70" step="1" value="50" aria-label="Stop number size inside triangle"><output for="stop-num-size">50</output></label>
+          <label class="size-pick"><span>Seat id</span><input id="row-size" type="range" min="12" max="22" step="1" value="14" aria-label="Seat id font size"><output for="row-size">14</output></label>
+          <label class="size-pick"><span>Column header</span><input id="col-size" type="range" min="11" max="22" step="1" value="13" aria-label="Column header (A B C) font size"><output for="col-size">13</output></label>
+          <label class="size-pick"><span>Row number</span><input id="rownum-size" type="range" min="14" max="30" step="1" value="18" aria-label="Row number (1 2 3) font size"><output for="rownum-size">18</output></label>
           </div>
         </details>
       </div>
