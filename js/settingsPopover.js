@@ -3,6 +3,7 @@
 
   var WHATS_NEW = {
     added: [
+      'Aisle space slider: set how much room sits on each side of the row number in the aisle.',
       'Show legend checkbox in Save and export: leave the legend off the PDF, JPEG and PDF view.',
       'PDF view: see the chart on the page exactly as the PDF will print it.',
       'Stop number shape (triangle, circle, square, squircle) and corner pickers.'

@@ -103,7 +103,7 @@ label.file-btn input { max-width: 190px; }
 .notes-field { flex: 1 1 260px; }
 .notes-field textarea { flex: 1; min-width: 0; font: inherit; resize: vertical; }
 .export-notes { font-size: 13px; margin-bottom: 8px; white-space: pre-wrap; }
-.aisle { box-sizing: border-box; min-width: 2.4rem; padding: 0 6px; position: relative; z-index: 2; white-space: nowrap; text-align: center; font-size: 15px; font-weight: 700; color: var(--muted); }
+.aisle { box-sizing: border-box; min-width: 2.4rem; padding: 0 var(--aisle-pad, 16px); position: relative; z-index: 2; white-space: nowrap; text-align: center; font-size: 15px; font-weight: 700; color: var(--muted); }
 .marker { padding: 4px 14px; font-size: 18px; font-weight: 700; letter-spacing: .04em; border-radius: 6px; background: var(--marker); text-align: center; }
 .door-marker { background: var(--door); }
 .col-head .marker { box-sizing: border-box; width: 100%; padding: 4px 0; }

@@ -906,6 +906,7 @@
   setupSizePick('row-size', '--row-size', 'busRowSize', [12, 22], 14);
   setupSizePick('col-size', '--col-size', 'busColSize', [11, 22], 13);
   setupSizePick('rownum-size', '--rownum-size', 'busRowNumSize', [14, 30], 18);
+  setupSizePick('aisle-pad', '--aisle-pad', 'busAislePad', [0, 60], 16);
   setupSizePick('stop-size', '--stop-size', 'busStopSize', [26, 56], 34);
   setupSizePick('stop-num-size', '--stop-num-size', 'busStopNumSize', [40, 70], 50);
   setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 16], 14);

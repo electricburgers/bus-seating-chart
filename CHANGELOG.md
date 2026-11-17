@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.43.0] - 2026-11-17
+
+### Added
+- An Aisle space slider (0 to 60 px, saved in the browser) sets the room on each side of the row number between the seat columns.
+
+### Fixed
+- More padding by default between the two sides of seats, so the aisle row number is no longer cramped.
+
 ## [0.42.0] - 2026-11-17
 
 ### Added
