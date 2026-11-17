@@ -570,6 +570,18 @@
         commit();
         return;
       }
+      var stopId = e.target.getAttribute && e.target.getAttribute('data-stop');
+      if (stopId) {
+        var stop = e.target.value.trim().slice(0, 3);
+        chart.students = chart.students.map(function (s) {
+          if (s.id !== stopId) return s;
+          var next = Object.assign({}, s);
+          if (stop) next.stop = stop; else delete next.stop;
+          return next;
+        });
+        commit();
+        return;
+      }
       var n = e.target.getAttribute && e.target.getAttribute('data-need');
       if (!n) return;
       var id = e.target.getAttribute('data-student-id');
@@ -787,6 +799,8 @@
   setupSizePick('row-size', '--row-size', 'busRowSize', [12, 14, 18, 22], 14);
   setupSizePick('col-size', '--col-size', 'busColSize', [11, 13, 18, 22], 13);
   setupSizePick('rownum-size', '--rownum-size', 'busRowNumSize', [14, 18, 24, 30], 18);
+  setupSizePick('stop-size', '--stop-size', 'busStopSize', [26, 34, 44, 56], 34);
+  setupSizePick('stop-num-size', '--stop-num-size', 'busStopNumSize', [40, 50, 60, 70], 50);
   setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 12, 14, 16], 14);
 
   wire();

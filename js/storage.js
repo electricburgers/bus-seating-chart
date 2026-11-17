@@ -61,6 +61,7 @@
       .map(function (s) {
         var out = { id: String(s.id), name: str(s.name), school: str(s.school), needs: isObject(s.needs) ? mergeLegacy(clone(s.needs)) : {} };
         if (str(s.nickname).trim()) out.nickname = str(s.nickname).trim();
+        if (str(s.stop).trim()) out.stop = str(s.stop).trim().slice(0, 3);
         if (s.removed === true) out.removed = true; // deleted, but still in the baseline so the Before chart and change log can name them
         return out;
       });

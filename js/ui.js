@@ -34,6 +34,25 @@
 
   function warningText(list) { return list.map(lib('needs').describe).join('; '); }
 
+  // Bus stop number in a triangle. An SVG so the outline and number stay crisp in color, gray and black and white.
+  function stopBadge(stop) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'chip-stop');
+    svg.setAttribute('viewBox', '0 0 100 90');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Bus stop ' + stop);
+    var tri = document.createElementNS(ns, 'polygon');
+    tri.setAttribute('points', '50,4 97,86 3,86');
+    tri.setAttribute('class', 'stop-tri');
+    var t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', '50'); t.setAttribute('y', '78'); t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('class', 'stop-num');
+    t.textContent = stop;
+    svg.appendChild(tri); svg.appendChild(t);
+    return svg;
+  }
+
   function studentChip(student, warnings, extraClass) {
     var chip = h('div', {
       'class': 'chip' + (extraClass ? ' ' + extraClass : ''),
@@ -42,7 +61,8 @@
     }, [
       h('span', { 'class': 'chip-name', title: student.name, 'data-full-name': student.name, text: student.name }),
       student.nickname ? h('span', { 'class': 'chip-nickname', text: '“' + student.nickname + '”' }) : null,
-      student.school ? h('span', { 'class': 'chip-school', text: student.school }) : null
+      student.school ? h('span', { 'class': 'chip-school', text: student.school }) : null,
+      student.stop ? stopBadge(student.stop) : null
     ]);
     if (warnings && warnings.length) {
       chip.classList.add('warn');
@@ -57,10 +77,11 @@
   function placeFeatureBars(container) {
     var jobs = [];
     Array.prototype.forEach.call(container.querySelectorAll('.seat'), function (seat) {
-      var bar = seat.querySelector('.features'), school = seat.querySelector('.chip-school');
-      if (!bar) return;
+      var bar = seat.querySelector('.features'), stop = seat.querySelector('.chip-stop'), school = seat.querySelector('.chip-school');
+      if (!bar && !stop) return;
       var gap = school ? seat.getBoundingClientRect().bottom - school.getBoundingClientRect().top + 2 : 4;
-      jobs.push([bar, Math.max(4, Math.round(gap))]);
+      if (bar) jobs.push([bar, Math.max(4, Math.round(gap))]);
+      if (stop) jobs.push([stop, Math.max(4, Math.round(gap))]);
     });
     jobs.forEach(function (j) { j[0].style.bottom = j[1] + 'px'; });
   }
@@ -226,6 +247,7 @@
         seatId !== undefined ? h('div', { 'class': 'seat-note', text: E.formatSeat(seatId, chart.layout) }) : null,
         w ? h('div', { 'class': 'warn-note', text: warningText(w) }) : null,
         h('label', { 'class': 'nickname-edit' }, ['Preferred name ', h('input', { type: 'text', 'class': 'nickname-input', 'data-nickname': s.id, value: s.nickname || '', placeholder: 'Nickname' })]),
+        h('label', { 'class': 'nickname-edit' }, ['Stop number ', h('input', { type: 'text', 'class': 'nickname-input', maxlength: '3', size: '4', 'data-stop': s.id, value: s.stop || '', placeholder: '#' })]),
         needs,
         h('button', { type: 'button', 'class': 'danger delete-student', 'data-delete-student': s.id, 'aria-label': 'Delete ' + s.name, text: 'Delete student' })
       ]);
