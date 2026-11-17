@@ -284,6 +284,9 @@ body.is-moving .pool { border-color: var(--line2); }
 
 /* Bus stop number: a triangle at the bottom left of the seat, just above the school name. nameFit's placeFeatureBars sets its bottom offset. */
 .seat .chip-stop { position: absolute; left: 4px; bottom: 22px; width: var(--stop-size, 34px); height: auto; z-index: 1; pointer-events: none; overflow: visible; }
+:root[data-stop-corner='br'] .seat .chip-stop { left: auto; right: 4px; }
+:root[data-stop-corner='tl'] .seat .chip-stop { bottom: auto; top: 4px; }
+:root[data-stop-corner='tr'] .seat .chip-stop { left: auto; right: 4px; bottom: auto; top: 4px; }
 .chip-stop .stop-tri { fill: #ffd84a; stroke: #1b1f24; stroke-width: 6; stroke-linejoin: round; }
 .chip-stop .stop-num { font-size: var(--stop-num-size, 50px); font-weight: 800; fill: #1b1f24; font-family: inherit; }
 .export-sheet.bw .chip-stop .stop-tri { fill: #fff; stroke: #000; }

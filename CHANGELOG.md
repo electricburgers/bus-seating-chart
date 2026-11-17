@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.33.0] - 2026-11-17
+
+### Added
+- Text sizes menu has Stop shape (triangle, circle, square, squircle) and Stop corner (bottom left, bottom right, top left, top right) options for the stop number, which apply to the web view and exports.
+
 ## [0.32.0] - 2026-11-17
 
 ### Added

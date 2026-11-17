@@ -866,6 +866,24 @@
   setupSizePick('stop-num-size', '--stop-num-size', 'busStopNumSize', [40, 70], 50);
   setupSizePick('school-size', '--school-size', 'busSchoolSize', [11, 16], 14);
 
+  // Stop number shape and seat corner are view settings too. They apply to the web view and to exports.
+  function setupStopPick(id, attr, key, allowed, fallback) {
+    var sel = $(id);
+    if (!sel) return;
+    function apply(v, save) {
+      if (allowed.indexOf(v) < 0) v = fallback;
+      document.documentElement.setAttribute(attr, v);
+      sel.value = v;
+      if (save) { try { storage().setItem(key, v); } catch (e) { /* storage unavailable */ } }
+    }
+    var saved = fallback;
+    try { saved = storage().getItem(key) || fallback; } catch (e) { /* storage unavailable */ }
+    apply(saved, false);
+    sel.addEventListener('change', function () { apply(sel.value, true); render(); });
+  }
+  setupStopPick('stop-shape', 'data-stop-shape', 'busStopShape', ['triangle', 'circle', 'square', 'squircle'], 'triangle');
+  setupStopPick('stop-corner', 'data-stop-corner', 'busStopCorner', ['bl', 'br', 'tl', 'tr'], 'bl');
+
   wire();
   render();
 

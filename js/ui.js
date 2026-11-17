@@ -42,11 +42,22 @@
     svg.setAttribute('viewBox', '0 0 100 90');
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', 'Bus stop ' + stop);
-    var tri = document.createElementNS(ns, 'polygon');
-    tri.setAttribute('points', '50,4 97,86 3,86');
+    var shape = document.documentElement.getAttribute('data-stop-shape') || 'triangle';
+    var tri;
+    if (shape === 'circle') {
+      tri = document.createElementNS(ns, 'ellipse');
+      tri.setAttribute('cx', '50'); tri.setAttribute('cy', '45'); tri.setAttribute('rx', '44'); tri.setAttribute('ry', '41');
+    } else if (shape === 'square' || shape === 'squircle') {
+      tri = document.createElementNS(ns, 'rect');
+      tri.setAttribute('x', '5'); tri.setAttribute('y', '4'); tri.setAttribute('width', '90'); tri.setAttribute('height', '82');
+      if (shape === 'squircle') { tri.setAttribute('rx', '30'); tri.setAttribute('ry', '30'); }
+    } else {
+      tri = document.createElementNS(ns, 'polygon');
+      tri.setAttribute('points', '50,4 97,86 3,86');
+    }
     tri.setAttribute('class', 'stop-tri');
     var t = document.createElementNS(ns, 'text');
-    t.setAttribute('x', '50'); t.setAttribute('y', '78'); t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('x', '50'); t.setAttribute('y', shape === 'triangle' ? '78' : '64'); t.setAttribute('text-anchor', 'middle');
     t.setAttribute('class', 'stop-num');
     t.textContent = stop;
     svg.appendChild(tri); svg.appendChild(t);
@@ -76,12 +87,13 @@
   // Car seat and harness badges sit at the bottom right of the seat, just above the school line.
   function placeFeatureBars(container) {
     var jobs = [];
+    var topCorner = /^t/.test(document.documentElement.getAttribute('data-stop-corner') || '');
     Array.prototype.forEach.call(container.querySelectorAll('.seat'), function (seat) {
       var bar = seat.querySelector('.features'), stop = seat.querySelector('.chip-stop'), school = seat.querySelector('.chip-school');
-      if (!bar && !stop) return;
+      if (!bar && !(stop && !topCorner)) return;
       var gap = school ? seat.getBoundingClientRect().bottom - school.getBoundingClientRect().top + 2 : 4;
       if (bar) jobs.push([bar, Math.max(4, Math.round(gap))]);
-      if (stop) jobs.push([stop, Math.max(4, Math.round(gap))]);
+      if (stop && !topCorner) jobs.push([stop, Math.max(4, Math.round(gap))]);
     });
     jobs.forEach(function (j) { j[0].style.bottom = j[1] + 'px'; });
   }
