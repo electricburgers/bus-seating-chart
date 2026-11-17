@@ -410,12 +410,8 @@
     // seat width, stop size). Carry them on the sheet itself so the export matches the page.
     var rs = document.documentElement.style;
     for (var i = 0; i < rs.length; i++) if (rs[i].indexOf('--') === 0) sheet.style.setProperty(rs[i], rs.getPropertyValue(rs[i]));
-    // Legend beside the bus by default. If that makes the sheet wider than tall (it would shrink on a portrait page),
-    // move the legend to the top under the driver info instead.
-    document.body.appendChild(sheet);
-    var wide = sheet.offsetWidth > sheet.offsetHeight;
-    if (wide && showLegend) sheet.querySelector('.export-body').classList.add('legend-top');
-    document.body.removeChild(sheet);
+    // The legend always sits at the top under the driver info, which leaves the full width for the chart.
+    if (showLegend) sheet.querySelector('.export-body').classList.add('legend-top');
     return sheet;
   }
 

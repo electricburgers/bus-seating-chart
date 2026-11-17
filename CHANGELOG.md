@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.44.0] - 2026-11-17
+
+### Changed
+- The export legend always sits at the top with the route and aide, saving horizontal room for the chart.
+
 ## [0.43.0] - 2026-11-17
 
 ### Added
