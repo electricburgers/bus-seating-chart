@@ -10,18 +10,17 @@ test('splitName handles first last, multiple first names, last comma first, and 
   assert.deepStrictEqual(N.splitName('  '), { first: '', last: '' });
 });
 
-test('tiers go from full name at normal size down to first initial, always keeping the whole last name', () => {
+test('tiers go from full name at normal size to a last initial, then shorten the first name last', () => {
   const t = N.tiers('Maximilian Nguyen', 11, 10);
   assert.deepStrictEqual(t.map((x) => [x.text, x.size]), [
     ['Maximilian Nguyen', null], ['Maximilian Nguyen', 11], ['Maximilian Nguyen', 10],
-    ['Maxim. Nguyen', 10], ['Max. Nguyen', 10], ['M. Nguyen', 10]
+    ['Maximilian N.', 10], ['Maximili. N.', 10], ['Maxim. N.', 10]
   ]);
-  t.forEach((x) => assert.ok(x.text.endsWith('Nguyen')));
 });
 
-test('tiers skip shortenings that would not shorten a short first name', () => {
+test('a short first name only drops the last name to an initial', () => {
   const t = N.tiers('Eli Kim', 11, 10);
-  assert.deepStrictEqual(t.map((x) => x.text), ['Eli Kim', 'Eli Kim', 'Eli Kim', 'E. Kim']);
+  assert.deepStrictEqual(t.map((x) => x.text), ['Eli Kim', 'Eli Kim', 'Eli Kim', 'Eli K.']);
 });
 
 test('a one-word name has only size tiers', () => {

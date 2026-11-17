@@ -312,3 +312,15 @@ body.is-moving .pool { border-color: var(--line2); }
 .legend-tri .stop-tri { fill: #ffd84a; stroke: #1b1f24; stroke-width: 6; stroke-linejoin: round; }
 .export-sheet.bw .legend-tri .stop-tri { fill: #fff; stroke: #000; }
 .export-sheet.bw .export-legend { border-color: #000; }
+
+/* Compact export: the seat ID sits inside the box (no overhang), rows sit close together, and rows with no students shrink to a strip. */
+.export-sheet .bus { row-gap: 6px; }
+.export-sheet .seat-label { position: static; align-self: flex-start; padding: 0 2px; border: 0; border-radius: 0; background: none; line-height: 1; }
+.export-sheet .seat .chip-name { padding-top: 0; }
+.export-sheet .bench.empty-row .seat { height: calc(var(--row-size, 14px) + 8px); }
+.export-sheet .bench.empty-row .seat-empty, .export-sheet .bench.empty-row .features { display: none; }
+/* Greyscale and black and white: no boxes. Hairlines between seats and rows, and the name takes the space the borders and padding used. */
+.export-sheet.tight .bus { row-gap: 0; }
+.export-sheet.tight .seat, .export-sheet.tight .seat.wc { border: 0; border-left: 1px solid #000; border-bottom: 1px solid #000; border-radius: 0; padding: 1px 2px; }
+.export-sheet.tight .seat.changed { border-style: solid; border-width: 0 0 1px 1px; outline: 3px solid #000; outline-offset: -3px; box-shadow: none; }
+.export-sheet.tight .seat .chip { border: 0 !important; padding: 0; border-radius: 0; background: none !important; }

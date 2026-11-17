@@ -17,6 +17,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.45.0] - 2026-11-17
+
+### Added
+- A Shrink empty rows checkbox in Save and export (on by default). Rows with no students shrink to a thin strip that keeps the seat and row IDs, so the chart is shorter and prints larger.
+
+### Changed
+- In exports the seat ID sits inside the seat box and rows sit closer together.
+- Grayscale and black and white exports drop the seat boxes for thin lines between seats, so names get more room.
+- Names that do not fit now shorten the last name to an initial first ("Maximilian N."). The first name is only shortened after that.
+
 ## [0.44.0] - 2026-11-17
 
 ### Changed

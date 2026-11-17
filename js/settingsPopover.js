@@ -3,12 +3,15 @@
 
   var WHATS_NEW = {
     added: [
+      'Shrink empty rows checkbox in Save and export: empty rows become a thin strip with seat and row IDs.',
       'Aisle space slider: set how much room sits on each side of the row number in the aisle.',
       'Show legend checkbox in Save and export: leave the legend off the PDF, JPEG and PDF view.',
       'PDF view: see the chart on the page exactly as the PDF will print it.',
       'Stop number shape (triangle, circle, square, squircle) and corner pickers.'
     ],
     changed: [
+      'Exports put the seat ID inside the seat and use thin lines instead of boxes in grayscale and black and white.',
+      'Long names shorten the last name to an initial before the first name.',
       'The export legend always sits to the right of the route and aide at the top, leaving the full width for the chart.',
       'The row number in the aisle always stays visible.',
       'PDF header fields sit closer to the center.'

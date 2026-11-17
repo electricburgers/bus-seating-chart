@@ -2,7 +2,7 @@
   'use strict';
 
   // Pure helpers for fitting a student name in a seat. ui.js measures the real text and walks the tiers.
-  // Last name is never shortened, so it can always be read.
+  // First name is what the aide needs most, so it is kept whole as long as possible: the last name drops to an initial first.
 
   // "Ava Nguyen" or "Nguyen, Ava". Everything before the last word is the first name.
   function splitName(name) {
@@ -24,12 +24,13 @@
     var p = splitName(name);
     var full = p.first ? p.first + ' ' + p.last : p.last;
     var out = [{ text: full, size: null }, { text: full, size: smallSize }, { text: full, size: floorSize }];
-    if (p.first) {
+    if (p.first && p.last) {
+      var initial = Array.from(p.last)[0] + '.';
+      out.push({ text: p.first + ' ' + initial, size: floorSize });
       var chars = Array.from(p.first);
-      [5, 3].forEach(function (n) {
-        if (chars.length > n) out.push({ text: shorten(p.first, n) + ' ' + p.last, size: floorSize });
+      [8, 5].forEach(function (n) {
+        if (chars.length > n) out.push({ text: shorten(p.first, n) + ' ' + initial, size: floorSize });
       });
-      out.push({ text: chars[0] + '. ' + p.last, size: floorSize });
     }
     return out;
   }

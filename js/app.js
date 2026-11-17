@@ -408,6 +408,13 @@
       });
     }
     if ($('opt-color').value === 'bw') sheet.classList.add('bw');
+    if ($('opt-color').value !== 'color') sheet.classList.add('tight');
+    if ($('export-shrink').checked) {
+      // A row with no student and no car seat or harness mark shrinks to a strip that keeps its seat and row IDs.
+      Array.prototype.forEach.call(sheet.querySelectorAll('.bench[data-row]'), function (b) {
+        if (!b.classList.contains('wc-row') && !b.querySelector('.seat.filled, .feature.on')) b.classList.add('empty-row');
+      });
+    }
     // The capture library copies the sheet into a fresh document that has none of the page's root settings (text sizes,
     // seat width, stop size). Carry them on the sheet itself so the export matches the page.
     var rs = document.documentElement.style;
@@ -929,7 +936,7 @@
   setupStopPick('door-col', 'data-door-col', 'busDoorCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
 
   // PDF view shows the export options live, so redraw it when one changes.
-  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-date'].forEach(function (id) {
+  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-shrink', 'export-date'].forEach(function (id) {
     var el = $(id);
     if (el) el.addEventListener('change', function () { if (view === 'pdf') render(); });
   });
