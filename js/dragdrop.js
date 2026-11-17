@@ -50,7 +50,7 @@
         if (n.getAttribute('data-student-id') === picked) n.classList.add('picked');
       });
     }
-    function nameOf(chip) { return (chip.querySelector('.chip-name') || chip).textContent; }
+    function nameOf(chip) { var n = chip.querySelector('.chip-name'); return n ? (n.getAttribute('data-full-name') || n.textContent) : chip.textContent; }
     function updateBar(name) {
       var bar = doc.getElementById('pick-bar');
       if (!bar) return;

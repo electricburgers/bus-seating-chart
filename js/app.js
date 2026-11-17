@@ -4,7 +4,7 @@
 
   var B = root.BusApp;
   var Schools = B.schools, Layout = B.busLayout, Features = B.seatFeatures, Roster = B.roster, Needs = B.needs, Csv = B.csvParser;
-  var Prompt = B.rosterPrompt, Log = B.changeLog, Store = B.storage, Exp = B.exporter, UI = B.ui, History = B.history;
+  var Prompt = B.rosterPrompt, Log = B.changeLog, Store = B.storage, Exp = B.exporter, UI = B.ui, History = B.history, NameFit = B.nameFit;
 
   function $(id) { return document.getElementById(id); }
   function today() {
@@ -193,6 +193,8 @@
     $('redo').disabled = !History.canRedo(hist);
     markSwap();
     $('baseline-note').textContent = chart.baseline ? changes.length + ' change' + (changes.length === 1 ? '' : 's') + ' since baseline' : 'No baseline set';
+    // The Bus layout box lives on the page, so it follows undo, loads and every other chart change.
+    if (popover) popover.render();
   }
 
   // ---- layout changes ----
@@ -388,6 +390,18 @@
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
     var ctx = busContext(roster, features, false, {}, !withLabel ? '' : isBefore ? 'Before (baseline)' : 'After (current)');
     var busFig = UI.renderBus(ctx);
+    var seatedStudents = Object.keys(roster).map(function (k) { return ctx.byId[roster[k]]; }).filter(Boolean);
+    var oneSchool = Object.keys(seatedStudents.reduce(function (o, st) { if (st.school) o[st.school] = 1; return o; }, {})).length <= 1;
+    var firstOnly = $('export-firstonly').checked;
+    if (firstOnly) {
+      // Show just the first name, with the last initial only where two seated students share a first name.
+      var chips = Array.prototype.slice.call(busFig.querySelectorAll('.seat .chip-name'));
+      var labels = NameFit.firstOnlyLabels(chips.map(function (c) { return c.getAttribute('data-full-name'); }));
+      chips.forEach(function (c, i) {
+        c.setAttribute('data-first-only', '1'); c.setAttribute('data-full-name', labels[i].first);
+        if (labels[i].initial) c.setAttribute('data-initial', labels[i].initial);
+      });
+    }
     var showLegend = $('export-legend').checked;
     var legend = showLegend ? exportLegend(roster, features, ctx, $('opt-color').value) : null;
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
@@ -408,6 +422,8 @@
       });
     }
     if ($('opt-color').value === 'bw') sheet.classList.add('bw');
+    // Every seated student goes to the same school, so the school line only repeats itself: leave it off.
+    if (oneSchool) sheet.classList.add('one-school');
     if ($('opt-color').value !== 'color') sheet.classList.add('tight');
     if ($('export-shrink').checked) {
       // A row with no student and no car seat or harness mark shrinks to a strip that keeps its seat and row IDs.
@@ -833,7 +849,7 @@
       }
     }, true);
 
-    $('onb-setup').addEventListener('click', function () { popover.open(); });
+    $('onb-setup').addEventListener('click', function () { var box = $('layout-box'); box.open = true; box.scrollIntoView({ block: 'start' }); });
     $('onb-import').addEventListener('click', function () {
       $('students-box').open = true;
       $('import-box').open = true;
@@ -848,7 +864,7 @@
     });
 
     popover = B.settingsPopover.create({
-      button: $('settings-button'), panel: $('settings-panel'), actions: actions,
+      button: $('settings-button'), panel: $('settings-panel'), layoutPanel: $('layout-panel'), actions: actions,
       getState: function () {
         return { layout: chart.layout, templateNames: Store.listTemplates(templates), theme: theme, backup: Store.loadBackup(storage()), autosaveOk: autosaveOk };
       }
@@ -936,7 +952,7 @@
   setupStopPick('door-col', 'data-door-col', 'busDoorCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
 
   // PDF view shows the export options live, so redraw it when one changes.
-  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-shrink', 'export-date'].forEach(function (id) {
+  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-shrink', 'export-firstonly', 'export-date'].forEach(function (id) {
     var el = $(id);
     if (el) el.addEventListener('change', function () { if (view === 'pdf') render(); });
   });

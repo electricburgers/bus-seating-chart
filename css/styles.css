@@ -36,7 +36,7 @@ label.file-btn input { max-width: 190px; }
 .settings-wrap { position: relative; }
 .popover { position: fixed; right: 12px; top: 12px; z-index: 20; width: 360px; max-width: calc(100vw - 24px); max-height: calc(100vh - 24px); overflow: auto; padding: 0 14px 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
 .popover[hidden] { display: none; }
-.popover .field { display: block; margin: 6px 0; }
+.popover .field, .layout-panel .field { display: block; margin: 6px 0; }
 .set-head { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin: 0 -14px 8px; padding: 12px 14px 8px; background: var(--panel); border-bottom: 2px solid #1f5fbf; }
 .set-head h2 { margin: 0; font-size: 18px; }
 .set-close { min-width: 36px; min-height: 36px; font-size: 22px; line-height: 1; padding: 0; }
@@ -45,7 +45,7 @@ label.file-btn input { max-width: 190px; }
 .set-section[open] > summary { border-bottom: 1px solid var(--line2); background: var(--head); border-radius: 6px 6px 0 0; }
 .set-section > :not(summary) { margin-left: 10px; margin-right: 10px; }
 .set-section > :last-child { margin-bottom: 10px; }
-.popover input[type=number] { width: 64px; }
+.popover input[type=number], .layout-panel input[type=number] { width: 64px; }
 .version { color: var(--muted); margin: 0; }
 
 .status { min-height: 22px; padding: 2px 16px; font-size: 13px; color: #1b5e20; }
@@ -268,8 +268,8 @@ body.is-moving .pool { border-color: var(--line2); }
 
 /* School sits at the bottom of the seat, big and bold, with a rule above it. It is plain text so it reads the same in color, gray and black and white. */
 .seat .chip-school { margin-top: auto; padding-top: 2px; border-top: 1px solid #3b444d; font-size: var(--school-size, 14px); font-weight: 700; line-height: 1.15; color: #1b1f24; }
-/* Badges straddle the top edge of the seat, so leave room under them. */
-.seat .features { top: auto; bottom: 22px; right: 4px; }
+/* Badges sit at the bottom right, in the school line, so they never cover the stop number. */
+.seat .features { top: auto; bottom: 3px; right: 4px; }
 
 /* Black and white export: no tints or colors, just black on white. */
 .export-sheet.bw, .export-sheet.bw.framed { background: #fff; border-color: #000; }
@@ -324,3 +324,17 @@ body.is-moving .pool { border-color: var(--line2); }
 .export-sheet.tight .seat, .export-sheet.tight .seat.wc { border: 0; border-left: 1px solid #000; border-bottom: 1px solid #000; border-radius: 0; padding: 1px 2px; }
 .export-sheet.tight .seat.changed { border-style: solid; border-width: 0 0 1px 1px; outline: 3px solid #000; outline-offset: -3px; box-shadow: none; }
 .export-sheet.tight .seat .chip { border: 0 !important; padding: 0; border-radius: 0; background: none !important; }
+
+/* Bus layout box on the main page (setup, windows, overrides, templates). */
+.layout-box { margin: 8px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); }
+.layout-box > summary { padding: 8px 12px; font-weight: 700; cursor: pointer; min-height: 36px; }
+.layout-panel { padding: 0 10px 8px; }
+
+/* First name is the one the aide reads on a moving bus: about 1.7 times the last name, extra bold. */
+.seat .chip-name .nm-first { display: block; font-size: 1.7em; font-weight: 900; line-height: 1.05; letter-spacing: .01em; font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; }
+.seat .chip-name .nm-last { font-size: 1em; font-weight: 700; }
+/* Every student goes to the same school: the school line only repeats itself, so leave it off the export. */
+.export-sheet.one-school .seat .chip-school { display: none; }
+/* In exports the name is the loudest thing in the seat: the seat ID is small and quiet. */
+.export-sheet .seat-label { font-weight: 600; color: #555; }
+.export-sheet.bw .seat-label, .export-sheet.tight .seat-label { color: #333; }

@@ -17,6 +17,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.46.0] - 2026-11-17
+
+### Added
+- A First names only checkbox in Save and export. Seats show just the first name, big, and add the last initial only when two seated students share a first name.
+
+### Changed
+- Settings is shorter: Appearance, Data safety and About. About now also holds What's new and the fake sample data buttons.
+- Bus setup, Emergency window exits, Single bench override and Bus templates moved out of Settings into a Bus layout box on the main page, next to the chart they change.
+- The onboarding Bus setup button opens the Bus layout box.
+- The first name on a seat is about 1.7 times larger and extra bold, with the last name smaller beneath it, so it can be read on a moving bus.
+- First names use a heavy font (Arial Black where available) and the seat ID in exports is smaller and quieter, so the name is the loudest thing in the seat.
+- When every seated student goes to the same school, exports leave off the school line.
+- The car seat star and harness H sit at the bottom right in the school line, and the school name leaves room for them, so they no longer cover the stop number.
+
 ## [0.45.0] - 2026-11-17
 
 ### Added

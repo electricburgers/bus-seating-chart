@@ -19,7 +19,9 @@ The chart auto-saves in your browser (`localStorage`). Use JSON export/load for 
 
 ## Settings
 
-The gear button shows the version and build date/time and holds bus setup: rows, seats per side, door side flip, and the wheelchair area.
+The gear button holds app preferences: theme, data safety (auto-save status and backup restore), and About (version, build date/time, what's new, and fake sample data).
+
+The **Bus layout** box on the main page holds the bus itself: rows, seats per side, door side flip, the wheelchair area, emergency window exits, single bench overrides and bus templates.
 
 ## Development
 

@@ -138,6 +138,10 @@
           </div>
         </details>
       </div>
+      <details id="layout-box" class="layout-box">
+        <summary>Bus layout: rows, seats, windows, templates</summary>
+        <div id="layout-panel" class="layout-panel"></div>
+      </details>
       <section id="onboarding" class="onboarding" hidden>
         <h2>Welcome! Let&rsquo;s build your first seating chart</h2>
         <ol>
@@ -182,6 +186,7 @@
           <label class="inline"><input id="export-frame" type="checkbox"> Yellow bus frame</label>
           <label class="inline"><input id="export-legend" type="checkbox" checked> Show legend</label>
           <label class="inline"><input id="export-shrink" type="checkbox" checked> Shrink empty rows</label>
+          <label class="inline"><input id="export-firstonly" type="checkbox"> First names only (last initial if two match)</label>
           <button id="export-jpeg" type="button">JPEG</button>
           <button id="export-csv" type="button">CSV</button>
           <button id="export-json" type="button">Save JSON</button>

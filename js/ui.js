@@ -88,16 +88,26 @@
 
   // Seat names that do not fit step down through nameFit tiers: smaller text first, then a shortened first name.
   // Needs the seats to be in the page so the text can be measured. Safe to call again after every render.
-  // Car seat and harness badges sit at the bottom right of the seat, just above the school line.
+  // Car seat and harness badges sit at the bottom right, in the school line, and the school text leaves room for them.
+  // The stop number sits just above the school line, and above the badges too when it is in the bottom right corner.
   function placeFeatureBars(container) {
+    var seats = Array.prototype.slice.call(container.querySelectorAll('.seat')), info = [];
+    // Pass 1: reserve room for the badges in the school line (this can wrap the school onto a second line).
+    seats.forEach(function (seat) {
+      var bar = seat.querySelector('.features'), school = seat.querySelector('.chip-school');
+      var box = bar && bar.children.length ? bar.getBoundingClientRect() : null;
+      if (school) school.style.paddingRight = box ? Math.ceil(box.width + 6) + 'px' : '';
+      if (school && !school.getClientRects().length) school = null; // hidden (one-school routes)
+      info.push({ seat: seat, school: school, barH: box ? box.height : 0 });
+    });
+    // Pass 2: put the stop number just above the (possibly taller) school line, and above the badges in the bottom right.
     var jobs = [];
-    Array.prototype.forEach.call(container.querySelectorAll('.seat'), function (seat) {
-      var bar = seat.querySelector('.features'), stop = seat.querySelector('.chip-stop'), school = seat.querySelector('.chip-school');
-      if (stop && lib('stopShape').corner(stop.getAttribute('data-corner')).top) stop = null;
-      if (!bar && !stop) return;
-      var gap = school ? seat.getBoundingClientRect().bottom - school.getBoundingClientRect().top + 2 : 4;
-      if (bar) jobs.push([bar, Math.max(4, Math.round(gap))]);
-      if (stop) jobs.push([stop, Math.max(4, Math.round(gap))]);
+    info.forEach(function (i) {
+      var stop = i.seat.querySelector('.chip-stop');
+      if (!stop || lib('stopShape').corner(stop.getAttribute('data-corner')).top) return;
+      var gap = i.school ? i.seat.getBoundingClientRect().bottom - i.school.getBoundingClientRect().top + 2 : 4;
+      var right = stop.getAttribute('data-corner') === 'br';
+      jobs.push([stop, Math.max(4, Math.round(gap), right && i.barH ? Math.round(i.barH + 6) : 0)]);
     });
     jobs.forEach(function (j) { j[0].style.bottom = j[1] + 'px'; });
   }
@@ -105,10 +115,20 @@
   function fitSeatNames(container) {
     try { fitNames(container); } finally { placeFeatureBars(container); }
   }
-  // First name always sits on its own line: break before the last word.
-  function firstOnOwnLine(text) {
+  // First name is big and bold on its own line, last name smaller after it, so the first name reads from across a bouncing bus.
+  function setName(el, text) {
     var i = text.lastIndexOf(' ');
-    return i < 0 ? text : text.slice(0, i) + '\n' + text.slice(i + 1);
+    el.textContent = '';
+    if (el.hasAttribute('data-first-only')) {
+      // "Mary Jane" or "Ava N.": everything is the first name, with a trailing last initial as the small line.
+      var m = /^(.*\S)\s+(\S\.)$/.exec(text);
+      el.appendChild(h('span', { 'class': 'nm-first', text: m ? m[1] : text }));
+      if (m) el.appendChild(h('span', { 'class': 'nm-last', text: m[2] }));
+      return;
+    }
+    if (i < 0) { el.appendChild(h('span', { 'class': 'nm-last', text: text })); return; }
+    el.appendChild(h('span', { 'class': 'nm-first', text: text.slice(0, i) }));
+    el.appendChild(h('span', { 'class': 'nm-last', text: text.slice(i + 1) }));
   }
   function fitNames(container) {
     var fit = lib('nameFit');
@@ -117,13 +137,14 @@
     // Each pass writes every pending name's next tier, then reads all overflow flags together, so the browser
     // lays out the page once per tier (at most a handful of times) instead of once per seat per tier.
     var pending = Array.prototype.map.call(container.querySelectorAll('.seat .chip-name'), function (el) {
-      return { el: el, list: fit.tiers(el.getAttribute('data-full-name') || el.textContent, SMALL_SIZE, FLOOR_SIZE) };
+      var full = el.getAttribute('data-full-name') || el.textContent, initial = el.getAttribute('data-initial');
+      return { el: el, list: el.hasAttribute('data-first-only') ? fit.firstTiers(full, initial || '', SMALL_SIZE, FLOOR_SIZE) : fit.tiers(full, SMALL_SIZE, FLOOR_SIZE) };
     }).filter(function (p) { return p.list.length > 0; });
     function overflows(el) { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }
     for (var tier = 0; pending.length; tier++) {
       pending.forEach(function (p) {
         var t = p.list[tier];
-        p.el.textContent = firstOnOwnLine(t.text);
+        setName(p.el, t.text);
         p.el.style.fontSize = t.size ? t.size + 'px' : '';
       });
       pending = pending.filter(function (p) { return tier + 1 < p.list.length && overflows(p.el); });

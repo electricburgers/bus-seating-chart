@@ -3,6 +3,7 @@
 
   var WHATS_NEW = {
     added: [
+      'Bus layout box on the main page holds bus setup, emergency windows, bench overrides and templates.',
       'Shrink empty rows checkbox in Save and export: empty rows become a thin strip with seat and row IDs.',
       'Aisle space slider: set how much room sits on each side of the row number in the aisle.',
       'Show legend checkbox in Save and export: leave the legend off the PDF, JPEG and PDF view.',
@@ -10,6 +11,7 @@
       'Stop number shape (triangle, circle, square, squircle) and corner pickers.'
     ],
     changed: [
+      'Settings is shorter: Appearance, Data safety and About (with What\'s new and fake data).',
       'Exports put the seat ID inside the seat and use thin lines instead of boxes in grayscale and black and white.',
       'Long names shorten the last name to an initial before the first name.',
       'The export legend always sits to the right of the route and aide at the top, leaving the full width for the chart.',
@@ -18,14 +20,15 @@
     ]
   };
 
-  // Gear-button popover: version info, then collapsible sections (bus setup, emergency windows, bench overrides, templates, sample data).
+  // Two surfaces. The gear popover holds app preferences (appearance, data safety, about). The Bus layout box on the main page
+  // (opts.layoutPanel) holds everything that describes the bus itself: setup, emergency windows, bench overrides and templates.
   // actions is app.js's set of handlers; each one may throw, and app.js shows the message.
   function create(opts) {
     var h = root.BusApp.ui.h;
-    var button = opts.button, panel = opts.panel, actions = opts.actions;
+    var button = opts.button, panel = opts.panel, actions = opts.actions, layoutPanel = opts.layoutPanel;
 
     function isOpen() { return !panel.hidden; }
-    function open() { openSections.whatsnew = true; panel.hidden = false; button.setAttribute('aria-expanded', 'true'); render(); }
+    function open() { panel.hidden = false; button.setAttribute('aria-expanded', 'true'); render(); }
     function close() { panel.hidden = true; button.setAttribute('aria-expanded', 'false'); }
 
     function numberField(label, value, min, onChange) {
@@ -41,7 +44,7 @@
     function run(fn) { fn(); render(); }
 
     // Which sections are expanded survives re-renders (every change re-draws the panel).
-    var openSections = { setup: true, windows: false, overrides: false, templates: false, appearance: false, safety: false, demo: false, whatsnew: false, about: false };
+    var openSections = { setup: true, windows: false, overrides: false, templates: false, appearance: true, safety: false, about: false };
 
     function section(key, title, kids) {
       var d = h('details', { 'class': 'set-section', open: openSections[key] }, [h('summary', { text: title })].concat(kids));
@@ -54,9 +57,11 @@
       var side = layout.doorSide, Lib = root.BusApp.busLayout, wc = layout.wheelchair;
       var scrollTop = panel.scrollTop;
       // The emergency-window table scrolls on its own; remember where it was so a click does not jump it to the top.
-      var oldWrap = panel.querySelector('.window-table-wrap');
+      var oldWrap = layoutPanel && layoutPanel.querySelector('.window-table-wrap');
       var winScroll = oldWrap ? oldWrap.scrollTop : 0;
       panel.textContent = '';
+      if (layoutPanel) layoutPanel.textContent = '';
+      var lp = layoutPanel || panel;
 
       // Header stays visible while the sections scroll.
       var closeX = h('button', { type: 'button', 'class': 'set-close', 'aria-label': 'Close settings', text: '×' });
@@ -65,14 +70,7 @@
         h('div', {}, [h('h2', { text: 'Settings' })]),
         closeX]));
 
-      // What's new comes first and opens expanded every time Settings is opened, so it is the first thing seen. (last three new things and last three changes; update with each release)
-      function list(items) { return h('ul', { 'class': 'hint' }, items.map(function (t) { return h('li', { text: t }); })); }
-      panel.appendChild(section('whatsnew', "What's new", [
-        h('p', {}, [h('strong', { text: 'New' })]), list(WHATS_NEW.added),
-        h('p', {}, [h('strong', { text: 'Changed' })]), list(WHATS_NEW.changed)
-      ]));
-
-      // 1. Bus setup
+      // Bus setup
       var flip = h('button', { type: 'button', text: 'Door is on the ' + side + ' — flip to ' + (side === 'right' ? 'left' : 'right') });
       flip.addEventListener('click', function () { run(actions.flipDoor); });
       var wcBox = h('input', { type: 'checkbox', checked: wc.enabled });
@@ -87,9 +85,9 @@
       if (wc.enabled) {
         setup.push(numberField('Wheelchair rows', wc.rows, Lib.MIN_WHEELCHAIR_ROWS, function (n) { actions.setWheelchair({ rows: n }); }));
       }
-      panel.appendChild(section('setup', 'Bus setup', setup));
+      lp.appendChild(section('setup', 'Bus setup', setup));
 
-      // 2. Emergency window exits
+      // Emergency window exits
       function windowCell(row, sideName) {
         var box = h('input', { type: 'checkbox', checked: Lib.hasEmergencyWindow(layout, row, sideName),
           'aria-label': 'Row ' + row + ', ' + sideName + ' side emergency window exit' });
@@ -102,7 +100,7 @@
         winRows.push(h('tr', {}, [h('th', { scope: 'row', text: String(r) }), windowCell(r, 'driver'), windowCell(r, 'door')]));
       }
       var nWin = Object.keys(layout.emergencyWindows || {}).length;
-      panel.appendChild(section('windows', 'Emergency window exits' + (nWin ? ' (' + nWin + ')' : ''), [
+      lp.appendChild(section('windows', 'Emergency window exits' + (nWin ? ' (' + nWin + ')' : ''), [
         h('p', { 'class': 'hint', text: 'Check the rows that have an emergency window exit on each side of the bus.' }),
         h('div', { 'class': 'window-table-wrap' }, [h('table', { 'class': 'window-table' }, [
           h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: 'Row' }),
@@ -110,7 +108,7 @@
           h('tbody', {}, winRows)])])
       ]));
 
-      // 3. Single bench override
+      // Single bench override
       var rowIn = h('input', { type: 'number', min: '1', max: String(layout.rows), value: '1', 'aria-label': 'Row' });
       var sideSel = h('select', { 'aria-label': 'Side' }, [
         h('option', { value: 'driver', text: 'Driver side' }), h('option', { value: 'door', text: 'Door side' })]);
@@ -127,9 +125,9 @@
         h('div', { 'class': 'row' }, ['Row ', rowIn, sideSel, ' seats ', countIn, set, clear])];
       var keys = Object.keys(layout.overrides);
       if (keys.length) ov.push(h('p', { 'class': 'hint', text: 'Overrides: ' + keys.map(function (k) { return k + ' = ' + layout.overrides[k]; }).join(', ') }));
-      panel.appendChild(section('overrides', 'Single bench override' + (keys.length ? ' (' + keys.length + ')' : ''), ov));
+      lp.appendChild(section('overrides', 'Single bench override' + (keys.length ? ' (' + keys.length + ')' : ''), ov));
 
-      // 4. Templates
+      // Templates
       var nameIn = h('input', { type: 'text', placeholder: 'Template name', 'aria-label': 'Template name' });
       var save = h('button', { type: 'button', text: 'Save current bus' });
       save.addEventListener('click', function () { run(function () { actions.saveTemplate(nameIn.value); }); });
@@ -145,9 +143,9 @@
       } else {
         tpl.push(h('p', { 'class': 'hint', text: 'No saved templates yet.' }));
       }
-      panel.appendChild(section('templates', 'Bus templates', tpl));
+      lp.appendChild(section('templates', 'Bus templates', tpl));
 
-      // 5. Appearance
+      // Appearance
       var themeSel = h('select', { 'aria-label': 'Theme' }, [
         h('option', { value: 'auto', text: 'Match my device' }), h('option', { value: 'light', text: 'Light' }), h('option', { value: 'dark', text: 'Dark' })]);
       themeSel.value = st.theme || 'auto';
@@ -157,7 +155,7 @@
         h('p', { 'class': 'hint', text: 'Exports and printouts always use the light look.' })
       ]));
 
-      // 6. Data safety
+      // Data safety
       var safety = [h('p', { 'class': st.autosaveOk ? 'hint' : 'warn-note',
         text: st.autosaveOk ? 'Auto-save is on: your chart is saved in this browser after every change. Use Undo (Ctrl/Cmd+Z) for mistakes.'
           : 'Auto-save is failing, so your work may be lost. Use Save JSON to keep it.' })];
@@ -172,24 +170,24 @@
       }
       panel.appendChild(section('safety', 'Data safety', safety));
 
-      // 7. Sample data
+      // About holds the version, what changed lately, and the fake-data demo (it replaces the chart, so it is tucked away here).
+      function list(items) { return h('ul', { 'class': 'hint' }, items.map(function (t) { return h('li', { text: t }); })); }
       var demo = h('button', { type: 'button', text: 'Generate fake names and layout' });
       demo.addEventListener('click', function () { run(function () { actions.loadSampleData(true); }); });
       var demoPlain = h('button', { type: 'button', text: 'Generate fake names, no wheelchair area' });
       demoPlain.addEventListener('click', function () { run(function () { actions.loadSampleData(false); }); });
-      panel.appendChild(section('demo', 'Try it out', [
+      panel.appendChild(section('about', 'About', [
+        h('p', { 'class': 'version', text: 'Version ' + v.version }),
+        h('p', { 'class': 'hint', text: 'Built ' + v.buildDate + ' ' + v.buildTime + ' (US Eastern time)' }),
+        h('p', {}, [h('strong', { text: 'New' })]), list(WHATS_NEW.added),
+        h('p', {}, [h('strong', { text: 'Changed' })]), list(WHATS_NEW.changed),
+        h('p', {}, [h('strong', { text: 'Try it out' })]),
         h('div', { 'class': 'row' }, [demo, demoPlain]),
         h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' })
       ]));
 
-      // 9. About
-      panel.appendChild(section('about', 'About', [
-        h('p', { 'class': 'version', text: 'Version ' + v.version }),
-        h('p', { 'class': 'hint', text: 'Built ' + v.buildDate + ' ' + v.buildTime + ' (US Eastern time)' })
-      ]));
-
       panel.scrollTop = scrollTop;
-      var newWrap = panel.querySelector('.window-table-wrap');
+      var newWrap = layoutPanel && layoutPanel.querySelector('.window-table-wrap');
       if (newWrap) newWrap.scrollTop = winScroll;
     }
 

@@ -35,7 +35,27 @@
     return out;
   }
 
-  var api = { splitName: splitName, tiers: tiers };
+  // First-names-only mode: just the first name (plus the last initial when two seated students share a first name).
+  // Smaller text first, then a shortened first name. A trailing initial like "N." is never dropped.
+  function firstTiers(first, initial, smallSize, floorSize) {
+    var tail = initial ? ' ' + initial : '';
+    var out = [{ text: first + tail, size: null }, { text: first + tail, size: smallSize }, { text: first + tail, size: floorSize }];
+    var chars = Array.from(first);
+    [8, 5].forEach(function (n) { if (chars.length > n) out.push({ text: shorten(first, n) + tail, size: floorSize }); });
+    return out;
+  }
+
+  // Maps each name to its first name, plus a last initial (e.g. "N.") only for first names that appear more than once.
+  function firstOnlyLabels(names) {
+    var count = {};
+    var parts = names.map(function (n) { var p = splitName(n); var f = p.first || p.last; count[f.toLowerCase()] = (count[f.toLowerCase()] || 0) + 1; return { f: f, p: p }; });
+    return parts.map(function (x) {
+      var dup = count[x.f.toLowerCase()] > 1 && x.p.first && x.p.last;
+      return { first: x.f, initial: dup ? Array.from(x.p.last)[0] + '.' : '' };
+    });
+  }
+
+  var api = { splitName: splitName, tiers: tiers, firstTiers: firstTiers, firstOnlyLabels: firstOnlyLabels };
   root.BusApp = root.BusApp || {};
   root.BusApp.nameFit = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
