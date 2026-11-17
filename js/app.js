@@ -141,17 +141,28 @@
   }
 
   function render() {
-    if (view !== 'after' && !chart.baseline) view = 'after';
+    if (view !== 'after' && view !== 'pdf' && !chart.baseline) view = 'after';
     var changes = Log.diff(chart.baseline, { roster: chart.roster, features: chart.features });
 
     var views = $('views');
     views.textContent = '';
     views.className = 'views ' + view;
-    if (view !== 'after') {
+    if (view === 'pdf') {
+      // Exactly what the PDF is built from, drawn on the page. Not editable; switch back to After to move students.
+      var wantBefore = $('pdf-before').checked && chart.baseline;
+      [wantBefore ? 'before' : null, 'after'].forEach(function (which) {
+        if (!which) return;
+        var sheet = buildSheet(which, !!wantBefore);
+        sheet.classList.add('on-page');
+        if ($('opt-color').value === 'gray') sheet.classList.add('gray');
+        views.appendChild(sheet);
+      });
+    }
+    if (view === 'before' || view === 'side') {
       views.appendChild(UI.renderBus(busContext(chart.baseline.roster, chart.baseline.features, false,
         changedSeats(changes, 'before'), 'Before (baseline)')));
     }
-    if (view !== 'before') {
+    if (view === 'after' || view === 'side') {
       views.appendChild(UI.renderBus(busContext(chart.roster, chart.features, true, changedSeats(changes, 'after'), 'After (current)')));
     }
     UI.fitSeatNames(views);
@@ -175,7 +186,7 @@
 
     Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) {
       b.setAttribute('aria-pressed', b.getAttribute('data-view') === view ? 'true' : 'false');
-      if (b.getAttribute('data-view') !== 'after') b.disabled = !chart.baseline;
+      if (b.getAttribute('data-view') !== 'after' && b.getAttribute('data-view') !== 'pdf') b.disabled = !chart.baseline;
     });
     $('onboarding').hidden = hasWork() || !!chart.baseline;
     $('undo').disabled = !History.canUndo(hist);
@@ -370,10 +381,8 @@
 
   // Draws one chart with the export header in an off-screen sheet and returns a canvas.
   // withLabel: show the "Before" / "After" caption. Only needed when both charts are in the same export.
-  function captureSheet(which, withLabel) {
-    if (typeof root.html2canvas !== 'function') {
-      return Promise.reject(new Error('PDF and JPEG export need the vendored html2canvas library, which is not installed yet.'));
-    }
+  // The export sheet as a DOM element: the same one the Preview, JPEG and PDF capture, and the one "PDF view" shows on the page.
+  function buildSheet(which, withLabel) {
     var info = Exp.headerLines(exportInfo());
     var isBefore = which === 'before';
     var roster = isBefore ? chart.baseline.roster : chart.roster, features = isBefore ? chart.baseline.features : chart.features;
@@ -395,8 +404,16 @@
         sheet.appendChild(UI.h('div', { 'class': 'bus-light ' + c }));
       });
     }
+    if ($('opt-color').value === 'bw') sheet.classList.add('bw');
+    return sheet;
+  }
+
+  function captureSheet(which, withLabel) {
+    if (typeof root.html2canvas !== 'function') {
+      return Promise.reject(new Error('PDF and JPEG export need the vendored html2canvas library, which is not installed yet.'));
+    }
     var colorMode = $('opt-color').value;
-    if (colorMode === 'bw') sheet.classList.add('bw');
+    var sheet = buildSheet(which, withLabel);
     document.body.appendChild(sheet);
     UI.fitSeatNames(sheet);
     inlineSvgStyles(sheet);
@@ -902,6 +919,12 @@
 
   setupStopPick('driver-col', 'data-driver-col', 'busDriverCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
   setupStopPick('door-col', 'data-door-col', 'busDoorCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
+
+  // PDF view shows the export options live, so redraw it when one changes.
+  ['opt-color', 'pdf-before', 'export-frame', 'export-date'].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener('change', function () { if (view === 'pdf') render(); });
+  });
 
   wire();
   render();

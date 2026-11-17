@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.37.0] - 2026-11-17
+
+### Added
+- PDF view in the View group: shows the chart on the page exactly as the PDF is built (same header, legend, frame, color mode and Before option), so what you see matches the export. It is not editable; switch back to After to move students.
+
+### Changed
+- The export sheet is now built by one shared function that both the PDF view and the Preview, JPEG and PDF exports use.
+
 ## [0.36.0] - 2026-11-17
 
 ### Fixed
