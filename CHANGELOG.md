@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.35.0] - 2026-11-17
+
+### Fixed
+- The stop number shape now shows in the export Preview, JPEG and PDF. Its colors and sizes are copied onto the SVG before the chart is captured, because the capture library ignored the stylesheet.
+
 ## [0.34.0] - 2026-11-17
 
 ### Added

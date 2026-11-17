@@ -398,6 +398,7 @@
     if (colorMode === 'bw') sheet.classList.add('bw');
     document.body.appendChild(sheet);
     UI.fitSeatNames(sheet);
+    inlineSvgStyles(sheet);
     var scale = parseFloat($('opt-quality').value) || 2;
     return root.html2canvas(sheet, { scale: scale, backgroundColor: '#ffffff' }).then(
       function (canvas) {
@@ -410,6 +411,20 @@
         return canvas;
       },
       function (e) { sheet.remove(); throw e; });
+  }
+
+  // html2canvas draws an inline SVG as a separate image, which ignores the page's stylesheet. Copy the computed
+  // look onto each SVG element as attributes, and give the SVG a fixed size, so the stop shapes show in exports and previews.
+  function inlineSvgStyles(sheet) {
+    var props = ['fill', 'stroke', 'stroke-width', 'stroke-linejoin', 'font-size', 'font-weight', 'font-family'];
+    Array.prototype.forEach.call(sheet.querySelectorAll('svg'), function (svg) {
+      var box = svg.getBoundingClientRect();
+      if (box.width) { svg.setAttribute('width', String(box.width)); svg.setAttribute('height', String(box.height)); }
+      Array.prototype.forEach.call(svg.querySelectorAll('polygon, ellipse, rect, text'), function (el) {
+        var cs = getComputedStyle(el);
+        props.forEach(function (p) { var v = cs.getPropertyValue(p); if (v) el.setAttribute(p, v); });
+      });
+    });
   }
 
   function exportJpeg() {
