@@ -3,14 +3,14 @@
 
   var WHATS_NEW = {
     added: [
-      'About and What\u2019s new sections in Settings, with the build date in US Eastern time.',
-      'Official seat labels on every seat (driver side odd, door side even).',
-      'Route #, AM/PM/Both, aide and notes fields in the top bar.'
+      'PDF view: see the chart on the page exactly as the PDF will print it.',
+      'Stop number shape (triangle, circle, square, squircle) and corner pickers.',
+      'Driver and Door labels can sit over any seat column.'
     ],
     changed: [
-      'PDF/JPEG header is now two larger rows with bold field names.',
-      'PDF export is always portrait and sizes the chart as large as possible.',
-      'Default bus layout is now 11 rows.'
+      'The stop badge now shows correctly in the export Preview, JPEG and PDF.',
+      'PDF header fields sit closer to the center.',
+      'Rear at top orientation, and text sizes are sliders.'
     ]
   };
 
@@ -21,7 +21,7 @@
     var button = opts.button, panel = opts.panel, actions = opts.actions;
 
     function isOpen() { return !panel.hidden; }
-    function open() { panel.hidden = false; button.setAttribute('aria-expanded', 'true'); render(); }
+    function open() { openSections.whatsnew = true; panel.hidden = false; button.setAttribute('aria-expanded', 'true'); render(); }
     function close() { panel.hidden = true; button.setAttribute('aria-expanded', 'false'); }
 
     function numberField(label, value, min, onChange) {
@@ -60,6 +60,13 @@
       panel.appendChild(h('div', { 'class': 'set-head' }, [
         h('div', {}, [h('h2', { text: 'Settings' })]),
         closeX]));
+
+      // What's new comes first and opens expanded every time Settings is opened, so it is the first thing seen. (last three new things and last three changes; update with each release)
+      function list(items) { return h('ul', { 'class': 'hint' }, items.map(function (t) { return h('li', { text: t }); })); }
+      panel.appendChild(section('whatsnew', "What's new", [
+        h('p', {}, [h('strong', { text: 'New' })]), list(WHATS_NEW.added),
+        h('p', {}, [h('strong', { text: 'Changed' })]), list(WHATS_NEW.changed)
+      ]));
 
       // 1. Bus setup
       var flip = h('button', { type: 'button', text: 'Door is on the ' + side + ' — flip to ' + (side === 'right' ? 'left' : 'right') });
@@ -169,13 +176,6 @@
       panel.appendChild(section('demo', 'Try it out', [
         h('div', { 'class': 'row' }, [demo, demoPlain]),
         h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' })
-      ]));
-
-      // 8. What's new (last three new things and last three changes; update with each release)
-      function list(items) { return h('ul', { 'class': 'hint' }, items.map(function (t) { return h('li', { text: t }); })); }
-      panel.appendChild(section('whatsnew', "What's new", [
-        h('p', {}, [h('strong', { text: 'New' })]), list(WHATS_NEW.added),
-        h('p', {}, [h('strong', { text: 'Changed' })]), list(WHATS_NEW.changed)
       ]));
 
       // 9. About
