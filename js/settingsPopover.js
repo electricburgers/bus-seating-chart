@@ -1,24 +1,32 @@
 (function (root) {
   'use strict';
 
-  var WHATS_NEW = {
-    added: [
-      'Bus layout box on the main page holds bus setup, emergency windows, bench overrides and templates.',
-      'Shrink empty rows checkbox in Save and export: empty rows become a thin strip with seat and row IDs.',
-      'Aisle space slider: set how much room sits on each side of the row number in the aisle.',
-      'Show legend checkbox in Save and export: leave the legend off the PDF, JPEG and PDF view.',
-      'PDF view: see the chart on the page exactly as the PDF will print it.',
-      'Stop number shape (triangle, circle, square, squircle) and corner pickers.'
-    ],
-    changed: [
-      'Settings is shorter: Appearance, Data safety and About (with What\'s new and fake data).',
-      'Exports put the seat ID inside the seat and use thin lines instead of boxes in grayscale and black and white.',
-      'Long names shorten the last name to an initial before the first name.',
-      'The export legend always sits to the right of the route and aide at the top, leaving the full width for the chart.',
-      'The row number in the aisle always stays visible.',
-      'PDF header fields sit closer to the center.'
-    ]
-  };
+  // The last three releases, newest first. Update with each release (the first entry must match the current version).
+  var WHATS_NEW = [
+    { version: '0.47.0', added: [
+      'What\'s new in Settings > About now lists the last three versions.'
+    ], changed: [
+      'The Text sizes menu is now Text and labels, grouped into Names, Seat numbers, Stop number, and Driver and door labels.'
+    ] },
+    { version: '0.46.0',
+      added: [
+        'Bus layout box on the main page holds bus setup, emergency windows, bench overrides and templates.',
+        'First names only checkbox in Save and export: big first names, with a last initial only when two students share one.'
+      ],
+      changed: [
+        'Settings is shorter: Appearance, Data safety and About (with What\'s new and fake data).',
+        'First names are about 1.7 times bigger in a heavy font, so they read on a moving bus.',
+        'Star and H badges sit at the bottom right in the school line, clear of the stop number.',
+        'Exports leave off the school line when every student goes to the same school.'
+      ] },
+    { version: '0.45.0',
+      added: ['Shrink empty rows checkbox in Save and export: empty rows become a thin strip with seat and row IDs.'],
+      changed: [
+        'Exports put the seat ID inside the seat and use thin lines instead of boxes in grayscale and black and white.',
+        'Long names shorten the last name to an initial before the first name.'
+      ] }
+  ];
+
 
   // Two surfaces. The gear popover holds app preferences (appearance, data safety, about). The Bus layout box on the main page
   // (opts.layoutPanel) holds everything that describes the bus itself: setup, emergency windows, bench overrides and templates.
@@ -171,6 +179,14 @@
       panel.appendChild(section('safety', 'Data safety', safety));
 
       // About holds the version, what changed lately, and the fake-data demo (it replaces the chart, so it is tucked away here).
+      function whatsNew() {
+        var out = [];
+        WHATS_NEW.forEach(function (r) {
+          out.push(h('p', {}, [h('strong', { text: 'Version ' + r.version })]));
+          out.push(list(r.added.map(function (t) { return 'New: ' + t; }).concat(r.changed.map(function (t) { return 'Changed: ' + t; }))));
+        });
+        return out;
+      }
       function list(items) { return h('ul', { 'class': 'hint' }, items.map(function (t) { return h('li', { text: t }); })); }
       var demo = h('button', { type: 'button', text: 'Generate fake names and layout' });
       demo.addEventListener('click', function () { run(function () { actions.loadSampleData(true); }); });
@@ -179,12 +195,12 @@
       panel.appendChild(section('about', 'About', [
         h('p', { 'class': 'version', text: 'Version ' + v.version }),
         h('p', { 'class': 'hint', text: 'Built ' + v.buildDate + ' ' + v.buildTime + ' (US Eastern time)' }),
-        h('p', {}, [h('strong', { text: 'New' })]), list(WHATS_NEW.added),
-        h('p', {}, [h('strong', { text: 'Changed' })]), list(WHATS_NEW.changed),
+        h('p', {}, [h('strong', { text: 'What\'s new' })])
+      ].concat(whatsNew()).concat([
         h('p', {}, [h('strong', { text: 'Try it out' })]),
         h('div', { 'class': 'row' }, [demo, demoPlain]),
         h('p', { 'class': 'hint', text: 'Replaces the current chart with made-up students, a baseline and a few moves, so you can preview exports.' })
-      ]));
+      ])));
 
       panel.scrollTop = scrollTop;
       var newWrap = layoutPanel && layoutPanel.querySelector('.window-table-wrap');
@@ -204,7 +220,7 @@
     return { open: open, close: close, render: render, isOpen: isOpen };
   }
 
-  var api = { create: create };
+  var api = { create: create, WHATS_NEW: WHATS_NEW };
   root.BusApp = root.BusApp || {};
   root.BusApp.settingsPopover = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -121,20 +121,28 @@
           <div class="baseline-row"><button id="set-baseline" type="button">Set baseline</button><span id="baseline-note" class="hint"></span></div>
         </div>
         <details class="text-sizes">
-          <summary>Text sizes</summary>
+          <summary>Text and labels</summary>
           <div class="size-grid">
-          <label class="size-pick"><span>Student name</span><input id="name-size" type="range" min="12" max="18" step="1" value="14" aria-label="Student name font size"><output for="name-size">14</output></label>
-          <label class="size-pick"><span>School name</span><input id="school-size" type="range" min="11" max="16" step="1" value="14" aria-label="School name font size"><output for="school-size">14</output></label>
-          <label class="size-pick"><span>Driver label column</span><select id="driver-col" aria-label="Seat column for the Driver label"><option value="aisle">Aisle seat</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>
-          <label class="size-pick"><span>Door label column</span><select id="door-col" aria-label="Seat column for the Door label"><option value="aisle">Aisle seat</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>
-          <label class="size-pick"><span>Stop shape</span><select id="stop-shape" aria-label="Stop number shape"><option value="triangle">Triangle</option><option value="circle">Circle</option><option value="square">Square</option><option value="squircle">Squircle</option></select></label>
-          <label class="size-pick"><span>Stop corner</span><select id="stop-corner" aria-label="Seat corner for the stop number"><option value="bl">Bottom left</option><option value="br">Bottom right</option><option value="tl">Top left</option><option value="tr">Top right</option></select></label>
-          <label class="size-pick"><span>Stop size</span><input id="stop-size" type="range" min="26" max="56" step="1" value="34" aria-label="Stop triangle size"><output for="stop-size">34</output></label>
-          <label class="size-pick"><span>Stop number</span><input id="stop-num-size" type="range" min="40" max="70" step="1" value="50" aria-label="Stop number size inside triangle"><output for="stop-num-size">50</output></label>
-          <label class="size-pick"><span>Seat id</span><input id="row-size" type="range" min="12" max="22" step="1" value="14" aria-label="Seat id font size"><output for="row-size">14</output></label>
-          <label class="size-pick"><span>Column header</span><input id="col-size" type="range" min="11" max="22" step="1" value="13" aria-label="Column header (A B C) font size"><output for="col-size">13</output></label>
-          <label class="size-pick"><span>Row number</span><input id="rownum-size" type="range" min="14" max="30" step="1" value="18" aria-label="Row number (1 2 3) font size"><output for="rownum-size">18</output></label>
-          <label class="size-pick"><span>Aisle space</span><input id="aisle-pad" type="range" min="0" max="60" step="2" value="16" aria-label="Space on each side of the aisle row number"><output for="aisle-pad">16</output></label>
+          <fieldset class="size-group"><legend>Names</legend>
+            <label class="size-pick"><span>Student name</span><input id="name-size" type="range" min="12" max="18" step="1" value="14" aria-label="Student name font size"><output for="name-size">14</output></label>
+            <label class="size-pick"><span>School name</span><input id="school-size" type="range" min="11" max="16" step="1" value="14" aria-label="School name font size"><output for="school-size">14</output></label>
+          </fieldset>
+          <fieldset class="size-group"><legend>Seat numbers</legend>
+            <label class="size-pick"><span>Seat ID</span><input id="row-size" type="range" min="12" max="22" step="1" value="14" aria-label="Seat id font size"><output for="row-size">14</output></label>
+            <label class="size-pick"><span>Column header (A B C)</span><input id="col-size" type="range" min="11" max="22" step="1" value="13" aria-label="Column header (A B C) font size"><output for="col-size">13</output></label>
+            <label class="size-pick"><span>Row number</span><input id="rownum-size" type="range" min="14" max="30" step="1" value="18" aria-label="Row number (1 2 3) font size"><output for="rownum-size">18</output></label>
+            <label class="size-pick"><span>Space around aisle number</span><input id="aisle-pad" type="range" min="0" max="60" step="2" value="16" aria-label="Space on each side of the aisle row number"><output for="aisle-pad">16</output></label>
+          </fieldset>
+          <fieldset class="size-group"><legend>Stop number</legend>
+            <label class="size-pick size-select"><span>Shape</span><select id="stop-shape" aria-label="Stop number shape"><option value="triangle">Triangle</option><option value="circle">Circle</option><option value="square">Square</option><option value="squircle">Squircle</option></select></label>
+            <label class="size-pick size-select"><span>Corner</span><select id="stop-corner" aria-label="Seat corner for the stop number"><option value="bl">Bottom left</option><option value="br">Bottom right</option><option value="tl">Top left</option><option value="tr">Top right</option></select></label>
+            <label class="size-pick"><span>Shape size</span><input id="stop-size" type="range" min="26" max="56" step="1" value="34" aria-label="Stop triangle size"><output for="stop-size">34</output></label>
+            <label class="size-pick"><span>Number size</span><input id="stop-num-size" type="range" min="40" max="70" step="1" value="50" aria-label="Stop number size inside triangle"><output for="stop-num-size">50</output></label>
+          </fieldset>
+          <fieldset class="size-group"><legend>Driver and door labels</legend>
+            <label class="size-pick size-select"><span>Driver over</span><select id="driver-col" aria-label="Seat column for the Driver label"><option value="aisle">Aisle seat</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>
+            <label class="size-pick size-select"><span>Door over</span><select id="door-col" aria-label="Seat column for the Door label"><option value="aisle">Aisle seat</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>
+          </fieldset>
           </div>
         </details>
       </div>

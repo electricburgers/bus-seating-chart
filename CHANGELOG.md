@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.47.0] - 2026-11-17
+
+### Changed
+- The Text sizes menu is now "Text and labels", split into Names, Seat numbers, Stop number, and Driver and door labels groups with a tidy two-column layout.
+- What's new in Settings > About lists the last three versions, each with its own changes.
+
 ## [0.46.0] - 2026-11-17
 
 ### Added

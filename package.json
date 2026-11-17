@@ -1,6 +1,6 @@
 {
   "name": "bus-seating-chart",
-  "version": "0.46.0",
+  "version": "0.47.0",
   "description": "Offline-capable bus seating chart with drag-and-drop student placement",
   "private": true,
   "scripts": {

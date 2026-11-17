@@ -64,3 +64,10 @@ test('the committed js/version.js matches package.json and the formats', () => {
   assert.match(v.buildTime, /^\d{2}:\d{2} [A-Z0-9+-]+$/);
   assert.strictEqual(St.hasChangelogEntry(fs.readFileSync(path.join(ROOT, 'CHANGELOG.md'), 'utf8'), v.version), true);
 });
+
+test("What's new lists the current version first, then up to two earlier ones", () => {
+  const { WHATS_NEW } = require('../js/settingsPopover.js');
+  const pkg = require('../package.json');
+  assert.strictEqual(WHATS_NEW[0].version, pkg.version);
+  assert.strictEqual(WHATS_NEW.length, 3);
+});
