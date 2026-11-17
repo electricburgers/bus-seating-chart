@@ -392,10 +392,12 @@
     var legend = showLegend ? exportLegend(roster, features, ctx, $('opt-color').value) : null;
     var sheet = UI.h('div', { 'class': 'export-sheet' }, [
       UI.h('div', { 'class': 'export-header' }, [
-        UI.h('div', { 'class': 'export-header-row' }, [headerField(info.route), headerField(info.driver)]),
-        UI.h('div', { 'class': 'export-header-row' }, [headerField(info.aide), headerField(info.date)])]),
+        UI.h('div', { 'class': 'export-header-fields' }, [
+          UI.h('div', { 'class': 'export-header-row' }, [headerField(info.route), headerField(info.driver)]),
+          UI.h('div', { 'class': 'export-header-row' }, [headerField(info.aide), headerField(info.date)])]),
+        legend]),
         info.notes ? UI.h('div', { 'class': 'export-notes', text: 'Notes: ' + info.notes }) : null,
-      UI.h('div', { 'class': 'export-body' }, [busFig, legend])
+      UI.h('div', { 'class': 'export-body' }, [busFig])
     ]);
     if ($('export-frame').checked) {
       // Optional fun frame: a yellow school-bus outline with wheels around the chart.
@@ -410,8 +412,6 @@
     // seat width, stop size). Carry them on the sheet itself so the export matches the page.
     var rs = document.documentElement.style;
     for (var i = 0; i < rs.length; i++) if (rs[i].indexOf('--') === 0) sheet.style.setProperty(rs[i], rs.getPropertyValue(rs[i]));
-    // The legend always sits at the top under the driver info, which leaves the full width for the chart.
-    if (showLegend) sheet.querySelector('.export-body').classList.add('legend-top');
     return sheet;
   }
 

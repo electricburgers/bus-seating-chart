@@ -9,7 +9,7 @@
       'Stop number shape (triangle, circle, square, squircle) and corner pickers.'
     ],
     changed: [
-      'The export legend always sits at the top with the route and aide, leaving the full width for the chart.',
+      'The export legend always sits to the right of the route and aide at the top, leaving the full width for the chart.',
       'The row number in the aisle always stays visible.',
       'PDF header fields sit closer to the center.'
     ]

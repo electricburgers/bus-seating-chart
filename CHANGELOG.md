@@ -20,7 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 ## [0.44.0] - 2026-11-17
 
 ### Changed
-- The export legend always sits at the top with the route and aide, saving horizontal room for the chart.
+- The export legend always sits to the right of the route and aide at the top, saving horizontal room for the chart.
 
 ## [0.43.0] - 2026-11-17
 
