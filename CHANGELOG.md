@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.56.0] - 2026-11-18
+
+### Fixed
+- When empty rows shrink, the EXIT tabs, row numbers and row count labels now line up exactly with the shrunken rows.
+
 ## [0.55.0] - 2026-11-18
 
 ### Added

@@ -324,7 +324,11 @@ body.is-moving .pool { border-color: var(--line2); }
 .export-sheet .bus { row-gap: 6px; }
 .export-sheet .seat-label { position: static; align-self: flex-start; padding: 0 2px; border: 0; border-radius: 0; background: none; line-height: 1; }
 .export-sheet .seat .chip-name { padding-top: 0; }
-.export-sheet .bench.empty-row .seat { height: calc(var(--row-size, 14px) + 8px); }
+.export-sheet .bus { --strip-h: max(calc(var(--row-size, 14px) + 8px), calc(var(--rownum-size, 18px) + 4px)); }
+/* Everything in a shrunk row (seats, EXIT tabs, row numbers, row count) is the same height, so the labels line up with the strip. */
+.export-sheet .bench.empty-row .seat, .export-sheet .bench.empty-row .window-exit, .export-sheet .bench.empty-row .window-exit-spacer, .export-sheet .bench.empty-row .window-num, .export-sheet .bench.empty-row .aisle { box-sizing: border-box; height: var(--strip-h); min-height: 0; padding-top: 0; padding-bottom: 0; line-height: var(--strip-h); overflow: hidden; }
+.export-sheet .bench.empty-row .seat { line-height: normal; overflow: visible; }
+.export-sheet .bench.empty-row .window-exit { line-height: 1; display: flex; }
 .export-sheet .bench.empty-row .seat-empty, .export-sheet .bench.empty-row .features { display: none; }
 /* Greyscale and black and white: no boxes. Hairlines between seats and rows, and the name takes the space the borders and padding used. */
 .export-sheet.tight .bus { row-gap: 0; }
