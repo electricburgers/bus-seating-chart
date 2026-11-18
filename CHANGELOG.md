@@ -17,6 +17,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.52.0] - 2026-11-18
+
+### Changed
+- A student with a nickname shows the nickname big in place of the first name (also in first-names-only mode). The real first name shrinks like a middle name: small type, then an initial, then off.
+
+## [0.51.0] - 2026-11-18
+
+### Added
+- Export and Import buttons for bus templates (JSON file), so a template can move between computers.
+- Middle names are shown in smaller type, then shrink to initials, then drop off, before the first or last name has to shrink.
+
+## [0.50.0] - 2026-11-18
+
+### Added
+- CSV export has nickname and stop columns.
+
+### Fixed
+- The stop badge in the student list was far too big; it is now a small corner mark.
+- Nicknames on seats could be squeezed out of the chart and exports.
+
 ## [0.49.0] - 2026-11-18
 
 ### Added

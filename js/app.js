@@ -257,6 +257,28 @@
         notify(r.ok ? 'Updated template "' + name + '" with the current bus and look.' : 'Could not update template: ' + r.error, !r.ok);
       });
     },
+    exportTemplate: function (name) {
+      guard(function () {
+        download(Exp.buildFilename('bus-template-' + name, today(), 'json'), Store.templateToJson(templates, name), 'application/json');
+        notify('Saved template "' + name + '" as a JSON file.');
+      });
+    },
+    importTemplate: function (file) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        guard(function () {
+          var t = Store.templateFromJson(reader.result);
+          if (Object.prototype.hasOwnProperty.call(templates, t.name) && !root.confirm('A template named "' + t.name + '" already exists. Replace it?')) return;
+          templates = Object.assign({}, templates);
+          templates[t.name] = t.template;
+          var r = Store.saveTemplates(storage(), templates);
+          notify(r.ok ? 'Imported template "' + t.name + '". Pick it under Bus templates and press Load.' : 'Could not save the template: ' + r.error, !r.ok);
+          if (popover) popover.render();
+        });
+      };
+      reader.onerror = function () { notify('Could not read that file.', true); };
+      reader.readAsText(file);
+    },
     setDefaultTemplate: function (name) {
       var r = Store.saveDefaultTemplate(storage(), name || '');
       notify(!r.ok ? 'Could not save the default: ' + r.error : name ? 'New charts will start from "' + name + '".' : 'No default template. New charts start blank.', !r.ok);
@@ -431,7 +453,7 @@
     if (firstOnly) {
       // Show just the first name, with the last initial only where two seated students share a first name.
       var chips = Array.prototype.slice.call(busFig.querySelectorAll('.seat .chip-name'));
-      var labels = NameFit.firstOnlyLabels(chips.map(function (c) { return c.getAttribute('data-full-name'); }));
+      var labels = NameFit.firstOnlyLabels(chips.map(function (c) { return c.getAttribute('data-nickname') || c.getAttribute('data-full-name'); }));
       chips.forEach(function (c, i) {
         c.setAttribute('data-first-only', '1'); c.setAttribute('data-full-name', labels[i].first);
         if (labels[i].initial) c.setAttribute('data-initial', labels[i].initial);

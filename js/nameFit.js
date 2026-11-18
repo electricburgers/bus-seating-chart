@@ -14,13 +14,41 @@
     return { first: s.slice(0, i), last: s.slice(i + 1) };
   }
 
+  // "Mary Jane Watson" -> given "Mary", middle "Jane", last "Watson". Names without a middle name have middle ''.
+  function splitParts(name) {
+    var p = splitName(name), words = p.first.split(' ').filter(Boolean);
+    return { given: words[0] || '', middle: words.slice(1).join(' '), last: p.last };
+  }
+  function middleInitials(middle) {
+    return middle.split(' ').filter(Boolean).map(function (w) { return Array.from(w)[0] + '.'; }).join(' ');
+  }
+
   function shorten(first, n) {
     var chars = Array.from(first);
     return chars.length <= n ? first : chars.slice(0, n).join('') + '.';
   }
 
   // Tiers from roomiest to tightest. Each is { text, size } where size is a font-size in px, or null for the normal size.
-  function tiers(name, smallSize, floorSize) {
+  // A name with a middle name keeps it in small type: full middle, then middle initials, then the usual size steps, then no middle name.
+  // Tiers then carry a `middle` field and `text` holds only the first and last name.
+  // With a nickname, the nickname takes the big first-name line and the real first (and middle) names shrink like a middle name.
+  function tiers(name, smallSize, floorSize, nickname) {
+    var parts = splitParts(name);
+    var nick = String(nickname || '').trim();
+    if (nick) {
+      if (!parts.given || !parts.last) return plainTiers(nick, smallSize, floorSize);
+      parts = { given: nick, middle: (parts.given + ' ' + parts.middle).trim(), last: parts.last };
+    }
+    if (parts.middle && parts.last) {
+      var base = plainTiers(parts.given + ' ' + parts.last, smallSize, floorSize), ini = middleInitials(parts.middle);
+      function withMid(t, m) { return { text: t.text, size: t.size, middle: m }; }
+      return [withMid(base[0], parts.middle), withMid(base[0], ini), withMid(base[1], ini), withMid(base[2], ini), withMid(base[2], '')]
+        .concat(base.slice(3));
+    }
+    return plainTiers(name, smallSize, floorSize);
+  }
+
+  function plainTiers(name, smallSize, floorSize) {
     var p = splitName(name);
     var full = p.first ? p.first + ' ' + p.last : p.last;
     var out = [{ text: full, size: null }, { text: full, size: smallSize }, { text: full, size: floorSize }];
@@ -55,7 +83,7 @@
     });
   }
 
-  var api = { splitName: splitName, tiers: tiers, firstTiers: firstTiers, firstOnlyLabels: firstOnlyLabels };
+  var api = { splitName: splitName, splitParts: splitParts, middleInitials: middleInitials, tiers: tiers, firstTiers: firstTiers, firstOnlyLabels: firstOnlyLabels };
   root.BusApp = root.BusApp || {};
   root.BusApp.nameFit = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

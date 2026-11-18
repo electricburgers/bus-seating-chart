@@ -74,7 +74,7 @@
       draggable: 'true', tabindex: '0', role: 'button', 'data-student-id': student.id,
       style: schoolStyle(student.school)
     }, [
-      h('span', { 'class': 'chip-name', title: student.name, 'data-full-name': student.name, text: student.name }),
+      h('span', { 'class': 'chip-name', title: student.name, 'data-full-name': student.name, 'data-nickname': student.nickname || false, text: student.name }),
       student.nickname ? h('span', { 'class': 'chip-nickname', text: '“' + student.nickname + '”' }) : null,
       student.school ? h('span', { 'class': 'chip-school', text: student.school }) : null,
       student.stop ? stopBadge(student.stop) : null
@@ -116,7 +116,7 @@
     try { fitNames(container); } finally { placeFeatureBars(container); }
   }
   // First name is big and bold on its own line, last name smaller after it, so the first name reads from across a bouncing bus.
-  function setName(el, text) {
+  function setName(el, text, middle) {
     var i = text.lastIndexOf(' ');
     el.textContent = '';
     if (el.hasAttribute('data-first-only')) {
@@ -128,6 +128,7 @@
     }
     if (i < 0) { el.appendChild(h('span', { 'class': 'nm-last', text: text })); return; }
     el.appendChild(h('span', { 'class': 'nm-first', text: text.slice(0, i) }));
+    if (middle) el.appendChild(h('span', { 'class': 'nm-mid', text: middle }));
     el.appendChild(h('span', { 'class': 'nm-last', text: text.slice(i + 1) }));
   }
   function fitNames(container) {
@@ -138,13 +139,13 @@
     // lays out the page once per tier (at most a handful of times) instead of once per seat per tier.
     var pending = Array.prototype.map.call(container.querySelectorAll('.seat .chip-name'), function (el) {
       var full = el.getAttribute('data-full-name') || el.textContent, initial = el.getAttribute('data-initial');
-      return { el: el, list: el.hasAttribute('data-first-only') ? fit.firstTiers(full, initial || '', SMALL_SIZE, FLOOR_SIZE) : fit.tiers(full, SMALL_SIZE, FLOOR_SIZE) };
+      return { el: el, list: el.hasAttribute('data-first-only') ? fit.firstTiers(full, initial || '', SMALL_SIZE, FLOOR_SIZE) : fit.tiers(full, SMALL_SIZE, FLOOR_SIZE, el.getAttribute('data-nickname')) };
     }).filter(function (p) { return p.list.length > 0; });
     function overflows(el) { return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1; }
     for (var tier = 0; pending.length; tier++) {
       pending.forEach(function (p) {
         var t = p.list[tier];
-        setName(p.el, t.text);
+        setName(p.el, t.text, t.middle);
         p.el.style.fontSize = t.size ? t.size + 'px' : '';
       });
       pending = pending.filter(function (p) { return tier + 1 < p.list.length && overflows(p.el); });

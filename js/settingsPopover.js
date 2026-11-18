@@ -3,13 +3,9 @@
 
   // The last three releases, newest first. Update with each release (the first entry must match the current version).
   var WHATS_NEW = [
-    { version: '0.49.0', added: [ 'Update button on a saved template re-saves the current bus and look over it.', 'Start new charts from this template: a default template that a brand-new chart loads automatically.' ], changed: [] },
-    { version: '0.48.0', added: [ 'Bus templates now also remember fonts and text sizes, text positions, Rear at top, seat width, and the Save export row options (shrink empty rows, first names only, legend, frame, color).', 'Preview export button at the top next to the view buttons.' ], changed: [] },
-    { version: '0.47.0', added: [
-      'What\'s new in Settings > About now lists the last three versions.'
-    ], changed: [
-      'The Text sizes menu is now Text and labels, grouped into Names, Seat numbers, Stop number, and Driver and door labels.'
-    ] }
+    { version: '0.52.0', added: [], changed: [ 'A student with a nickname shows the nickname big in place of the first name. The real first name shrinks like a middle name: small type, then an initial, then off.' ] },
+    { version: '0.51.0', added: [ 'Export and Import for bus templates: save a template as a JSON file and load it on another computer.', 'Middle names show in smaller type under the first name and shrink to initials, then drop off, before the first name has to shrink.' ], changed: [] },
+    { version: '0.50.0', added: [ 'CSV export has nickname and stop columns.' ], changed: [ 'The stop badge in the student list is a small corner mark instead of a huge triangle.', 'Nicknames on seats no longer get squeezed out of the chart and exports.' ] }
   ];
 
 
@@ -135,7 +131,9 @@
         load.addEventListener('click', function () { run(function () { actions.loadTemplate(sel.value); }); });
         del.addEventListener('click', function () { run(function () { actions.deleteTemplate(sel.value); }); });
         if (st.defaultTemplate && names.indexOf(st.defaultTemplate) >= 0) sel.value = st.defaultTemplate;
-        tpl.push(h('div', { 'class': 'row' }, [sel, load, upd, del]));
+        var exp = h('button', { type: 'button', text: 'Export', title: 'Save this template as a JSON file' });
+        exp.addEventListener('click', function () { run(function () { actions.exportTemplate(sel.value); }); });
+        tpl.push(h('div', { 'class': 'row' }, [sel, load, upd, exp, del]));
         var defBox = h('input', { type: 'checkbox', 'aria-label': 'Start new charts from this template' });
         var syncDef = function () { defBox.checked = sel.value === st.defaultTemplate; };
         syncDef();
@@ -145,6 +143,9 @@
       } else {
         tpl.push(h('p', { 'class': 'hint', text: 'No saved templates yet.' }));
       }
+      var impIn = h('input', { type: 'file', accept: '.json,application/json', 'aria-label': 'Import a bus template JSON file' });
+      impIn.addEventListener('change', function () { var f = impIn.files && impIn.files[0]; if (f) run(function () { actions.importTemplate(f); }); });
+      tpl.push(h('div', { 'class': 'row' }, [h('label', { 'class': 'file-btn' }, ['Import template JSON ', impIn])]));
       lp.appendChild(section('templates', 'Bus templates', tpl));
 
       // Appearance

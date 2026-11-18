@@ -48,13 +48,13 @@ function chart() {
 test('csvRows: header, then one row per seat in left-to-right order', () => {
   const rows = X.csvRows(chart(), '2026-11-15');
   assert.deepStrictEqual(rows[0], ['route', 'date', 'seat', 'side', 'row', 'student', 'school',
-    'car_seat', 'harness_attachment', 'wheelchair']);
+    'car_seat', 'harness_attachment', 'wheelchair', 'nickname', 'stop']);
   // rows 1-2: 3 seats each; wheelchair rows 3-4: one spot each
   assert.strictEqual(rows.length, 1 + 3 + 3 + 2);
-  assert.deepStrictEqual(rows[1], ['Route 12', '2026-11-15', '1-driver-1', 'driver', 1, 'Ann Lee', 'Oak', 'yes', 'yes', 'no']);
+  assert.deepStrictEqual(rows[1], ['Route 12', '2026-11-15', '1-driver-1', 'driver', 1, 'Ann Lee', 'Oak', 'yes', 'yes', 'no', '', '']);
   assert.deepStrictEqual(rows[2].slice(2, 6), ['1-driver-2', 'driver', 1, '']);
   assert.deepStrictEqual(rows[3].slice(2, 5), ['1-door-1', 'door', 1]);
-  assert.deepStrictEqual(rows[7], ['Route 12', '2026-11-15', 'wc-3', 'wheelchair', 3, 'Smith, Bob', 'Elm', 'no', 'no', 'yes']);
+  assert.deepStrictEqual(rows[7], ['Route 12', '2026-11-15', 'wc-3', 'wheelchair', 3, 'Smith, Bob', 'Elm', 'no', 'no', 'yes', '', '']);
   assert.deepStrictEqual(rows[8].slice(2, 7), ['wc-4', 'wheelchair', 4, '', '']);
 });
 

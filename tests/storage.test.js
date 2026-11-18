@@ -244,3 +244,18 @@ test('default template name is remembered and ignored when the template is gone'
   assert.strictEqual(S.loadDefaultTemplate(store, t), 'Route 5');
   assert.strictEqual(S.loadDefaultTemplate(store, {}), '');
 });
+
+test('template JSON export and import round-trips the bus and look', () => {
+  const chart = sampleChart();
+  const t = S.saveTemplate({}, 'Route 5', chart.layout, chart.features, { busRearTop: '1' });
+  const back = S.templateFromJson(S.templateToJson(t, 'Route 5'));
+  assert.strictEqual(back.name, 'Route 5');
+  assert.deepStrictEqual(back.template.layout, chart.layout);
+  assert.deepStrictEqual(back.template.view, { busRearTop: '1' });
+});
+
+test('template import rejects files that are not bus templates', () => {
+  assert.throws(() => S.templateFromJson('nope'), /not valid JSON/);
+  assert.throws(() => S.templateFromJson('{"app":"x"}'), /not a bus template/);
+  assert.throws(() => S.templateFromJson(JSON.stringify({ kind: 'template', template: { layout: { rows: -5 } } })), /layout/);
+});

@@ -256,7 +256,8 @@ body.is-moving .pool { border-color: var(--line2); }
 .preview-box[hidden] { display: none; }
 .preview-box img { display: block; max-width: 100%; max-height: 420px; margin: 0 auto 8px; background: #fff; border: 1px solid var(--line2); }
 .chip-nickname { font-size: 11px; font-style: italic; overflow-wrap: anywhere; }
-.seat .chip-nickname { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.seat .chip-nickname { display: none !important; }
+.seat .chip-nickname-old { flex: 0 0 auto; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .nickname-edit { display: block; font-size: 12px; margin-top: 2px; }
 .nickname-edit input { width: 9em; }
 
@@ -286,6 +287,10 @@ body.is-moving .pool { border-color: var(--line2); }
 .export-sheet.bw .feature.on { background: #000; color: #fff; border-color: #000; }
 
 .size-pick { font-size: 13px; }
+
+/* In the student list the stop badge is a small corner mark, not a full-width shape. */
+.pool .chip-stop { position: absolute; right: 6px; top: 4px; width: 26px; pointer-events: none; }
+.pool .chip { padding-right: 38px; }
 
 /* Bus stop number: a triangle at the bottom left of the seat, just above the school name. nameFit's placeFeatureBars sets its bottom offset. */
 .seat .chip-stop { position: absolute; left: 4px; bottom: 22px; width: var(--stop-size, 34px); z-index: 1; pointer-events: none; }
@@ -335,6 +340,7 @@ body.is-moving .pool { border-color: var(--line2); }
 
 /* First name is the one the aide reads on a moving bus: about 1.7 times the last name, extra bold. */
 .seat .chip-name .nm-first { display: block; font-size: 1.7em; font-weight: 900; line-height: 1.05; letter-spacing: .01em; font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; }
+.seat .chip-name .nm-mid { display: block; font-size: .8em; font-weight: 600; line-height: 1.1; }
 .seat .chip-name .nm-last { font-size: 1em; font-weight: 700; }
 /* Every student goes to the same school: the school line only repeats itself, so leave it off the export. */
 .export-sheet.one-school .seat .chip-school { display: none; }

@@ -205,6 +205,28 @@
     return t === 'light' || t === 'dark' ? t : 'auto';
   }
 
+  // One template as a shareable JSON file: { app, kind: 'template', name, template }.
+  function templateToJson(templates, name) {
+    var t = loadTemplate(templates, name);
+    return JSON.stringify({ app: APP_TAG, kind: 'template', schemaVersion: SCHEMA_VERSION, name: name, template: t }, null, 2);
+  }
+  // Returns { name, template } after checking that the bus layout is real. Throws a plain message otherwise.
+  function templateFromJson(text) {
+    var data;
+    try { data = JSON.parse(text); } catch (e) { fail('that file is not valid JSON'); }
+    if (!isObject(data) || data.kind !== 'template' || !isObject(data.template)) fail('that file is not a bus template');
+    var t = data.template;
+    if (!isObject(t.layout)) fail('the template has no bus layout');
+    var layout;
+    try { layout = lib('busLayout').createLayout(t.layout); } catch (e) { fail('the template layout is not valid'); }
+    var out = { layout: clone(layout), features: isObject(t.features) ? mergeLegacyFeatures(clone(t.features)) : {} };
+    if (isObject(t.view)) {
+      out.view = {};
+      Object.keys(t.view).forEach(function (k) { if (typeof t.view[k] === 'string') out.view[k] = t.view[k]; });
+    }
+    return { name: str(data.name).trim() || 'Imported template', template: out };
+  }
+
   // The name of the template new charts start from ('' for none).
   function saveDefaultTemplate(store, name) { return write(store, DEFAULT_TEMPLATE_KEY, String(name || '')); }
   function loadDefaultTemplate(store, templates) {
@@ -227,6 +249,7 @@
     SCHEMA_VERSION: SCHEMA_VERSION, AUTOSAVE_KEY: AUTOSAVE_KEY, TEMPLATES_KEY: TEMPLATES_KEY,
     serialize: serialize, deserialize: deserialize,
     saveTemplate: saveTemplate, listTemplates: listTemplates, loadTemplate: loadTemplate, deleteTemplate: deleteTemplate,
+    templateToJson: templateToJson, templateFromJson: templateFromJson,
     saveDefaultTemplate: saveDefaultTemplate, loadDefaultTemplate: loadDefaultTemplate,
     saveBackup: saveBackup, loadBackup: loadBackup, saveTheme: saveTheme, loadTheme: loadTheme,
     saveAutosave: saveAutosave, loadAutosave: loadAutosave, saveTemplates: saveTemplates, loadTemplates: loadTemplates
