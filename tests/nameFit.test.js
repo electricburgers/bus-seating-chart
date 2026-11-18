@@ -56,3 +56,8 @@ test('a nickname takes the big line and the real first name shrinks like a middl
   assert.deepStrictEqual(t.slice(0, 2).map((x) => [x.text, x.middle, x.size]), [['MJ Watson', 'Mary Jane', null], ['MJ Watson', 'M. J.', null]]);
   assert.deepStrictEqual(N.tiers('Cher', 11, 10, 'Ch').map((x) => x.text), ['Ch', 'Ch', 'Ch']);
 });
+
+test('firstOnlyLabels with allInitials adds a last initial to everyone', () => {
+  const r = N.firstOnlyLabels(['Ava Nguyen', 'Eli Kim'], true);
+  assert.deepStrictEqual(r.map((x) => x.initial), ['N.', 'K.']);
+});

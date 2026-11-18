@@ -196,6 +196,7 @@
           <label class="inline"><input id="export-legend" type="checkbox" checked> Show legend</label>
           <label class="inline"><input id="export-shrink" type="checkbox" checked> Shrink empty rows</label>
           <label class="inline"><input id="export-firstonly" type="checkbox"> First names only (last initial if two match)</label>
+          <label class="inline"><input id="export-initial" type="checkbox"> First name + last initial for all students</label>
           <button id="export-jpeg" type="button">JPEG</button>
           <button id="export-csv" type="button">CSV</button>
           <button id="export-json" type="button">Save JSON</button>
@@ -206,7 +207,7 @@
         <div class="row">
           <label>Paper <select id="opt-paper"><option value="letter">Letter</option><option value="a4">A4</option></select></label> <label>Page <select id="opt-orient"><option value="portrait" selected>Portrait</option><option value="landscape">Landscape</option></select></label>
           <label>Quality <select id="opt-quality"><option value="1.5">Draft</option><option value="2" selected>Standard</option><option value="3">High</option></select></label>
-          <label>Color <select id="opt-color"><option value="color">Color</option><option value="gray">Grayscale</option><option value="bw">Black and white</option></select></label>
+          <label>Color <select id="opt-color"><option value="color">Color</option><option value="gray" selected>Grayscale</option><option value="bw">Black and white</option></select></label>
           <label class="inline"><input id="opt-summary" type="checkbox" checked> Change summary page in PDF</label>
         </div>
         <div class="row">

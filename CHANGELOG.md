@@ -17,6 +17,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.58.0] - 2026-11-18
+
+### Added
+- Export option "First name + last initial for all students".
+
+### Changed
+- Stop numbers are now white on a black shape for the highest contrast.
+- Export color now defaults to Grayscale.
+
 ## [0.57.0] - 2026-11-18
 
 ### Added

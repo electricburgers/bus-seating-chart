@@ -73,12 +73,12 @@
     return out;
   }
 
-  // Maps each name to its first name, plus a last initial (e.g. "N.") only for first names that appear more than once.
-  function firstOnlyLabels(names) {
+  // Maps each name to its first name, plus a last initial (e.g. "N.") only for first names that appear more than once (or for everyone when allInitials is set).
+  function firstOnlyLabels(names, allInitials) {
     var count = {};
     var parts = names.map(function (n) { var p = splitName(n); var f = p.first || p.last; count[f.toLowerCase()] = (count[f.toLowerCase()] || 0) + 1; return { f: f, p: p }; });
     return parts.map(function (x) {
-      var dup = count[x.f.toLowerCase()] > 1 && x.p.first && x.p.last;
+      var dup = (allInitials || count[x.f.toLowerCase()] > 1) && x.p.first && x.p.last;
       return { first: x.f, initial: dup ? Array.from(x.p.last)[0] + '.' : '' };
     });
   }

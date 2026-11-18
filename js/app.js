@@ -27,7 +27,7 @@
   var theme = Store.loadTheme(storage());
   // Look settings a bus template remembers: key -> function(value) that applies and saves it. Filled in below.
   var viewApply = {};
-  var VIEW_CHECKS = ['export-shrink', 'export-firstonly', 'export-legend', 'export-frame'];
+  var VIEW_CHECKS = ['export-shrink', 'export-firstonly', 'export-initial', 'export-legend', 'export-frame'];
   function viewSnapshot() {
     var v = {};
     Object.keys(viewApply).forEach(function (k) {
@@ -449,11 +449,11 @@
     var busFig = UI.renderBus(ctx);
     var seatedStudents = Object.keys(roster).map(function (k) { return ctx.byId[roster[k]]; }).filter(Boolean);
     var oneSchool = Object.keys(seatedStudents.reduce(function (o, st) { if (st.school) o[st.school] = 1; return o; }, {})).length <= 1;
-    var firstOnly = $('export-firstonly').checked;
-    if (firstOnly) {
+    var allInitials = $('export-initial').checked;
+    if (allInitials || $('export-firstonly').checked) {
       // Show just the first name, with the last initial only where two seated students share a first name.
       var chips = Array.prototype.slice.call(busFig.querySelectorAll('.seat .chip-name'));
-      var labels = NameFit.firstOnlyLabels(chips.map(function (c) { return c.getAttribute('data-nickname') || c.getAttribute('data-full-name'); }));
+      var labels = NameFit.firstOnlyLabels(chips.map(function (c) { return c.getAttribute('data-nickname') || c.getAttribute('data-full-name'); }), allInitials);
       chips.forEach(function (c, i) {
         c.setAttribute('data-first-only', '1'); c.setAttribute('data-full-name', labels[i].first);
         if (labels[i].initial) c.setAttribute('data-initial', labels[i].initial);
@@ -1038,7 +1038,7 @@
   setupStopPick('door-col', 'data-door-col', 'busDoorCol', ['aisle', 'A', 'B', 'C', 'D'], 'aisle');
 
   // PDF view shows the export options live, so redraw it when one changes.
-  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-shrink', 'export-firstonly', 'export-date'].forEach(function (id) {
+  ['opt-color', 'pdf-before', 'export-frame', 'export-legend', 'export-shrink', 'export-firstonly', 'export-initial', 'export-date'].forEach(function (id) {
     var el = $(id);
     if (el) el.addEventListener('change', function () { if (view === 'pdf') render(); });
   });

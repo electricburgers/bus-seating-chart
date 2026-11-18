@@ -297,10 +297,8 @@ body.is-moving .pool { border-color: var(--line2); }
 .seat .chip-stop[data-corner='br'] { left: auto; right: 4px; }
 .seat .chip-stop[data-corner='tl'] { bottom: auto; top: 4px; }
 .seat .chip-stop[data-corner='tr'] { left: auto; right: 4px; bottom: auto; top: 4px; }
-.chip-stop .stop-tri { fill: #ffd84a; stroke: #1b1f24; stroke-width: 6; stroke-linejoin: round; }
-.chip-stop .stop-num { font-size: var(--stop-num-size, 50px); font-weight: 800; fill: #1b1f24; font-family: inherit; }
-.export-sheet.bw .chip-stop .stop-tri { fill: #fff; stroke: #000; }
-.export-sheet.bw .chip-stop .stop-num { fill: #000; }
+.chip-stop .stop-tri { fill: #000; stroke: #000; stroke-width: 6; stroke-linejoin: round; }
+.chip-stop .stop-num { font-size: var(--stop-num-size, 50px); font-weight: 800; fill: #fff; font-family: inherit; }
 
 /* Text size sliders */
 .size-pick input[type=range] { width: 100%; min-height: 0; padding: 0; }
@@ -316,8 +314,7 @@ body.is-moving .pool { border-color: var(--line2); }
 .export-legend .window-exit { align-self: auto; height: 22px; width: 42px; flex: 0 0 auto; }
 .export-legend .legend-swatch { flex: 0 0 auto; }
 .legend-tri { flex: 0 0 auto; width: 24px; height: auto; }
-.legend-tri .stop-tri { fill: #ffd84a; stroke: #1b1f24; stroke-width: 6; stroke-linejoin: round; }
-.export-sheet.bw .legend-tri .stop-tri { fill: #fff; stroke: #000; }
+.legend-tri .stop-tri { fill: #000; stroke: #000; stroke-width: 6; stroke-linejoin: round; }
 .export-sheet.bw .export-legend { border-color: #000; }
 
 /* Compact export: the seat ID sits inside the box (no overhang), rows sit close together, and rows with no students shrink to a strip. */
