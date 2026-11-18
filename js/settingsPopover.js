@@ -3,9 +3,9 @@
 
   // The last three releases, newest first. Update with each release (the first entry must match the current version).
   var WHATS_NEW = [
+    { version: '0.59.0', added: [], changed: [ 'Empty seats no longer show an "Empty" label.' ] },
     { version: '0.58.0', added: [ 'Export options has a toggle to show each student as first name plus last initial.' ], changed: [ 'Stop numbers are white on a black shape for the highest contrast.', 'Export color now defaults to Grayscale.' ] },
     { version: '0.57.0', added: [ 'Settings > About shows a Hard refresh button when a new version is available. It clears cached app files and reloads, and keeps your saved chart.' ], changed: [] },
-    { version: '0.56.0', added: [], changed: [ 'Shrunken empty rows: EXIT tabs, row numbers and row count labels now line up with the rows.' ] },
   ];
 
 

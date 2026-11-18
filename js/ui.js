@@ -165,7 +165,7 @@
     if (student) {
       seat.appendChild(studentChip(student, ctx.warnings[studentId]));
     } else {
-      seat.appendChild(h('span', { 'class': 'seat-empty', text: isWheelchair ? 'Wheelchair spot' : 'Empty' }));
+      seat.appendChild(h('span', { 'class': 'seat-empty', text: isWheelchair ? 'Wheelchair spot' : '' }));
     }
     if (!isWheelchair) {
       var bar = h('div', { 'class': 'features' });

@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.59.0] - 2026-11-18
+
+### Changed
+- Empty seats no longer show an "Empty" label.
+
 ## [0.58.0] - 2026-11-18
 
 ### Added
