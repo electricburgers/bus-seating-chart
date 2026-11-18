@@ -500,7 +500,7 @@
   function stretchToPage(sheet) {
     var J = root.jspdf && root.jspdf.jsPDF;
     if (!J) return;
-    var size = new J({ unit: 'pt', format: $('opt-paper').value, orientation: 'portrait' }).internal.pageSize;
+    var size = new J({ unit: 'pt', format: $('opt-paper').value, orientation: $('opt-orient').value }).internal.pageSize;
     var maxW = (size.getWidth ? size.getWidth() : size.width) - 36, maxH = (size.getHeight ? size.getHeight() : size.height) - 36;
     var box = sheet.getBoundingClientRect();
     if (!box.width || !box.height) return;
@@ -576,11 +576,11 @@
     var J = root.jspdf && root.jspdf.jsPDF;
     if (!J) { notify('PDF export needs the vendored jsPDF library, which is not installed yet.', true); return; }
     var wantBefore = $('pdf-before').checked && chart.baseline;
-    var doc = new J({ unit: 'pt', format: $('opt-paper').value, orientation: 'portrait' });
+    var doc = new J({ unit: 'pt', format: $('opt-paper').value, orientation: $('opt-orient').value });
     var size = doc.internal.pageSize;
     var pw = size.getWidth ? size.getWidth() : size.width, ph = size.getHeight ? size.getHeight() : size.height;
     var MARGIN = 18;
-    // Fits the chart on the portrait page as large as possible, exactly as the Preview shows it (never turned sideways).
+    // Fits the chart on the page (portrait or landscape, as chosen in Export options) as large as possible. The chart is never turned sideways.
     function addImage(canvas, first) {
       if (!first) doc.addPage();
       var maxW = pw - 2 * MARGIN, maxH = ph - 2 * MARGIN;
