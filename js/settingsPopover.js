@@ -3,9 +3,9 @@
 
   // The last three releases, newest first. Update with each release (the first entry must match the current version).
   var WHATS_NEW = [
+    { version: '0.57.0', added: [ 'Settings > About shows a Hard refresh button when a new version is available. It clears cached app files and reloads, and keeps your saved chart.' ], changed: [] },
     { version: '0.56.0', added: [], changed: [ 'Shrunken empty rows: EXIT tabs, row numbers and row count labels now line up with the rows.' ] },
     { version: '0.55.0', added: [ 'Export options has a Page setting to export the PDF in Portrait or Landscape.' ], changed: [] },
-    { version: '0.54.0', added: [], changed: [ 'PDF export no longer turns the chart sideways: it matches the portrait Preview.' ] },
   ];
 
 
@@ -187,8 +187,30 @@
       demo.addEventListener('click', function () { run(function () { actions.loadSampleData(true); }); });
       var demoPlain = h('button', { type: 'button', text: 'Generate fake names, no wheelchair area' });
       demoPlain.addEventListener('click', function () { run(function () { actions.loadSampleData(false); }); });
+      // Looks for a newer deployed version by fetching version.js past the cache. If there is one, shows a button that
+      // clears the browser's cached copies of the app and reloads. Saved charts (localStorage) are not touched.
+      var updateBox = h('div', { 'class': 'update-box' });
+      function hardRefresh() {
+        var jobs = [];
+        if (root.caches && root.caches.keys) jobs.push(root.caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return root.caches.delete(k); })); }));
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }));
+        Promise.all(jobs).catch(function () {}).then(function () {
+          var u = new URL(root.location.href); u.searchParams.set('refresh', String(Date.now())); root.location.replace(u.toString());
+        });
+      }
+      if (typeof fetch === 'function') {
+        fetch('js/version.js?check=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (txt) {
+          var m = /"version":"([^"]+)"/.exec(txt), t = /"buildTime":"([^"]+)"/.exec(txt), d = /"buildDate":"([^"]+)"/.exec(txt);
+          if (!m || (m[1] === v.version && (!d || d[1] === v.buildDate) && (!t || t[1] === v.buildTime))) return;
+          var btn = h('button', { type: 'button', text: 'Hard refresh to version ' + m[1] });
+          btn.addEventListener('click', hardRefresh);
+          updateBox.appendChild(h('p', { 'class': 'hint', text: 'A new version is available.' }));
+          updateBox.appendChild(h('div', { 'class': 'row' }, [btn]));
+        }).catch(function () {});
+      }
       panel.appendChild(section('about', 'About', [
         h('p', { 'class': 'version', text: 'Version ' + v.version }),
+        updateBox,
         h('p', { 'class': 'hint', text: 'Built ' + v.buildDate + ' ' + v.buildTime + ' (US Eastern time)' }),
         h('p', {}, [h('strong', { text: 'What\'s new' })])
       ].concat(whatsNew()).concat([

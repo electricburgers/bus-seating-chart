@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.57.0] - 2026-11-18
+
+### Added
+- Settings > About shows a Hard refresh button when a newer version is deployed. It clears cached app files and reloads, and keeps the saved chart.
+
 ## [0.56.0] - 2026-11-18
 
 ### Fixed
