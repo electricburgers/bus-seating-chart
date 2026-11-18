@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.49.0] - 2026-11-18
+
+### Added
+- Update button next to a saved bus template re-saves the current bus and look over it.
+- "Start new charts from this template" checkbox sets a default template that a brand-new chart loads automatically.
+
 ## [0.48.0] - 2026-11-18
 
 ### Added

@@ -16,7 +16,8 @@
     return { routeName: '', routeNumber: '', shift: '', driver: '', aide: '', notes: '', preparedBy: '', layout: Layout.createLayout(), students: [], roster: {}, features: {}, baseline: null, reasons: {}, logSnapshot: null };
   }
 
-  var chart = Store.loadAutosave(storage()) || newChart();
+  var savedChart = Store.loadAutosave(storage());
+  var chart = savedChart || newChart();
   var templates = Store.loadTemplates(storage());
   var view = 'after';
   var popover;
@@ -248,6 +249,18 @@
         notify(r.ok ? 'Template "' + name.trim() + '" saved with its fonts, text positions, orientation and export row options.' : 'Could not save template: ' + r.error, !r.ok);
       });
     },
+    updateTemplate: function (name) {
+      guard(function () {
+        if (!Object.prototype.hasOwnProperty.call(templates, name)) throw new Error('Pick a saved template to update.');
+        templates = Store.saveTemplate(templates, name, chart.layout, chart.features, viewSnapshot());
+        var r = Store.saveTemplates(storage(), templates);
+        notify(r.ok ? 'Updated template "' + name + '" with the current bus and look.' : 'Could not update template: ' + r.error, !r.ok);
+      });
+    },
+    setDefaultTemplate: function (name) {
+      var r = Store.saveDefaultTemplate(storage(), name || '');
+      notify(!r.ok ? 'Could not save the default: ' + r.error : name ? 'New charts will start from "' + name + '".' : 'No default template. New charts start blank.', !r.ok);
+    },
     loadTemplate: function (name) {
       guard(function () {
         var t = Store.loadTemplate(templates, name);
@@ -297,6 +310,7 @@
     deleteTemplate: function (name) {
       templates = Store.deleteTemplate(templates, name);
       Store.saveTemplates(storage(), templates);
+      if (Store.loadDefaultTemplate(storage(), { [name]: 1 }) === name) Store.saveDefaultTemplate(storage(), '');
     }
   };
 
@@ -889,7 +903,7 @@
     popover = B.settingsPopover.create({
       button: $('settings-button'), panel: $('settings-panel'), layoutPanel: $('layout-panel'), actions: actions,
       getState: function () {
-        return { layout: chart.layout, templateNames: Store.listTemplates(templates), theme: theme, backup: Store.loadBackup(storage()), autosaveOk: autosaveOk };
+        return { layout: chart.layout, templateNames: Store.listTemplates(templates), defaultTemplate: Store.loadDefaultTemplate(storage(), templates), theme: theme, backup: Store.loadBackup(storage()), autosaveOk: autosaveOk };
       }
     });
   }
@@ -983,6 +997,20 @@
     var el = $(id);
     if (el) el.addEventListener('change', function () { if (view === 'pdf') render(); });
   });
+
+  // A brand-new chart (nothing auto-saved yet) starts from the default template, if one is set.
+  if (!savedChart) {
+    var defName = Store.loadDefaultTemplate(storage(), templates);
+    if (defName) {
+      try {
+        var dt = Store.loadTemplate(templates, defName);
+        applyView(dt.view);
+        chart.layout = Layout.createLayout(dt.layout);
+        chart.features = Features.prune(dt.features || {}, seatIds(chart.layout));
+        hist = History.create(Store.serialize(chart));
+      } catch (e) { /* a broken default template is ignored */ }
+    }
+  }
 
   wire();
   render();

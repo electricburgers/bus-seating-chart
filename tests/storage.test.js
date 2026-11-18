@@ -236,3 +236,11 @@ test('student nicknames survive a round trip and blank ones are dropped', () => 
   assert.strictEqual(back.students[0].nickname, 'Annie');
   assert.ok(!('nickname' in back.students[1]));
 });
+
+test('default template name is remembered and ignored when the template is gone', () => {
+  const mem = {}; const store = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = v; } };
+  const t = S.saveTemplate({}, 'Route 5', B.createLayout(), {});
+  S.saveDefaultTemplate(store, 'Route 5');
+  assert.strictEqual(S.loadDefaultTemplate(store, t), 'Route 5');
+  assert.strictEqual(S.loadDefaultTemplate(store, {}), '');
+});

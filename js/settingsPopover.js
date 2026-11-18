@@ -3,23 +3,13 @@
 
   // The last three releases, newest first. Update with each release (the first entry must match the current version).
   var WHATS_NEW = [
+    { version: '0.49.0', added: [ 'Update button on a saved template re-saves the current bus and look over it.', 'Start new charts from this template: a default template that a brand-new chart loads automatically.' ], changed: [] },
     { version: '0.48.0', added: [ 'Bus templates now also remember fonts and text sizes, text positions, Rear at top, seat width, and the Save export row options (shrink empty rows, first names only, legend, frame, color).', 'Preview export button at the top next to the view buttons.' ], changed: [] },
     { version: '0.47.0', added: [
       'What\'s new in Settings > About now lists the last three versions.'
     ], changed: [
       'The Text sizes menu is now Text and labels, grouped into Names, Seat numbers, Stop number, and Driver and door labels.'
-    ] },
-    { version: '0.46.0',
-      added: [
-        'Bus layout box on the main page holds bus setup, emergency windows, bench overrides and templates.',
-        'First names only checkbox in Save and export: big first names, with a last initial only when two students share one.'
-      ],
-      changed: [
-        'Settings is shorter: Appearance, Data safety and About (with What\'s new and fake data).',
-        'First names are about 1.7 times bigger in a heavy font, so they read on a moving bus.',
-        'Star and H badges sit at the bottom right in the school line, clear of the stop number.',
-        'Exports leave off the school line when every student goes to the same school.'
-      ] }
+    ] }
   ];
 
 
@@ -139,10 +129,19 @@
       if (names.length) {
         var sel = h('select', { 'aria-label': 'Saved templates' }, names.map(function (n) { return h('option', { value: n, text: n }); }));
         var load = h('button', { type: 'button', text: 'Load' });
+        var upd = h('button', { type: 'button', text: 'Update', title: 'Replace this template with the current bus and look' });
         var del = h('button', { type: 'button', 'class': 'danger', text: 'Delete' });
+        upd.addEventListener('click', function () { run(function () { actions.updateTemplate(sel.value); }); });
         load.addEventListener('click', function () { run(function () { actions.loadTemplate(sel.value); }); });
         del.addEventListener('click', function () { run(function () { actions.deleteTemplate(sel.value); }); });
-        tpl.push(h('div', { 'class': 'row' }, [sel, load, del]));
+        if (st.defaultTemplate && names.indexOf(st.defaultTemplate) >= 0) sel.value = st.defaultTemplate;
+        tpl.push(h('div', { 'class': 'row' }, [sel, load, upd, del]));
+        var defBox = h('input', { type: 'checkbox', 'aria-label': 'Start new charts from this template' });
+        var syncDef = function () { defBox.checked = sel.value === st.defaultTemplate; };
+        syncDef();
+        sel.addEventListener('change', syncDef);
+        defBox.addEventListener('change', function () { run(function () { actions.setDefaultTemplate(defBox.checked ? sel.value : ''); }); });
+        tpl.push(h('label', { 'class': 'inline' }, [defBox, ' Start new charts from this template' + (st.defaultTemplate ? ' (now: ' + st.defaultTemplate + ')' : '')]));
       } else {
         tpl.push(h('p', { 'class': 'hint', text: 'No saved templates yet.' }));
       }

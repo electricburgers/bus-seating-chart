@@ -8,6 +8,7 @@
   var BACKUP_KEY = 'busSeatingChart.backup';
   var SHIFTS = ['AM', 'PM', 'Both'];
   var THEME_KEY = 'busSeatingChart.theme';
+  var DEFAULT_TEMPLATE_KEY = 'busSeatingChart.defaultTemplate';
 
   function fail(msg) { throw new Error('storage: ' + msg); }
   function lib(name) {
@@ -204,6 +205,13 @@
     return t === 'light' || t === 'dark' ? t : 'auto';
   }
 
+  // The name of the template new charts start from ('' for none).
+  function saveDefaultTemplate(store, name) { return write(store, DEFAULT_TEMPLATE_KEY, String(name || '')); }
+  function loadDefaultTemplate(store, templates) {
+    var n = read(store, DEFAULT_TEMPLATE_KEY);
+    return n && Object.prototype.hasOwnProperty.call(templates || {}, n) ? n : '';
+  }
+
   function saveTemplates(store, templates) { return write(store, TEMPLATES_KEY, JSON.stringify(templates)); }
 
   function loadTemplates(store) {
@@ -219,6 +227,7 @@
     SCHEMA_VERSION: SCHEMA_VERSION, AUTOSAVE_KEY: AUTOSAVE_KEY, TEMPLATES_KEY: TEMPLATES_KEY,
     serialize: serialize, deserialize: deserialize,
     saveTemplate: saveTemplate, listTemplates: listTemplates, loadTemplate: loadTemplate, deleteTemplate: deleteTemplate,
+    saveDefaultTemplate: saveDefaultTemplate, loadDefaultTemplate: loadDefaultTemplate,
     saveBackup: saveBackup, loadBackup: loadBackup, saveTheme: saveTheme, loadTheme: loadTheme,
     saveAutosave: saveAutosave, loadAutosave: loadAutosave, saveTemplates: saveTemplates, loadTemplates: loadTemplates
   };
