@@ -504,8 +504,7 @@
     var maxW = (size.getWidth ? size.getWidth() : size.width) - 36, maxH = (size.getHeight ? size.getHeight() : size.height) - 36;
     var box = sheet.getBoundingClientRect();
     if (!box.width || !box.height) return;
-    var upright = Math.min(maxW / box.width, maxH / box.height), turned = Math.min(maxW / box.height, maxH / box.width);
-    if (turned > upright || maxW / box.width > maxH / box.height) return;
+    if (maxW / box.width > maxH / box.height) return;
     var seats = [];
     Array.prototype.forEach.call(sheet.querySelectorAll('.bench[data-row]:not(.empty-row)'), function (b) {
       var row = Array.prototype.slice.call(b.querySelectorAll('.seat'));
@@ -581,23 +580,12 @@
     var size = doc.internal.pageSize;
     var pw = size.getWidth ? size.getWidth() : size.width, ph = size.getHeight ? size.getHeight() : size.height;
     var MARGIN = 18;
-    // Fits the chart on the portrait page as large as possible. A wide chart is turned 90 degrees
-    // when that makes it bigger than leaving it upright.
+    // Fits the chart on the portrait page as large as possible, exactly as the Preview shows it (never turned sideways).
     function addImage(canvas, first) {
       if (!first) doc.addPage();
       var maxW = pw - 2 * MARGIN, maxH = ph - 2 * MARGIN;
-      var upright = Math.min(maxW / canvas.width, maxH / canvas.height);
-      var turned = Math.min(maxW / canvas.height, maxH / canvas.width);
-      var src = canvas;
-      if (turned > upright) {
-        src = document.createElement('canvas');
-        src.width = canvas.height; src.height = canvas.width;
-        var ctx = src.getContext('2d');
-        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, src.width, src.height);
-        ctx.translate(src.width, 0); ctx.rotate(Math.PI / 2); ctx.drawImage(canvas, 0, 0);
-      }
-      var k = Math.max(upright, turned), w = src.width * k, hgt = src.height * k;
-      doc.addImage(src.toDataURL('image/jpeg', 0.92), 'JPEG', MARGIN + (maxW - w) / 2, MARGIN + (maxH - hgt) / 2, w, hgt);
+      var k = Math.min(maxW / canvas.width, maxH / canvas.height), w = canvas.width * k, hgt = canvas.height * k;
+      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', MARGIN + (maxW - w) / 2, MARGIN + (maxH - hgt) / 2, w, hgt);
     }
     captureSheet('after', !!wantBefore, true).then(function (after) {
       addImage(after, true);

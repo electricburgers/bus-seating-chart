@@ -3,9 +3,9 @@
 
   // The last three releases, newest first. Update with each release (the first entry must match the current version).
   var WHATS_NEW = [
+    { version: '0.54.0', added: [], changed: [ 'PDF export no longer turns the chart sideways: it matches the portrait Preview.' ] },
     { version: '0.53.0', added: [], changed: [ 'PDF and Preview exports now stretch the rows that have students, and grow the text with them, to fill the page space freed by shrinking empty rows.' ] },
     { version: '0.52.0', added: [], changed: [ 'A student with a nickname shows the nickname big in place of the first name. The real first name shrinks like a middle name: small type, then an initial, then off.' ] },
-    { version: '0.51.0', added: [ 'Export and Import for bus templates: save a template as a JSON file and load it on another computer.', 'Middle names show in smaller type under the first name and shrink to initials, then drop off, before the first name has to shrink.' ], changed: [] }
   ];
 
 

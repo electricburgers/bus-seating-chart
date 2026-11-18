@@ -17,6 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.54.0] - 2026-11-18
+
+### Fixed
+- PDF export no longer turns the chart sideways, so the PDF matches the portrait Preview.
+
 ## [0.53.0] - 2026-11-18
 
 ### Changed
