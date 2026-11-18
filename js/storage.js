@@ -127,11 +127,12 @@
 
   // ---- templates: { name: { layout, features } } ----
 
-  function saveTemplate(templates, name, layout, features) {
+  function saveTemplate(templates, name, layout, features, view) {
     var n = String(name || '').trim();
     if (!n) fail('template needs a name');
     var next = Object.assign({}, templates);
     next[n] = { layout: clone(layout), features: clone(features || {}) };
+    if (isObject(view)) next[n].view = clone(view);
     return next;
   }
 

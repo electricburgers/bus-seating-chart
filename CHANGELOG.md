@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 - Settings button with a popover showing version number, build date and build time.
 - Auto-save in the browser, bus templates, GitHub Pages deployment.
 
+## [0.48.0] - 2026-11-18
+
+### Added
+- Bus templates also save fonts and text sizes, text positions, Rear at top, seat width, and Save export row options; loading a template restores them.
+- Preview export button in the top toolbar.
+
 ## [0.47.0] - 2026-11-17
 
 ### Changed

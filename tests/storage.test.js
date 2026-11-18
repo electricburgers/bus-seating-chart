@@ -99,6 +99,14 @@ test('save, list, load and delete templates', () => {
   assert.deepStrictEqual(S.listTemplates(t), ['Another', 'Big bus'], 'original untouched');
 });
 
+test('templates keep look settings (fonts, orientation, row options) when given', () => {
+  const chart = sampleChart();
+  const view = { busRearTop: '1', busNameSize: '16', 'chk:export-shrink': '1' };
+  const t = S.saveTemplate({}, 'Look', chart.layout, chart.features, view);
+  assert.deepStrictEqual(S.loadTemplate(t, 'Look').view, view);
+  assert.strictEqual(S.loadTemplate(S.saveTemplate({}, 'Old', chart.layout, {}), 'Old').view, undefined);
+});
+
 test('templates hold the bus only, not students or seating', () => {
   const chart = sampleChart();
   const t = S.saveTemplate({}, 'Bus', chart.layout, chart.features);

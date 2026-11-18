@@ -24,6 +24,25 @@
   var autosaveOk = true;
   var swapMode = false, swapFrom = null;
   var theme = Store.loadTheme(storage());
+  // Look settings a bus template remembers: key -> function(value) that applies and saves it. Filled in below.
+  var viewApply = {};
+  var VIEW_CHECKS = ['export-shrink', 'export-firstonly', 'export-legend', 'export-frame'];
+  function viewSnapshot() {
+    var v = {};
+    Object.keys(viewApply).forEach(function (k) {
+      try { var x = storage().getItem(k); if (x !== null) v[k] = x; } catch (e) { /* storage unavailable */ }
+    });
+    VIEW_CHECKS.forEach(function (id) { if ($(id)) v['chk:' + id] = $(id).checked ? '1' : '0'; });
+    if ($('opt-color')) v['sel:opt-color'] = $('opt-color').value;
+    return v;
+  }
+  function applyView(v) {
+    Object.keys(v || {}).forEach(function (k) {
+      if (viewApply[k]) viewApply[k](String(v[k]));
+      else if (k.indexOf('chk:') === 0 && $(k.slice(4))) $(k.slice(4)).checked = v[k] === '1';
+      else if (k === 'sel:opt-color' && $('opt-color')) $('opt-color').value = v[k];
+    });
+  }
 
   // ---- theme ----
 
@@ -224,16 +243,18 @@
     clearOverride: function (row, side) { guard(function () { applyLayout(Layout.clearBenchOverride(chart.layout, wholeNumber(row), side)); }); },
     saveTemplate: function (name) {
       guard(function () {
-        templates = Store.saveTemplate(templates, name, chart.layout, chart.features);
+        templates = Store.saveTemplate(templates, name, chart.layout, chart.features, viewSnapshot());
         var r = Store.saveTemplates(storage(), templates);
-        notify(r.ok ? 'Template "' + name.trim() + '" saved.' : 'Could not save template: ' + r.error, !r.ok);
+        notify(r.ok ? 'Template "' + name.trim() + '" saved with its fonts, text positions, orientation and export row options.' : 'Could not save template: ' + r.error, !r.ok);
       });
     },
     loadTemplate: function (name) {
       guard(function () {
         var t = Store.loadTemplate(templates, name);
+        applyView(t.view);
         applyLayout(Layout.createLayout(t.layout), t.features);
-        notify('Loaded template "' + name + '". Students no longer on a seat were moved back to the list.');
+        render();
+        notify('Loaded template "' + name + '"' + (t.view ? ' with its look settings' : '') + '. Students no longer on a seat were moved back to the list.');
       });
     },
     loadSampleData: function (wheelchair) {
@@ -522,6 +543,7 @@
     captureSheet('after', !!wantBefore).then(function (canvas) {
       $('preview-img').src = canvas.toDataURL('image/jpeg', 0.85);
       $('preview-box').hidden = false;
+      if ($('preview-box').scrollIntoView) $('preview-box').scrollIntoView({ block: 'nearest' });
       notify('Preview ready. This is the "After" chart as it will be exported.');
     }).catch(function (e) { notify(e.message, true); });
   }
@@ -820,6 +842,7 @@
       e.target.value = '';
     });
     $('export-preview').addEventListener('click', previewExport);
+    $('toolbar-preview').addEventListener('click', previewExport);
     $('preview-close').addEventListener('click', function () { $('preview-box').hidden = true; $('preview-img').removeAttribute('src'); });
 
     $('undo').addEventListener('click', undo);
@@ -880,6 +903,7 @@
     });
     if (save) { try { storage().setItem('busSeatWidth', String(px)); } catch (e) { /* storage unavailable */ } }
   }
+  viewApply.busSeatWidth = function (v) { setSeatWidth(parseInt(v, 10), true); };
   var savedWidth = 140;
   try { savedWidth = parseInt(storage().getItem('busSeatWidth'), 10) || 140; } catch (e) { /* storage unavailable */ }
   setSeatWidth(savedWidth, false);
@@ -895,6 +919,7 @@
     });
     if (save) { try { storage().setItem('busRearTop', rear ? '1' : '0'); } catch (e) { /* storage unavailable */ } }
   }
+  viewApply.busRearTop = function (v) { setOrient(v === '1', true); };
   var savedRear = false;
   try { savedRear = storage().getItem('busRearTop') === '1'; } catch (e) { /* storage unavailable */ }
   setOrient(savedRear, false);
@@ -914,6 +939,7 @@
       if (out) out.textContent = px + ' px';
       if (save) { try { storage().setItem(key, String(px)); } catch (e) { /* storage unavailable */ } }
     }
+    viewApply[key] = function (v) { apply(parseInt(v, 10), true); };
     var saved = fallback;
     try { saved = parseInt(storage().getItem(key), 10) || fallback; } catch (e) { /* storage unavailable */ }
     apply(saved, false);
@@ -940,6 +966,7 @@
       sel.value = v;
       if (save) { try { storage().setItem(key, v); } catch (e) { /* storage unavailable */ } }
     }
+    viewApply[key] = function (v) { apply(v, true); };
     var saved = fallback;
     try { saved = storage().getItem(key) || fallback; } catch (e) { /* storage unavailable */ }
     apply(saved, false);

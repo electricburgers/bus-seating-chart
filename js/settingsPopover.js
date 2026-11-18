@@ -3,6 +3,7 @@
 
   // The last three releases, newest first. Update with each release (the first entry must match the current version).
   var WHATS_NEW = [
+    { version: '0.48.0', added: [ 'Bus templates now also remember fonts and text sizes, text positions, Rear at top, seat width, and the Save export row options (shrink empty rows, first names only, legend, frame, color).', 'Preview export button at the top next to the view buttons.' ], changed: [] },
     { version: '0.47.0', added: [
       'What\'s new in Settings > About now lists the last three versions.'
     ], changed: [
@@ -18,12 +19,6 @@
         'First names are about 1.7 times bigger in a heavy font, so they read on a moving bus.',
         'Star and H badges sit at the bottom right in the school line, clear of the stop number.',
         'Exports leave off the school line when every student goes to the same school.'
-      ] },
-    { version: '0.45.0',
-      added: ['Shrink empty rows checkbox in Save and export: empty rows become a thin strip with seat and row IDs.'],
-      changed: [
-        'Exports put the seat ID inside the seat and use thin lines instead of boxes in grayscale and black and white.',
-        'Long names shorten the last name to an initial before the first name.'
       ] }
   ];
 
