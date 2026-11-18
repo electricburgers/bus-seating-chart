@@ -495,13 +495,36 @@
     return sheet;
   }
 
-  function captureSheet(which, withLabel) {
+  // After empty rows shrink, a chart that is limited by the page width leaves blank space below it. Give that space
+  // back to the rows that have students, by making their seats taller, so the PDF and Preview use the whole page.
+  function stretchToPage(sheet) {
+    var J = root.jspdf && root.jspdf.jsPDF;
+    if (!J) return;
+    var size = new J({ unit: 'pt', format: $('opt-paper').value, orientation: 'portrait' }).internal.pageSize;
+    var maxW = (size.getWidth ? size.getWidth() : size.width) - 36, maxH = (size.getHeight ? size.getHeight() : size.height) - 36;
+    var box = sheet.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    var upright = Math.min(maxW / box.width, maxH / box.height), turned = Math.min(maxW / box.height, maxH / box.width);
+    if (turned > upright || maxW / box.width > maxH / box.height) return;
+    var spare = maxH * box.width / maxW - box.height;
+    var seats = [];
+    Array.prototype.forEach.call(sheet.querySelectorAll('.bench[data-row]:not(.empty-row)'), function (b) {
+      var row = Array.prototype.slice.call(b.querySelectorAll('.seat'));
+      if (row.length) seats.push(row);
+    });
+    if (spare < 2 || !seats.length) return;
+    var per = Math.min(spare / seats.length, 60);
+    seats.forEach(function (row) { row.forEach(function (el) { el.style.height = (el.getBoundingClientRect().height + per) + 'px'; }); });
+  }
+
+  function captureSheet(which, withLabel, toPage) {
     if (typeof root.html2canvas !== 'function') {
       return Promise.reject(new Error('PDF and JPEG export need the vendored html2canvas library, which is not installed yet.'));
     }
     var colorMode = $('opt-color').value;
     var sheet = buildSheet(which, withLabel);
     document.body.appendChild(sheet);
+    if (toPage) stretchToPage(sheet);
     UI.fitSeatNames(sheet);
     inlineSvgStyles(sheet);
     var scale = parseFloat($('opt-quality').value) || 2;
@@ -564,9 +587,9 @@
       var k = Math.max(upright, turned), w = src.width * k, hgt = src.height * k;
       doc.addImage(src.toDataURL('image/jpeg', 0.92), 'JPEG', MARGIN + (maxW - w) / 2, MARGIN + (maxH - hgt) / 2, w, hgt);
     }
-    captureSheet('after', !!wantBefore).then(function (after) {
+    captureSheet('after', !!wantBefore, true).then(function (after) {
       addImage(after, true);
-      return wantBefore ? captureSheet('before', true).then(function (before) { addImage(before, false); }) : null;
+      return wantBefore ? captureSheet('before', true, true).then(function (before) { addImage(before, false); }) : null;
     }).then(function () {
       if ($('opt-summary').checked) drawChangeSummary(doc, pw, ph);
       doc.save(fileName('pdf'));
@@ -576,7 +599,7 @@
 
   function previewExport() {
     var wantBefore = $('pdf-before').checked && chart.baseline;
-    captureSheet('after', !!wantBefore).then(function (canvas) {
+    captureSheet('after', !!wantBefore, true).then(function (canvas) {
       $('preview-img').src = canvas.toDataURL('image/jpeg', 0.85);
       $('preview-box').hidden = false;
       if ($('preview-box').scrollIntoView) $('preview-box').scrollIntoView({ block: 'nearest' });

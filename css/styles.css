@@ -256,8 +256,7 @@ body.is-moving .pool { border-color: var(--line2); }
 .preview-box[hidden] { display: none; }
 .preview-box img { display: block; max-width: 100%; max-height: 420px; margin: 0 auto 8px; background: #fff; border: 1px solid var(--line2); }
 .chip-nickname { font-size: 11px; font-style: italic; overflow-wrap: anywhere; }
-.seat .chip-nickname { display: none !important; }
-.seat .chip-nickname-old { flex: 0 0 auto; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.seat .chip-nickname { flex: 0 0 auto; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .nickname-edit { display: block; font-size: 12px; margin-top: 2px; }
 .nickname-edit input { width: 9em; }
 
