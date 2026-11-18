@@ -20,7 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/), and versions
 ## [0.53.0] - 2026-11-18
 
 ### Changed
-- PDF and Preview exports now stretch the rows that have students to fill the page space freed by shrinking empty rows.
+- PDF and Preview exports now stretch the rows that have students, and grow the text with them, to fill the page space freed by shrinking empty rows.
 
 ## [0.52.0] - 2026-11-18
 

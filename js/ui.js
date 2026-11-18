@@ -133,7 +133,7 @@
   }
   function fitNames(container) {
     var fit = lib('nameFit');
-    var base = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'), 10) || 14;
+    var base = parseInt(container.style && container.style.getPropertyValue('--name-size'), 10) || parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'), 10) || 14;
     var SMALL_SIZE = Math.max(9, base - 2), FLOOR_SIZE = Math.max(8, base - 4);
     // Each pass writes every pending name's next tier, then reads all overflow flags together, so the browser
     // lays out the page once per tier (at most a handful of times) instead of once per seat per tier.

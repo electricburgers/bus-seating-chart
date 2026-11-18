@@ -496,7 +496,7 @@
   }
 
   // After empty rows shrink, a chart that is limited by the page width leaves blank space below it. Give that space
-  // back to the rows that have students, by making their seats taller, so the PDF and Preview use the whole page.
+  // back to the rows that have students, by making their seats taller and their text bigger, so the PDF and Preview use the whole page.
   function stretchToPage(sheet) {
     var J = root.jspdf && root.jspdf.jsPDF;
     if (!J) return;
@@ -506,13 +506,25 @@
     if (!box.width || !box.height) return;
     var upright = Math.min(maxW / box.width, maxH / box.height), turned = Math.min(maxW / box.height, maxH / box.width);
     if (turned > upright || maxW / box.width > maxH / box.height) return;
-    var spare = maxH * box.width / maxW - box.height;
     var seats = [];
     Array.prototype.forEach.call(sheet.querySelectorAll('.bench[data-row]:not(.empty-row)'), function (b) {
       var row = Array.prototype.slice.call(b.querySelectorAll('.seat'));
       if (row.length) seats.push(row);
     });
-    if (spare < 2 || !seats.length) return;
+    if (!seats.length) return;
+    function spareNow() { var r = sheet.getBoundingClientRect(); return maxH * r.width / maxW - r.height; }
+    var first = seats[0][0].getBoundingClientRect().height || 116;
+    var per0 = Math.min(Math.max(spareNow(), 0) / seats.length, 60);
+    if (per0 < 2) return;
+    // Text grows with the seats, a bit less than the seat height does, so names, schools and stop marks use the room too.
+    var k = 1 + 0.7 * per0 / first;
+    var base = { '--name-size': 14, '--school-size': 14, '--stop-size': 34, '--row-size': 14, '--col-size': 13, '--rownum-size': 18 };
+    Object.keys(base).forEach(function (v) {
+      var cur = parseFloat(getComputedStyle(sheet).getPropertyValue(v)) || base[v];
+      sheet.style.setProperty(v, (cur * k).toFixed(1) + 'px');
+    });
+    var spare = spareNow();
+    if (spare < 2) return;
     var per = Math.min(spare / seats.length, 60);
     seats.forEach(function (row) { row.forEach(function (el) { el.style.height = (el.getBoundingClientRect().height + per) + 'px'; }); });
   }
